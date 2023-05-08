@@ -28,6 +28,37 @@ function App() {
   const previousPageNumber = previousPage(page);
   const nextPageNumber = nextPage(page);
 
+  const [postSlideIndex, setPostSlideIndex] = useState<(index: number) => void>(
+    () => () => undefined,
+  );
+
+  // Const currentSlideChannel = useMemo(
+  //   () => new BroadcastChannel('current_slide'),
+  //   [],
+  // );
+  // UseEffect(() => {
+  //   return () => {
+  //     currentSlideChannel.close();
+  //   };
+  // }, [currentSlideChannel]);
+
+  console.log(postSlideIndex);
+
+  useEffect(() => {
+    const currentSlideChannel = new BroadcastChannel('current_slide');
+    setPostSlideIndex(() => (index: number) => {
+      currentSlideChannel.postMessage(index);
+    });
+    return () => {
+      currentSlideChannel.close();
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log('posting', page);
+    postSlideIndex(page);
+  }, [page, postSlideIndex]);
+
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       console.log({event, numPages: numberPages});
@@ -103,36 +134,34 @@ function App() {
   );
 
   return (
-    <div className="text-white font-sans text-xl">
-      <div className="pdf-container w-screen h-screen flex flex-col items-center justify-center overflow-hidden">
-        <Document
-          file={'/zen-oss.pdf'}
-          onLoadSuccess={onDocumentLoadSuccess}
-          className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))]"
-          loading={<Message>Loading...</Message>}
-          error={<Message>Loading failed.</Message>}
-          noData={<Message>No PDF file found.</Message>}
-        >
-          {/* <div className='bg-yellow position-absolute top-0 w-full h-full' />
+    <div className="pdf-container w-screen h-screen flex flex-col items-center justify-center overflow-hidden">
+      <Document
+        file={'/zen-oss.pdf'}
+        onLoadSuccess={onDocumentLoadSuccess}
+        className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))]"
+        loading={<Message>Loading...</Message>}
+        error={<Message>Loading failed.</Message>}
+        noData={<Message>No PDF file found.</Message>}
+      >
+        {/* <div className='bg-yellow position-absolute top-0 w-full h-full' />
         <div className='bg-blue position-absolute top-0 w-full h-full' /> */}
 
-          {/* <div className='position-relative top-0 bg-yellow w-full h-full'> */}
-          {/* Preload the previous page (if there is one) */}
-          {((forward && page > 0) || (!forward && page < numberPages - 1)) &&
-            pageUnder}
-          {/* Render the current page with a CSS transition */}
-          <Page
-            key={`page-${page}`}
-            pageIndex={page}
-            width={Math.min(window.innerWidth, window.innerHeight * (16 / 9))}
-            className="transition transition-opacity duration-500 ease-linear opacity-100 w-full h-full important-position-absolute top-0 left-0"
-          />
-          {/* Preload the next page (if there is one) */}
-          {((forward && page < numberPages - 1) || (!forward && page > 0)) &&
-            pageOver}
-          {/* </div> */}
-        </Document>
-      </div>
+        {/* <div className='position-relative top-0 bg-yellow w-full h-full'> */}
+        {/* Preload the previous page (if there is one) */}
+        {((forward && page > 0) || (!forward && page < numberPages - 1)) &&
+          pageUnder}
+        {/* Render the current page with a CSS transition */}
+        <Page
+          key={`page-${page}`}
+          pageIndex={page}
+          width={Math.min(window.innerWidth, window.innerHeight * (16 / 9))}
+          className="transition transition-opacity duration-500 ease-linear opacity-100 w-full h-full important-position-absolute top-0 left-0"
+        />
+        {/* Preload the next page (if there is one) */}
+        {((forward && page < numberPages - 1) || (!forward && page > 0)) &&
+          pageOver}
+        {/* </div> */}
+      </Document>
     </div>
   );
 }
