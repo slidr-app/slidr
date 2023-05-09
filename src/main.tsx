@@ -1,7 +1,7 @@
 // eslint-disable-line unicorn/filename-case
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import '@unocss/reset/normalize.css';
+import '@unocss/reset/tailwind.css';
 import 'virtual:uno.css';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import './index.css';

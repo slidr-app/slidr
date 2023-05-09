@@ -1,8 +1,14 @@
-import {useEffect, useState} from 'react';
 import ReactMarkdown from 'react-markdown';
-import {useSearchParams} from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
+import {Document, Page} from 'react-pdf';
+import * as pdfjs from 'pdfjs-dist';
+import {type PropsWithChildren} from 'react';
 import {useSlideIndex} from './use-slide-index';
+import './pdf.css';
+import useArrowKeys from './use-arrow-keys';
+
+const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
+pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 const markdown = `# Start here
 
@@ -14,91 +20,95 @@ This is how **it works**.
 `;
 
 export default function Speaker() {
-  // Const [searchParameters, setSearchParameters] = useSearchParams();
-  // const [firstMount, setFirstMount] = useState(true);
-  // const [slideIndex, setSlideIndex] = useState<number>();
-  // const [postSlideIndex, setPostSlideIndex] =
-  //   useState<(index: number) => void>();
+  const {
+    slideIndex,
+    setSlideIndex,
+    nextSlideIndex,
+    prevSlideIndex,
+    setSlideCount,
+    slideCount,
+    navNext,
+    navPrevious,
+  } = useSlideIndex();
 
-  // useEffect(() => {
-  //   const currentSlideChannel = new BroadcastChannel('current_slide');
-  //   const currentSlideHandler = (event: MessageEvent) => {
-  //     console.log(event);
-  //     setSearchParameters(
-  //       {slide: String(event.data as number)},
-  //       {replace: true},
-  //     );
-  //     setSlideIndex(event.data as number);
-  //   };
-
-  //   currentSlideChannel.addEventListener('message', currentSlideHandler);
-  //   setPostSlideIndex(() => (index: number) => {
-  //     console.log('posting', index);
-  //     currentSlideChannel.postMessage(index);
-  //   });
-
-  //   return () => {
-  //     currentSlideChannel.removeEventListener('message', currentSlideHandler);
-  //     currentSlideChannel.close();
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (postSlideIndex) {
-  //     setFirstMount(false);
-  //   }
-  // }, [postSlideIndex]);
-
-  // const updateIndex = (index: number) => {
-  //   setSlideIndex(index);
-  //   postSlideIndex!(index);
-  // };
-
-  // useEffect(() => {
-  //   if (!postSlideIndex) {
-  //     return;
-  //   }
-
-  //   const nextIndex = searchParameters.get('slide');
-  //   if (nextIndex === null) {
-  //     setSearchParameters({slide: '0'}, {replace: true});
-  //     updateIndex(0);
-  //     return;
-  //   }
-
-  //   if (firstMount) {
-  //     console.log('first mount');
-  //     updateIndex(Number.parseInt(nextIndex, 10));
-  //   }
-  // }, [searchParameters.get('slide'), firstMount, postSlideIndex]);
-
-  const {slideIndex, setSlideIndex, nextSlideIndex, prevSlideIndex} =
-    useSlideIndex(40);
+  useArrowKeys(navPrevious, navNext);
 
   console.log({slideIndex});
 
+  const Message = ({children}: PropsWithChildren) => (
+    <div className="position-absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+      <div>{children}</div>
+    </div>
+  );
+
   return (
-    <div className="m-2 grid grid-cols-[auto_1fr] grid-rows-[auto_1fr] gap-2 h-screen">
+    <div className="m-2 grid grid-cols-2 grid-rows-[auto_1fr] gap-2 h-screen">
       <div className="col-span-2 p-2">Current Slide: {slideIndex}</div>
-      <div className="flex flex-col items-center p-2 gap-2">
+      <div className="grid grid-cols-3 p-2 gap-4 content-start">
+        <Document
+          file={'/zen-oss.pdf'}
+          onLoadSuccess={(pdf) => {
+            setSlideCount(pdf.numPages);
+          }}
+          className="col-span-3 grid grid-cols-3 gap-2 w-full"
+          loading={<Message>Loading...</Message>}
+          error={<Message>Loading failed.</Message>}
+          noData={<Message>No PDF file found.</Message>}
+        >
+          {slideIndex > 0 && (
+            <Page
+              key={`page-${prevSlideIndex}`}
+              pageIndex={prevSlideIndex}
+              className="col-start-1 w-full h-full scale-75"
+            />
+          )}
+          <Page
+            key={`page-${slideIndex}`}
+            pageIndex={slideIndex}
+            className="col-start-2 w-full h-full"
+          />
+          {slideIndex < slideCount - 1 && (
+            <Page
+              key={`page-${nextSlideIndex}`}
+              pageIndex={nextSlideIndex}
+              className="col-start-3 w-full h-full scale-75"
+            />
+          )}
+        </Document>
         <button
+          className="col-start-1 btn m-2"
           onClick={() => {
-            setSlideIndex(nextSlideIndex);
+            navPrevious();
+          }}
+        >
+          Prev
+        </button>
+        <button
+          className="col-start-3 btn m-2"
+          onClick={() => {
+            navNext();
           }}
         >
           Next
         </button>
         <button
           onClick={() => {
-            setSlideIndex(prevSlideIndex);
+            setSlideIndex(0);
           }}
+          className="col-start-1 btn m-2"
         >
-          Prev
+          Start
         </button>
-        <button>Start</button>
-        <button>End</button>
+        <button
+          onClick={() => {
+            setSlideIndex(slideCount - 1);
+          }}
+          className="col-start-3 btn m-2"
+        >
+          End
+        </button>
       </div>
-      <div className="p-2">
+      <div className="p-2 prose">
         <ReactMarkdown children={markdown} remarkPlugins={[remarkGfm]} />
       </div>
     </div>

@@ -1,14 +1,19 @@
 import {useCallback, useEffect, useState, useMemo} from 'react';
 import {useSearchParams} from 'react-router-dom';
 
-export function useSlideIndex(slideCount: number): {
+export function useSlideIndex(): {
   slideIndex: number;
   setSlideIndex: (index: number) => void;
   forward: boolean;
   prevSlideIndex: number;
   nextSlideIndex: number;
+  slideCount: number;
+  setSlideCount: (count: number) => void;
+  navNext: () => void;
+  navPrevious: () => void;
 } {
   const [slideIndex, setSlideIndex] = useState(0);
+  const [slideCount, setSlideCount] = useState(0);
   const [searchParameters, setSearchParameters] = useSearchParams();
   const [firstRender, setFirstRender] = useState(true);
   const [postSlideIndex, setPostSlideIndex] =
@@ -80,11 +85,23 @@ export function useSlideIndex(slideCount: number): {
     }
   }, [updateSlideIndexAndPost, searchParameters.get('slide'), firstRender]);
 
+  const navNext = useCallback(() => {
+    updateSlideIndexAndPost(nextSlideIndex);
+  }, [updateSlideIndexAndPost, nextSlideIndex]);
+
+  const navPrevious = useCallback(() => {
+    updateSlideIndexAndPost(previousSlideIndex);
+  }, [updateSlideIndexAndPost, previousSlideIndex]);
+
   return {
     slideIndex,
     setSlideIndex: updateSlideIndexAndPost,
     forward,
     prevSlideIndex: previousSlideIndex,
     nextSlideIndex,
+    slideCount,
+    setSlideCount,
+    navNext,
+    navPrevious,
   };
 }

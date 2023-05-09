@@ -21,13 +21,19 @@
   /* min-height: unset !important; */
 }
 
-.pdf-container .react-pdf__Page canvas {
+/* .pdf-container .react-pdf__Page canvas { */
+/* max-width: 100%; */
+/* height: auto !important; */
+/* --uno: important-w-full important-h-full; */
+/* } */
+
+/* .pdf-container .react-pdf__message {
+  padding: 20px;
+  color: white;
+} */
+
+.react-pdf__Page canvas {
   /* max-width: 100%; */
   /* height: auto !important; */
   --uno: important-w-full important-h-full;
-}
-
-.pdf-container .react-pdf__message {
-  padding: 20px;
-  color: white;
 }
