@@ -40,7 +40,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_KEY }}
-          BASE_URL: https://present.devrel.eu/
+          BASE_URL: https://present.codyfactory.eu/
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
