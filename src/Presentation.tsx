@@ -2,6 +2,7 @@ import {useState, type PropsWithChildren, useEffect} from 'react';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
 import ReactCanvasConfetti from 'react-canvas-confetti';
+import QRCode from 'react-qr-code';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import clsx from 'clsx';
@@ -17,8 +18,6 @@ const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 function Presentation({slideUrl}: {slideUrl: string}) {
-  console.log('base', import.meta.env.BASE_URL);
-
   const {
     slideIndex,
     setSlideIndex,
@@ -141,6 +140,14 @@ function Presentation({slideUrl}: {slideUrl: string}) {
           ticks={600}
           useWorker
         />
+        <div className="position-absolute top-4 right-4 bg-white p-8px">
+          <QRCode
+            value={`${window.location.origin}${window.location.pathname}/view${window.location.search}`}
+            size={128}
+            level="M"
+            className="w-full h-full"
+          />
+        </div>
       </Document>
     </div>
   );
