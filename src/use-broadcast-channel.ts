@@ -3,6 +3,7 @@ import {type UseChannel} from './use-channel';
 
 const useBroadcastChannel: UseChannel = function (
   channelId,
+  // @ts-expect-error matching call sig
   eventId,
   onIncoming,
 ) {

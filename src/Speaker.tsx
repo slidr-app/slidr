@@ -8,7 +8,7 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useSlideIndex} from './use-slide-index';
 import './pdf.css';
 import useArrowKeys from './use-arrow-keys';
-import useConfetti from './use-confetti-supabase';
+import useConfetti from './use-confetti';
 import useBroadcastChannel from './use-broadcast-channel';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 
@@ -24,7 +24,7 @@ const markdown = `# Start here
 This is how **it works**.
 `;
 
-export default function Speaker() {
+export default function Speaker({slideUrl}: {slideUrl: string}) {
   const {
     slideIndex,
     setSlideIndex,
@@ -34,12 +34,12 @@ export default function Speaker() {
     slideCount,
     navNext,
     navPrevious,
-  } = useSlideIndex(useBroadcastChannel);
+  } = useSlideIndex(useBroadcastChannel, slideUrl);
 
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
   useArrowKeys(navPrevious, navNext);
-  const postConfetti = useConfetti();
+  const postConfetti = useConfetti(slideUrl, useBroadcastChannel);
 
   console.log({slideIndex});
 
@@ -54,7 +54,7 @@ export default function Speaker() {
       <div className="col-span-2 p-2">Current Slide: {slideIndex}</div>
       <div className="grid grid-cols-3 p-2 gap-4 content-start">
         <Document
-          file={'/oss.pdf'}
+          file={slideUrl}
           onLoadSuccess={(pdf) => {
             setSlideCount(pdf.numPages);
           }}
@@ -115,7 +115,12 @@ export default function Speaker() {
         >
           End
         </button>
-        <button onClick={postConfetti} className="col-start-2 btn m-2">
+        <button
+          onClick={() => {
+            postConfetti({});
+          }}
+          className="col-start-2 btn m-2"
+        >
           Boom
         </button>
       </div>

@@ -5,23 +5,40 @@ import '@unocss/reset/tailwind.css';
 import 'virtual:uno.css';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import './index.css';
-import App from './App.tsx';
+import Presentation from './Presentation.tsx';
 import Speaker from './Speaker.tsx';
 import Viewer from './Viewer.tsx';
+import Home from './Home.tsx';
+
+const presentations = import.meta.glob('./presentations/*.pdf', {
+  as: 'url',
+  eager: true,
+});
+
+const presentationNameUrlEntries: Array<[string, string]> = Object.entries(
+  presentations,
+).map(([name, url]) => [name.split('/').at(-1)!.replace('.pdf', ''), url]);
+
+const routes = presentationNameUrlEntries.flatMap(([name, url]) => [
+  {path: `/${name}`, element: <Presentation slideUrl={url} />},
+  {path: `/${name}/speaker`, element: <Speaker slideUrl={url} />},
+  {path: `/${name}/view`, element: <Viewer slideUrl={url} />},
+]);
+
+console.log(presentations, routes);
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
+    element: (
+      <Home
+        presentations={presentationNameUrlEntries.map(
+          ([presentation]) => presentation,
+        )}
+      />
+    ),
   },
-  {
-    path: '/speaker',
-    element: <Speaker />,
-  },
-  {
-    path: '/viewer',
-    element: <Viewer />,
-  },
+  ...routes,
 ]);
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(

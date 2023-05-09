@@ -15,7 +15,7 @@ const useBroadcastSupaBase: UseChannel = function (
     const channel = supabase.channel(channelId);
 
     channel
-      .on('broadcast', {event: eventId!}, (message) => {
+      .on('broadcast', {event: eventId}, (message) => {
         console.log('incomming supabase', channelId, eventId, message);
         if (onIncoming) {
           onIncoming(message.payload);
@@ -28,7 +28,7 @@ const useBroadcastSupaBase: UseChannel = function (
             console.log('posting supabase data', channelId, payload);
             void channel.send({
               type: 'broadcast',
-              event: eventId!,
+              event: eventId,
               payload,
             });
           });

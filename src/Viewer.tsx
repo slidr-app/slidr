@@ -3,7 +3,7 @@ import * as pdfjs from 'pdfjs-dist';
 import {type PropsWithChildren} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-import useConfetti from './use-confetti-supabase';
+import useConfetti from './use-confetti';
 import './pdf.css';
 import {useSlideIndex} from './use-slide-index';
 import useBroadcastSupaBase from './use-broadcast-supabase';
@@ -12,10 +12,11 @@ import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
-export default function Viewer() {
-  const postConfetti = useConfetti();
+export default function Viewer({slideUrl}: {slideUrl: string}) {
+  const postConfetti = useConfetti(slideUrl, useBroadcastSupaBase);
   const {setSlideCount, slideIndex, setSlideIndex} = useSlideIndex(
     useBroadcastSupaBase,
+    slideUrl,
     true,
   );
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
@@ -30,7 +31,7 @@ export default function Viewer() {
     <div className="max-w-md mx-auto flex flex-col justify-center gap-4 py-2">
       <Document
         className="w-full aspect-video"
-        file={'/oss.pdf'}
+        file={slideUrl}
         onLoadSuccess={(pdf) => {
           setSlideCount(pdf.numPages);
         }}
@@ -44,7 +45,12 @@ export default function Viewer() {
           pageIndex={slideIndex}
         />
       </Document>
-      <button className="btn" onClick={postConfetti}>
+      <button
+        className="btn"
+        onClick={() => {
+          postConfetti({});
+        }}
+      >
         Boom 🎉
       </button>
 

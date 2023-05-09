@@ -1,8 +1,9 @@
-import {useCallback, useEffect, useState, useMemo} from 'react';
+import {useCallback, useState, useMemo} from 'react';
 import {type UseChannel} from './use-channel';
 
 export function useSlideIndex(
   useChannel: UseChannel,
+  presentationName: string,
   ignorePost?: boolean,
 ): {
   slideIndex: number;
@@ -40,8 +41,8 @@ export function useSlideIndex(
   );
 
   const postSlideIndex = useChannel(
-    'current_slide',
-    'current_slide',
+    `${presentationName}_slide_index`,
+    'slide_index',
     updateSlideIndex,
   );
 
