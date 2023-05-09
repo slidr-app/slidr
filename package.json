@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.21.0",
     "@unocss/reset": "^0.51.12",
     "clsx": "^1.2.1",
     "pdfjs-dist": "2.16.105",

@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState, useMemo} from 'react';
 import {useSearchParams} from 'react-router-dom';
 
-export function useSlideIndex(): {
+export function useSlideIndex(ignorePost?: boolean): {
   slideIndex: number;
   setSlideIndex: (index: number) => void;
   forward: boolean;
@@ -47,6 +47,11 @@ export function useSlideIndex(): {
 
     currentSlideChannel.addEventListener('message', currentSlideHandler);
     setPostSlideIndex(() => (index: number) => {
+      if (ignorePost) {
+        console.log('ignoring post', index);
+        return;
+      }
+
       console.log('posting', index);
       currentSlideChannel.postMessage(index);
     });
@@ -55,7 +60,7 @@ export function useSlideIndex(): {
       currentSlideChannel.removeEventListener('message', currentSlideHandler);
       currentSlideChannel.close();
     };
-  }, [updateSlideIndex]);
+  }, [updateSlideIndex, ignorePost]);
 
   const updateSlideIndexAndPost = useCallback(
     (index: number) => {

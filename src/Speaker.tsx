@@ -6,7 +6,7 @@ import {type PropsWithChildren} from 'react';
 import {useSlideIndex} from './use-slide-index';
 import './pdf.css';
 import useArrowKeys from './use-arrow-keys';
-import useConfetti from './use-confetti';
+import useConfetti from './use-confetti-supabase';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();

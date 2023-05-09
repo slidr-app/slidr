@@ -1,4 +1,4 @@
-import {useState, type PropsWithChildren} from 'react';
+import {useState, type PropsWithChildren, useEffect} from 'react';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
 import ReactCanvasConfetti from 'react-canvas-confetti';
@@ -8,12 +8,33 @@ import clsx from 'clsx';
 import './pdf.css';
 import {useSlideIndex} from './use-slide-index';
 import useArrowKeys from './use-arrow-keys';
-import useConfetti from './use-confetti';
+import useConfetti from './use-confetti-supabase';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 function App() {
+  // UseEffect(() => {
+  //   const channel = supabase.channel('boom');
+  //   channel
+  //     .on('broadcast', {event: 'supa'}, (payload) => {
+  //       console.log(payload);
+  //     })
+  //     .subscribe((status) => {
+  //       if (status === 'SUBSCRIBED') {
+  //         void channel.send({
+  //           type: 'broadcast',
+  //           event: 'supa',
+  //           payload: {org: 'supabase'},
+  //         });
+  //       }
+  //     });
+
+  //   return () => {
+  //     void channel.unsubscribe();
+  //   };
+  // });
+
   const {
     slideIndex,
     forward,

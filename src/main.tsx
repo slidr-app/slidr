@@ -7,6 +7,7 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import './index.css';
 import App from './App.tsx';
 import Speaker from './Speaker.tsx';
+import Viewer from './Viewer.tsx';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
   {
     path: '/speaker',
     element: <Speaker />,
+  },
+  {
+    path: '/viewer',
+    element: <Viewer />,
   },
 ]);
 
