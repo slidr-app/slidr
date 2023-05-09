@@ -32,6 +32,10 @@
   color: white;
 } */
 
+.react-pdf__message {
+  --uno: w-full h-full;
+}
+
 .react-pdf__Page canvas {
   /* max-width: 100%; */
   /* height: auto !important; */

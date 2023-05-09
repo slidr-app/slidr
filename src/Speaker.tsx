@@ -3,10 +3,14 @@ import remarkGfm from 'remark-gfm';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
 import {type PropsWithChildren} from 'react';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useSlideIndex} from './use-slide-index';
 import './pdf.css';
 import useArrowKeys from './use-arrow-keys';
 import useConfetti from './use-confetti-supabase';
+import useBroadcastChannel from './use-broadcast-channel';
+import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -30,7 +34,9 @@ export default function Speaker() {
     slideCount,
     navNext,
     navPrevious,
-  } = useSlideIndex();
+  } = useSlideIndex(useBroadcastChannel);
+
+  useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
   useArrowKeys(navPrevious, navNext);
   const postConfetti = useConfetti();

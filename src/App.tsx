@@ -9,34 +9,17 @@ import './pdf.css';
 import {useSlideIndex} from './use-slide-index';
 import useArrowKeys from './use-arrow-keys';
 import useConfetti from './use-confetti-supabase';
+import useBroadcastChannel from './use-broadcast-channel';
+import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
+import useBroadcastSupaBase from './use-broadcast-supabase';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 function App() {
-  // UseEffect(() => {
-  //   const channel = supabase.channel('boom');
-  //   channel
-  //     .on('broadcast', {event: 'supa'}, (payload) => {
-  //       console.log(payload);
-  //     })
-  //     .subscribe((status) => {
-  //       if (status === 'SUBSCRIBED') {
-  //         void channel.send({
-  //           type: 'broadcast',
-  //           event: 'supa',
-  //           payload: {org: 'supabase'},
-  //         });
-  //       }
-  //     });
-
-  //   return () => {
-  //     void channel.unsubscribe();
-  //   };
-  // });
-
   const {
     slideIndex,
+    setSlideIndex,
     forward,
     prevSlideIndex,
     nextSlideIndex,
@@ -44,7 +27,18 @@ function App() {
     setSlideCount,
     navNext,
     navPrevious,
-  } = useSlideIndex();
+  } = useSlideIndex(useBroadcastChannel);
+
+  const {setSlideIndex: setSupaBaseSlideIndex} =
+    useSlideIndex(useBroadcastSupaBase);
+
+  useEffect(() => {
+    console.log('updating', slideIndex);
+    setSupaBaseSlideIndex(slideIndex);
+  }, [slideIndex]);
+  // SetSupaBaseSlideIndex(slideIndex);
+
+  useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
   useArrowKeys(navPrevious, navNext);
 

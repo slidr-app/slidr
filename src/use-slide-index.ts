@@ -1,7 +1,10 @@
 import {useCallback, useEffect, useState, useMemo} from 'react';
-import {useSearchParams} from 'react-router-dom';
+import {type UseChannel} from './use-channel';
 
-export function useSlideIndex(ignorePost?: boolean): {
+export function useSlideIndex(
+  useChannel: UseChannel,
+  ignorePost?: boolean,
+): {
   slideIndex: number;
   setSlideIndex: (index: number) => void;
   forward: boolean;
@@ -14,10 +17,8 @@ export function useSlideIndex(ignorePost?: boolean): {
 } {
   const [slideIndex, setSlideIndex] = useState(0);
   const [slideCount, setSlideCount] = useState(0);
-  const [searchParameters, setSearchParameters] = useSearchParams();
-  const [firstRender, setFirstRender] = useState(true);
-  const [postSlideIndex, setPostSlideIndex] =
-    useState<(index: number) => void>();
+  // Const [postSlideIndex, setPostSlideIndex] =
+  //   useState<(index: number) => void>();
   const [forward, setForward] = useState(true);
 
   const previousSlideIndex = useMemo(
@@ -33,62 +34,26 @@ export function useSlideIndex(ignorePost?: boolean): {
     (index: number) => {
       setForward(index >= slideIndex);
       setSlideIndex(index);
-      setSearchParameters({slide: String(index)}, {replace: true});
+      // SetSearchParameters({slide: String(index)}, {replace: true});
     },
     [slideIndex],
   );
 
-  useEffect(() => {
-    const currentSlideChannel = new BroadcastChannel('current_slide');
-    const currentSlideHandler = (event: MessageEvent) => {
-      console.log(event);
-      updateSlideIndex(event.data as number);
-    };
-
-    currentSlideChannel.addEventListener('message', currentSlideHandler);
-    setPostSlideIndex(() => (index: number) => {
-      if (ignorePost) {
-        console.log('ignoring post', index);
-        return;
-      }
-
-      console.log('posting', index);
-      currentSlideChannel.postMessage(index);
-    });
-
-    return () => {
-      currentSlideChannel.removeEventListener('message', currentSlideHandler);
-      currentSlideChannel.close();
-    };
-  }, [updateSlideIndex, ignorePost]);
+  const postSlideIndex = useChannel(
+    'current_slide',
+    'current_slide',
+    updateSlideIndex,
+  );
 
   const updateSlideIndexAndPost = useCallback(
     (index: number) => {
       updateSlideIndex(index);
-      postSlideIndex!(index);
+      if (!ignorePost) {
+        postSlideIndex(index);
+      }
     },
-    [updateSlideIndex, postSlideIndex],
+    [updateSlideIndex, postSlideIndex, ignorePost],
   );
-
-  useEffect(() => {
-    if (!postSlideIndex) {
-      return;
-    }
-
-    const slideString = searchParameters.get('slide');
-
-    if (slideString === null) {
-      setSearchParameters({slide: '0'}, {replace: true});
-      updateSlideIndexAndPost(0);
-      return;
-    }
-
-    if (firstRender) {
-      console.log('first render');
-      updateSlideIndexAndPost(Number.parseInt(slideString, 10));
-      setFirstRender(false);
-    }
-  }, [updateSlideIndexAndPost, searchParameters.get('slide'), firstRender]);
 
   const navNext = useCallback(() => {
     updateSlideIndexAndPost(nextSlideIndex);
