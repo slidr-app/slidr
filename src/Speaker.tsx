@@ -6,6 +6,7 @@ import {type PropsWithChildren} from 'react';
 import {useSlideIndex} from './use-slide-index';
 import './pdf.css';
 import useArrowKeys from './use-arrow-keys';
+import useConfetti from './use-confetti';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -32,6 +33,7 @@ export default function Speaker() {
   } = useSlideIndex();
 
   useArrowKeys(navPrevious, navNext);
+  const postConfetti = useConfetti();
 
   console.log({slideIndex});
 
@@ -106,6 +108,9 @@ export default function Speaker() {
           className="col-start-3 btn m-2"
         >
           End
+        </button>
+        <button onClick={postConfetti} className="col-start-2 btn m-2">
+          Boom
         </button>
       </div>
       <div className="p-2 prose">

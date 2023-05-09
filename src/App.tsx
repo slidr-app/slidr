@@ -1,12 +1,14 @@
-import {useEffect, type PropsWithChildren} from 'react';
+import {useState, type PropsWithChildren} from 'react';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
+import ReactCanvasConfetti from 'react-canvas-confetti';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import clsx from 'clsx';
 import './pdf.css';
 import {useSlideIndex} from './use-slide-index';
 import useArrowKeys from './use-arrow-keys';
+import useConfetti from './use-confetti';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -60,6 +62,9 @@ function App() {
     </div>
   );
 
+  const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
+  useConfetti(setFire);
+
   return (
     <div className="pdf-container w-screen h-screen flex flex-col items-center justify-center overflow-hidden">
       <Document
@@ -72,10 +77,6 @@ function App() {
         error={<Message>Loading failed.</Message>}
         noData={<Message>No PDF file found.</Message>}
       >
-        {/* <div className='bg-yellow position-absolute top-0 w-full h-full' />
-        <div className='bg-blue position-absolute top-0 w-full h-full' /> */}
-
-        {/* <div className='position-relative top-0 bg-yellow w-full h-full'> */}
         {/* Preload the previous page (if there is one) */}
         {((forward && slideIndex > 0) ||
           (!forward && slideIndex < slideCount - 1)) &&
@@ -92,6 +93,35 @@ function App() {
           (!forward && slideIndex > 0)) &&
           pageOver}
         {/* </div> */}
+        <ReactCanvasConfetti
+          fire={fire}
+          angle={90}
+          className="canvas position-absolute top-0 w-screen h-screen"
+          colors={[
+            '#26ccff',
+            '#a25afd',
+            '#ff5e7e',
+            '#88ff5a',
+            '#fcff42',
+            '#ffa62d',
+            '#ff36ff',
+          ]}
+          decay={0.8}
+          drift={0}
+          gravity={1}
+          origin={{
+            x: Math.random(),
+            y: Math.random(),
+          }}
+          particleCount={500}
+          resize
+          scalar={1}
+          shapes={['circle', 'square', 'star']}
+          spread={360}
+          startVelocity={45}
+          ticks={600}
+          useWorker
+        />
       </Document>
     </div>
   );
