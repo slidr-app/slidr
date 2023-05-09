@@ -30,7 +30,7 @@ export default function Viewer() {
     <div className="max-w-md mx-auto flex flex-col justify-center gap-4 py-2">
       <Document
         className="w-full aspect-video"
-        file={'/zen-oss.pdf'}
+        file={'/oss.pdf'}
         onLoadSuccess={(pdf) => {
           setSlideCount(pdf.numPages);
         }}

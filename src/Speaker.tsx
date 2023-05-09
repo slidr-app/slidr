@@ -54,7 +54,7 @@ export default function Speaker() {
       <div className="col-span-2 p-2">Current Slide: {slideIndex}</div>
       <div className="grid grid-cols-3 p-2 gap-4 content-start">
         <Document
-          file={'/zen-oss.pdf'}
+          file={'/oss.pdf'}
           onLoadSuccess={(pdf) => {
             setSlideCount(pdf.numPages);
           }}

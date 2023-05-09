@@ -83,7 +83,7 @@ function App() {
   return (
     <div className="pdf-container w-screen h-screen flex flex-col items-center justify-center overflow-hidden">
       <Document
-        file={'/zen-oss.pdf'}
+        file={'/oss.pdf'}
         onLoadSuccess={(pdf) => {
           setSlideCount(pdf.numPages);
         }}
