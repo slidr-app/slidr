@@ -1,4 +1,4 @@
-import {useState, useEffect, type PropsWithChildren} from 'react';
+import {useState, useEffect, type PropsWithChildren, useMemo} from 'react';
 // Import './App.css'
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
@@ -8,68 +8,65 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import type {PDFDocumentProxy} from 'pdfjs-dist';
 import clsx from 'clsx';
 import './pdf.css';
+import {useSlideIndex} from './use-slide-index';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 function App() {
-  const [page, setPage] = useState(0);
+  // Const [page, setPage] = useState(0);
   const [numberPages, setNumberPages] = useState(0);
-  const [forward, setForward] = useState(true);
+  // Const [forward, setForward] = useState(true);
 
-  function nextPage(pageNumber: number) {
-    return Math.min(pageNumber + 1, numberPages - 1);
-  }
+  const {slideIndex, setSlideIndex, forward, prevSlideIndex, nextSlideIndex} =
+    useSlideIndex(numberPages);
 
-  function previousPage(pageNumber: number) {
-    return Math.max(pageNumber - 1, 0);
-  }
-
-  const previousPageNumber = previousPage(page);
-  const nextPageNumber = nextPage(page);
-
-  const [postSlideIndex, setPostSlideIndex] = useState<(index: number) => void>(
-    () => () => undefined,
-  );
-
-  // Const currentSlideChannel = useMemo(
-  //   () => new BroadcastChannel('current_slide'),
-  //   [],
+  // Const previousPageNumber = useMemo(
+  //   () => Math.max(slideIndex - 1, 0),
+  //   [slideIndex],
   // );
-  // UseEffect(() => {
+  // const nextPageNumber = useMemo(
+  //   () => Math.min(slideIndex + 1, numberPages - 1),
+  //   [slideIndex, numberPages],
+  // );
+
+  // Const [postSlideIndex, setPostSlideIndex] = useState<(index: number) => void>(
+  //   () => () => undefined,
+  // );
+
+  // useEffect(() => {
+  //   const currentSlideChannel = new BroadcastChannel('current_slide');
+  //   const currentSlideHandler = (event: MessageEvent) => {
+  //     console.log(event);
+  //     setPage(event.data as number);
+  //   };
+
+  //   currentSlideChannel.addEventListener('message', currentSlideHandler);
+  //   setPostSlideIndex(() => (index: number) => {
+  //     console.log('posting', index);
+  //     currentSlideChannel.postMessage(index);
+  //   });
   //   return () => {
+  //     currentSlideChannel.removeEventListener('message', currentSlideHandler);
   //     currentSlideChannel.close();
   //   };
-  // }, [currentSlideChannel]);
-
-  console.log(postSlideIndex);
-
-  useEffect(() => {
-    const currentSlideChannel = new BroadcastChannel('current_slide');
-    setPostSlideIndex(() => (index: number) => {
-      currentSlideChannel.postMessage(index);
-    });
-    return () => {
-      currentSlideChannel.close();
-    };
-  }, []);
-
-  useEffect(() => {
-    console.log('posting', page);
-    postSlideIndex(page);
-  }, [page, postSlideIndex]);
+  // }, []);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       console.log({event, numPages: numberPages});
       if (event.code === 'ArrowRight') {
-        setPage(nextPage);
-        setForward(true);
+        setSlideIndex(nextSlideIndex);
+        // SetPage(nextPageNumber);
+        // postSlideIndex(nextPageNumber);
+        // setForward(true);
       }
 
       if (event.code === 'ArrowLeft') {
-        setPage(previousPage);
-        setForward(false);
+        setSlideIndex(prevSlideIndex);
+        // SetPage(previousPageNumber);
+        // postSlideIndex(previousPageNumber);
+        // setForward(false);
       }
     }
 
@@ -79,7 +76,7 @@ function App() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [numberPages]);
+  }, [nextSlideIndex, prevSlideIndex, setSlideIndex]);
 
   function onDocumentLoadSuccess({
     numPages: nextNumberPages,
@@ -92,16 +89,16 @@ function App() {
 
   console.log({
     numPages: numberPages,
-    page,
-    prevPageNum: previousPageNumber,
-    nextPageNum: nextPageNumber,
+    slideIndex,
+    nextSlideIndex,
+    prevSlideIndex,
     forward,
   });
 
   const pageUnder = (
     <Page
-      key={`page-${forward ? previousPageNumber : nextPageNumber}`}
-      pageIndex={forward ? previousPageNumber : nextPageNumber}
+      key={`page-${forward ? prevSlideIndex : nextSlideIndex}`}
+      pageIndex={forward ? prevSlideIndex : nextSlideIndex}
       className={clsx(
         'w-full h-full important-position-absolute top-0 left-0 opacity-100',
       )}
@@ -110,22 +107,14 @@ function App() {
   );
   const pageOver = (
     <Page
-      key={`page-${forward ? nextPageNumber : previousPageNumber}`}
-      pageIndex={forward ? nextPageNumber : previousPageNumber}
+      key={`page-${forward ? nextSlideIndex : prevSlideIndex}`}
+      pageIndex={forward ? nextSlideIndex : prevSlideIndex}
       className={clsx(
         'w-full h-full important-position-absolute top-0 left-0 opacity-0',
       )}
       width={Math.min(window.innerWidth, window.innerHeight * (16 / 9))}
     />
   );
-
-  // Return (
-  //   <div className='w-screen h-screen bg-black flex flex-col items-center justify-center'>
-  //     <div className='w-full aspect-video bg-yellow' style={{maxWidth: 'calc(100vh * (16/9))'}}>
-  //       <div className='bg-red'>hello</div>
-  //     </div>
-  //   </div>
-  // )
 
   const Message = ({children}: PropsWithChildren) => (
     <div className="position-absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
@@ -148,17 +137,19 @@ function App() {
 
         {/* <div className='position-relative top-0 bg-yellow w-full h-full'> */}
         {/* Preload the previous page (if there is one) */}
-        {((forward && page > 0) || (!forward && page < numberPages - 1)) &&
+        {((forward && slideIndex > 0) ||
+          (!forward && slideIndex < numberPages - 1)) &&
           pageUnder}
         {/* Render the current page with a CSS transition */}
         <Page
-          key={`page-${page}`}
-          pageIndex={page}
+          key={`page-${slideIndex}`}
+          pageIndex={slideIndex}
           width={Math.min(window.innerWidth, window.innerHeight * (16 / 9))}
           className="transition transition-opacity duration-500 ease-linear opacity-100 w-full h-full important-position-absolute top-0 left-0"
         />
         {/* Preload the next page (if there is one) */}
-        {((forward && page < numberPages - 1) || (!forward && page > 0)) &&
+        {((forward && slideIndex < numberPages - 1) ||
+          (!forward && slideIndex > 0)) &&
           pageOver}
         {/* </div> */}
       </Document>
