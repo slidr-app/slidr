@@ -17,6 +17,8 @@ const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 function Presentation({slideUrl}: {slideUrl: string}) {
+  console.log('base', import.meta.env.BASE_URL);
+
   const {
     slideIndex,
     setSlideIndex,
