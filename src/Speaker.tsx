@@ -11,6 +11,7 @@ import useArrowKeys from './use-arrow-keys';
 import useConfetti from './use-confetti';
 import useBroadcastChannel from './use-broadcast-channel';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
+import useBroadcastSupaBase from './use-broadcast-supabase';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -37,7 +38,14 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
   } = useSlideIndex(useBroadcastChannel, slideUrl);
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
   useArrowKeys(navPrevious, navNext);
-  const postConfetti = useConfetti(slideUrl, useBroadcastChannel);
+  const postConfettiBroadcastChannel = useConfetti(
+    slideUrl,
+    useBroadcastChannel,
+  );
+  const postConfettiBroadcastSupaBase = useConfetti(
+    slideUrl,
+    useBroadcastSupaBase,
+  );
 
   const Message = ({children}: PropsWithChildren) => (
     <div className="position-absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
@@ -114,11 +122,19 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
           </button>
           <button
             onClick={() => {
-              postConfetti({});
+              postConfettiBroadcastChannel({});
             }}
-            className="btn col-span-2 py-6"
+            className="btn py-6"
           >
-            🎉
+            🎉 local
+          </button>
+          <button
+            onClick={() => {
+              postConfettiBroadcastSupaBase({});
+            }}
+            className="btn py-6"
+          >
+            🎉 supabase
           </button>
         </div>
       </div>

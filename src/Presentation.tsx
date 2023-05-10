@@ -13,6 +13,7 @@ import useConfetti from './use-confetti';
 import useBroadcastChannel from './use-broadcast-channel';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import useBroadcastSupaBase from './use-broadcast-supabase';
+import Confetti from './Confetti';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -111,44 +112,17 @@ function Presentation({slideUrl}: {slideUrl: string}) {
           (!forward && slideIndex > 0)) &&
           pageOver}
         {/* </div> */}
-        <ReactCanvasConfetti
-          fire={fire}
-          angle={90}
-          className="canvas position-absolute top-0 w-screen h-screen"
-          colors={[
-            '#26ccff',
-            '#a25afd',
-            '#ff5e7e',
-            '#88ff5a',
-            '#fcff42',
-            '#ffa62d',
-            '#ff36ff',
-          ]}
-          decay={0.8}
-          drift={0}
-          gravity={1}
-          origin={{
-            x: Math.random(),
-            y: Math.random(),
-          }}
-          particleCount={500}
-          resize
-          scalar={1}
-          shapes={['circle', 'square', 'star']}
-          spread={360}
-          startVelocity={45}
-          ticks={600}
-          useWorker
-        />
-        <div className="position-absolute top-4 right-4 bg-white p-8px">
+        <div className="position-absolute top-4 right-4 bg-white p-2 w-40 h-40">
           <QRCode
             value={`${window.location.origin}${window.location.pathname}/view${window.location.search}`}
-            size={128}
-            level="M"
+            // Size={128}
+            // Level="M"
             className="w-full h-full"
+            style={{width: '100%', height: 'auto', maxWidth: '100%'}}
           />
         </div>
       </Document>
+      <Confetti fire={fire} />
     </div>
   );
 }

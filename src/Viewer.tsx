@@ -1,6 +1,6 @@
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
-import {type PropsWithChildren} from 'react';
+import {useState, type PropsWithChildren} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import useConfetti from './use-confetti';
@@ -8,12 +8,14 @@ import './pdf.css';
 import {useSlideIndex} from './use-slide-index';
 import useBroadcastSupaBase from './use-broadcast-supabase';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
+import Confetti from './Confetti';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 export default function Viewer({slideUrl}: {slideUrl: string}) {
-  const postConfetti = useConfetti(slideUrl, useBroadcastSupaBase);
+  const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
+  const postConfetti = useConfetti(slideUrl, useBroadcastSupaBase, setFire);
   const {setSlideCount, slideIndex, setSlideIndex} = useSlideIndex(
     useBroadcastSupaBase,
     slideUrl,
@@ -45,16 +47,19 @@ export default function Viewer({slideUrl}: {slideUrl: string}) {
           pageIndex={slideIndex}
         />
       </Document>
+
+      <Confetti fire={fire} />
       <button
-        className="btn"
+        className="btn position-relative"
         onClick={() => {
+          setFire({});
           postConfetti({});
         }}
       >
         Boom 🎉
       </button>
 
-      <div className="prose text-center">
+      <div className="prose text-center position-relative">
         <a href="https://devrel.codyfactory.eu">Learn more</a>
       </div>
     </div>
