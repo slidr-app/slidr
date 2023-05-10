@@ -38,7 +38,7 @@ const useBroadcastSupaBase: UseChannel = function (
     return () => {
       void channel.unsubscribe();
     };
-  }, [onIncoming]);
+  }, [onIncoming, channelId, eventId]);
 
   return postMessage;
 };

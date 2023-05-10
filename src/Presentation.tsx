@@ -1,4 +1,10 @@
-import {useState, type PropsWithChildren, useEffect} from 'react';
+import {
+  useState,
+  type PropsWithChildren,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
 import QRCode from 'react-qr-code';
@@ -7,7 +13,7 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import clsx from 'clsx';
 import './pdf.css';
 import {useSlideIndex} from './use-slide-index';
-import useArrowKeys from './use-arrow-keys';
+import useKeys from './use-keys';
 import useConfetti from './use-confetti';
 import useBroadcastChannel from './use-broadcast-channel';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
@@ -38,11 +44,31 @@ function Presentation({slideUrl}: {slideUrl: string}) {
   useEffect(() => {
     console.log('updating', slideIndex);
     setSupaBaseSlideIndex(slideIndex);
-  }, [slideIndex]);
+  }, [slideIndex, setSupaBaseSlideIndex]);
 
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
-  useArrowKeys(navPrevious, navNext);
+  const openSpeakerWindow = useCallback(
+    () =>
+      window.open(
+        `${window.location.origin}${window.location.pathname}/speaker${window.location.search}`,
+        undefined,
+        'popup',
+      ),
+    [],
+  );
+
+  const keyHandlers = useMemo(
+    () =>
+      new Map([
+        ['ArrowLeft', navPrevious],
+        ['ArrowRight', navNext],
+        ['Space', navNext],
+        ['KeyS', openSpeakerWindow],
+      ]),
+    [navPrevious, navNext, openSpeakerWindow],
+  );
+  useKeys(keyHandlers);
 
   console.log({
     slideCount,
@@ -73,11 +99,13 @@ function Presentation({slideUrl}: {slideUrl: string}) {
     />
   );
 
-  const Message = ({children}: PropsWithChildren) => (
-    <div className="position-absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
-      <div>{children}</div>
-    </div>
-  );
+  function Message({children}: PropsWithChildren) {
+    return (
+      <div className="position-absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+        <div>{children}</div>
+      </div>
+    );
+  }
 
   const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
   useConfetti(slideUrl, useBroadcastChannel, setFire);
@@ -87,13 +115,13 @@ function Presentation({slideUrl}: {slideUrl: string}) {
     <div className="pdf-container w-screen h-screen flex flex-col items-center justify-center overflow-hidden">
       <Document
         file={slideUrl}
-        onLoadSuccess={(pdf) => {
-          setSlideCount(pdf.numPages);
-        }}
         className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))]"
         loading={<Message>Loading...</Message>}
         error={<Message>Loading failed.</Message>}
         noData={<Message>No PDF file found.</Message>}
+        onLoadSuccess={(pdf) => {
+          setSlideCount(pdf.numPages);
+        }}
       >
         {/* Preload the previous page (if there is one) */}
         {((forward && slideIndex > 0) ||

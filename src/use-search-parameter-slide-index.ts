@@ -8,25 +8,30 @@ export default function useSearchParametersSlideIndex(
   const [searchParameters, setSearchParameters] = useSearchParams();
   const [firstRender, setFirstRender] = useState(true);
 
+  const searchParameterSlideIndex = searchParameters.get('slide');
+
   useEffect(() => {
     if (!setSlideIndex) {
       return;
     }
 
-    const slideString = searchParameters.get('slide');
-
-    if (slideString === null) {
+    if (searchParameterSlideIndex === null) {
       setSearchParameters({slide: '0'}, {replace: true});
       setSlideIndex(0);
       return;
     }
 
     if (firstRender) {
-      console.log('first render');
-      setSlideIndex(Number.parseInt(slideString, 10));
+      setSlideIndex(Number.parseInt(searchParameterSlideIndex, 10));
       setFirstRender(false);
     }
-  }, [setSlideIndex, searchParameters.get('slide'), firstRender]);
+  }, [
+    setSlideIndex,
+    firstRender,
+    searchParameters,
+    setSearchParameters,
+    searchParameterSlideIndex,
+  ]);
 
   useEffect(() => {
     if (firstRender) {
@@ -34,5 +39,5 @@ export default function useSearchParametersSlideIndex(
     }
 
     setSearchParameters({slide: String(slideIndex)}, {replace: true});
-  }, [slideIndex, firstRender]);
+  }, [slideIndex, firstRender, setSearchParameters]);
 }

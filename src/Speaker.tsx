@@ -2,12 +2,12 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
-import {type PropsWithChildren} from 'react';
+import {useMemo, type PropsWithChildren} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useSlideIndex} from './use-slide-index';
 import './pdf.css';
-import useArrowKeys from './use-arrow-keys';
+import useKeys from './use-keys';
 import useConfetti from './use-confetti';
 import useBroadcastChannel from './use-broadcast-channel';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
@@ -37,7 +37,16 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
     navPrevious,
   } = useSlideIndex(useBroadcastChannel, slideUrl);
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
-  useArrowKeys(navPrevious, navNext);
+  const keyHandlers = useMemo(
+    () =>
+      new Map([
+        ['ArrowLeft', navPrevious],
+        ['ArrowRight', navNext],
+        ['Space', navNext],
+      ]),
+    [navPrevious, navNext],
+  );
+  useKeys(keyHandlers);
   const postConfettiBroadcastChannel = useConfetti(
     slideUrl,
     useBroadcastChannel,
@@ -47,11 +56,13 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
     useBroadcastSupaBase,
   );
 
-  const Message = ({children}: PropsWithChildren) => (
-    <div className="position-absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
-      <div>{children}</div>
-    </div>
-  );
+  function Message({children}: PropsWithChildren) {
+    return (
+      <div className="position-absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+        <div>{children}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:flex lt-sm:flex-col lt-sm:overflow-auto lt-sm:h-auto">
@@ -59,13 +70,13 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
         <div className="text-center">Slide: {slideIndex}</div>
         <Document
           file={slideUrl}
-          onLoadSuccess={(pdf) => {
-            setSlideCount(pdf.numPages);
-          }}
           className="grid grid-cols-2 gap-4 items-center"
           loading={<Message>Loading...</Message>}
           error={<Message>Loading failed.</Message>}
           noData={<Message>No PDF file found.</Message>}
+          onLoadSuccess={(pdf) => {
+            setSlideCount(pdf.numPages);
+          }}
         >
           <Page
             key={`page-${slideIndex}`}
@@ -89,6 +100,7 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
         </Document>
         <div className="grid grid-cols-2 gap-6">
           <button
+            type="button"
             className="btn py-6"
             onClick={() => {
               navPrevious();
@@ -97,6 +109,7 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
             prev
           </button>
           <button
+            type="button"
             className="btn py-6"
             onClick={() => {
               navNext();
@@ -105,34 +118,38 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
             next
           </button>
           <button
+            type="button"
+            className="btn"
             onClick={() => {
               setSlideIndex(0);
             }}
-            className="btn"
           >
             start
           </button>
           <button
+            type="button"
+            className="btn"
             onClick={() => {
               setSlideIndex(slideCount - 1);
             }}
-            className="btn"
           >
             end
           </button>
           <button
+            type="button"
+            className="btn py-6"
             onClick={() => {
               postConfettiBroadcastChannel({});
             }}
-            className="btn py-6"
           >
             🎉 local
           </button>
           <button
+            type="button"
+            className="btn py-6"
             onClick={() => {
               postConfettiBroadcastSupaBase({});
             }}
-            className="btn py-6"
           >
             🎉 supabase
           </button>
@@ -141,7 +158,7 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
       <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto">
         <div className="text-center">Speaker Notes</div>
         <div className="p-2 prose">
-          <ReactMarkdown children={markdown} remarkPlugins={[remarkGfm]} />
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
         </div>
       </div>
       {/* <div className="grid grid-cols-3 gap-4 content-start"> */}

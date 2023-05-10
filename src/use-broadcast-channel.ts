@@ -30,7 +30,7 @@ const useBroadcastChannel: UseChannel = function (
       channel.removeEventListener('message', channelMessageHandler);
       channel.close();
     };
-  }, [onIncoming]);
+  }, [onIncoming, channelId]);
 
   return postMessage;
 };

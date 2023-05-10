@@ -1,17 +1,12 @@
 import {useEffect} from 'react';
 
-export default function useArrowKeys(
-  onLeftArrow: () => void,
-  onRightArrow: () => void,
-) {
+export default function useKeys(keyHandlers: Map<string, () => void>) {
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.code === 'ArrowRight') {
-        onRightArrow();
-      }
-
-      if (event.code === 'ArrowLeft') {
-        onLeftArrow();
+      console.log(event.code);
+      const handler = keyHandlers.get(event.code);
+      if (handler) {
+        handler();
       }
     }
 
@@ -21,5 +16,5 @@ export default function useArrowKeys(
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [onRightArrow, onLeftArrow]);
+  }, [keyHandlers]);
 }

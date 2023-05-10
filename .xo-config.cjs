@@ -1,4 +1,5 @@
 module.exports = {
+  extends: ["xo-react", "plugin:react/jsx-runtime"],
   prettier: true,
   space: true,
   overrides: [

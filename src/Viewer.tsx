@@ -23,33 +23,36 @@ export default function Viewer({slideUrl}: {slideUrl: string}) {
   );
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
-  const Message = ({children}: PropsWithChildren) => (
-    <div className="w-full h-full flex flex-col items-center justify-center">
-      <div>{children}</div>
-    </div>
-  );
+  function Message({children}: PropsWithChildren) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center">
+        <div>{children}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto flex flex-col justify-center gap-4 py-2">
       <Document
         className="w-full aspect-video"
         file={slideUrl}
-        onLoadSuccess={(pdf) => {
-          setSlideCount(pdf.numPages);
-        }}
         loading={<Message>Loading...</Message>}
         error={<Message>Loading failed.</Message>}
         noData={<Message>No PDF file found.</Message>}
+        onLoadSuccess={(pdf) => {
+          setSlideCount(pdf.numPages);
+        }}
       >
         <Page
-          className="w-full h-full"
           key={`page-${slideIndex}`}
+          className="w-full h-full"
           pageIndex={slideIndex}
         />
       </Document>
 
       <Confetti fire={fire} />
       <button
+        type="button"
         className="btn position-relative"
         onClick={() => {
           setFire({});
