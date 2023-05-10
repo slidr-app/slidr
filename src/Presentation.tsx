@@ -112,7 +112,7 @@ function Presentation({slideUrl}: {slideUrl: string}) {
   useConfetti(slideUrl, useBroadcastSupaBase, setFire);
 
   return (
-    <div className="pdf-container w-screen h-screen flex flex-col items-center justify-center overflow-hidden">
+    <div className="pdf-container w-screen h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
       <Document
         file={slideUrl}
         className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))]"
@@ -139,17 +139,30 @@ function Presentation({slideUrl}: {slideUrl: string}) {
           (!forward && slideIndex > 0)) &&
           pageOver}
         {/* </div> */}
-        <div className="position-absolute top-4 right-4 bg-white p-2 w-40 h-40">
+        {/* <div className="position-absolute w-40 h-[calc(100%_-_11rem)] right-4 animate-longbounce">
+          <div className=" bg-white p-2 w-40 h-40">
+            <QRCode
+              value={`${window.location.origin}${window.location.pathname}/view${window.location.search}`}
+              // Size={128}
+              // Level="M"
+              className="w-full h-full"
+              style={{width: '100%', height: 'auto', maxWidth: '100%'}}
+            />
+          </div>
+        </div> */}
+      </Document>
+      <Confetti fire={fire} />
+      <div className="position-absolute top-4 w-40 h-[calc(100%_-_12rem)] right-4 animate-longbounce">
+        <div className=" bg-white p-2 w-40 h-40">
           <QRCode
             value={`${window.location.origin}${window.location.pathname}/view${window.location.search}`}
             // Size={128}
-            // Level="M"
+            // level="Q"
             className="w-full h-full"
             style={{width: '100%', height: 'auto', maxWidth: '100%'}}
           />
         </div>
-      </Document>
-      <Confetti fire={fire} />
+      </div>
     </div>
   );
 }

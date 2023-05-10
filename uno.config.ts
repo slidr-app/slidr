@@ -12,4 +12,25 @@ export default defineConfig({
   shortcuts: {
     btn: 'py-2 px-2 font-semibold rounded-md shadow-md shadow-gray-500 bg-white text-black',
   },
+  // https://github.com/unocss/unocss/discussions/2012
+  theme: {
+    animation: {
+      keyframes: {
+        longbounce: `{
+            0%, 100% { transform: translateY(+100%) }
+            50% { transform: translateY(0) }
+          }`,
+      },
+      durations: {
+        longbounce: '120s',
+      },
+      timingFns: {
+        longbounce: 'ease-in-out',
+      },
+      counts: {
+        longbounce: 'infinite',
+      },
+      // Wiggle: 'wiggle 1s ease-in-out infinite',
+    },
+  },
 });
