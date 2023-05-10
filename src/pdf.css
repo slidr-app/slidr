@@ -41,3 +41,7 @@
   /* height: auto !important; */
   --uno: important-w-full important-h-full;
 }
+
+.react-pdf__Page__annotations.annotationLayer {
+  --uno: important-w-full important-h-full;
+}

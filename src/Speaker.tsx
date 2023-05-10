@@ -35,13 +35,9 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
     navNext,
     navPrevious,
   } = useSlideIndex(useBroadcastChannel, slideUrl);
-
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
-
   useArrowKeys(navPrevious, navNext);
   const postConfetti = useConfetti(slideUrl, useBroadcastChannel);
-
-  console.log({slideIndex});
 
   const Message = ({children}: PropsWithChildren) => (
     <div className="position-absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
@@ -50,83 +46,90 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
   );
 
   return (
-    <div className="m-2 grid grid-cols-2 grid-rows-[auto_1fr] gap-2 h-screen">
-      <div className="col-span-2 p-2">Current Slide: {slideIndex}</div>
-      <div className="grid grid-cols-3 p-2 gap-4 content-start">
+    <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden">
+      <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto resize-x w-md">
+        <div className="text-center">Slide: {slideIndex}</div>
         <Document
           file={slideUrl}
           onLoadSuccess={(pdf) => {
             setSlideCount(pdf.numPages);
           }}
-          className="col-span-3 grid grid-cols-3 gap-2 w-full"
+          className="grid grid-cols-2 gap-4 items-center"
           loading={<Message>Loading...</Message>}
           error={<Message>Loading failed.</Message>}
           noData={<Message>No PDF file found.</Message>}
         >
+          <Page
+            key={`page-${slideIndex}`}
+            pageIndex={slideIndex}
+            className="w-full h-full col-span-2"
+          />
           {slideIndex > 0 && (
             <Page
               key={`page-${prevSlideIndex}`}
               pageIndex={prevSlideIndex}
-              className="col-start-1 w-full h-full scale-75"
+              className="w-full h-full pr-2"
             />
           )}
-          <Page
-            key={`page-${slideIndex}`}
-            pageIndex={slideIndex}
-            className="col-start-2 w-full h-full"
-          />
           {slideIndex < slideCount - 1 && (
             <Page
               key={`page-${nextSlideIndex}`}
               pageIndex={nextSlideIndex}
-              className="col-start-3 w-full h-full scale-75"
+              className="w-full h-full pl-2"
             />
           )}
         </Document>
-        <button
-          className="col-start-1 btn m-2"
-          onClick={() => {
-            navPrevious();
-          }}
-        >
-          Prev
-        </button>
-        <button
-          className="col-start-3 btn m-2"
-          onClick={() => {
-            navNext();
-          }}
-        >
-          Next
-        </button>
-        <button
-          onClick={() => {
-            setSlideIndex(0);
-          }}
-          className="col-start-1 btn m-2"
-        >
-          Start
-        </button>
-        <button
-          onClick={() => {
-            setSlideIndex(slideCount - 1);
-          }}
-          className="col-start-3 btn m-2"
-        >
-          End
-        </button>
-        <button
-          onClick={() => {
-            postConfetti({});
-          }}
-          className="col-start-2 btn m-2"
-        >
-          Boom
-        </button>
+        <div className="grid grid-cols-2 gap-6">
+          <button
+            className="btn py-6"
+            onClick={() => {
+              navPrevious();
+            }}
+          >
+            prev
+          </button>
+          <button
+            className="btn py-6"
+            onClick={() => {
+              navNext();
+            }}
+          >
+            next
+          </button>
+          <button
+            onClick={() => {
+              setSlideIndex(0);
+            }}
+            className="btn"
+          >
+            start
+          </button>
+          <button
+            onClick={() => {
+              setSlideIndex(slideCount - 1);
+            }}
+            className="btn"
+          >
+            end
+          </button>
+          <button
+            onClick={() => {
+              postConfetti({});
+            }}
+            className="btn col-span-2 py-6"
+          >
+            🎉
+          </button>
+        </div>
       </div>
-      <div className="p-2 prose">
-        <ReactMarkdown children={markdown} remarkPlugins={[remarkGfm]} />
+      <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto">
+        <div className="text-center">Speaker Notes</div>
+        <div className="p-2 prose">
+          <ReactMarkdown children={markdown} remarkPlugins={[remarkGfm]} />
+        </div>
       </div>
+      {/* <div className="grid grid-cols-3 gap-4 content-start"> */}
+      {/* </div> */}
     </div>
   );
 }

@@ -10,6 +10,6 @@ export default defineConfig({
   presets: [presetUno(), presetIcons(), presetTypography()],
   transformers: [transformerDirectives(), transformerVariantGroup()],
   shortcuts: {
-    btn: 'py-2 px-4 font-semibold rounded-lg shadow-md shadow-green-700 bg-white text-black',
+    btn: 'py-2 px-2 font-semibold rounded-md shadow-md shadow-gray-500 bg-white text-black',
   },
 });
