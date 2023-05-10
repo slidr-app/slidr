@@ -1,7 +1,6 @@
 import {useState, type PropsWithChildren, useEffect} from 'react';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
-import ReactCanvasConfetti from 'react-canvas-confetti';
 import QRCode from 'react-qr-code';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
