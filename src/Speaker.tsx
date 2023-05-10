@@ -54,8 +54,8 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
   );
 
   return (
-    <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden">
-      <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto resize-x w-md">
+    <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:flex lt-sm:flex-col lt-sm:overflow-auto lt-sm:h-auto">
+      <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto resize-x w-md lt-sm:w-full">
         <div className="text-center">Slide: {slideIndex}</div>
         <Document
           file={slideUrl}
