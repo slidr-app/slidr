@@ -18,15 +18,6 @@ import {notes, presentations} from './presentation-urls';
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
-const markdown = `# Start here
-
-- Just a link: https://reactjs.com.
-- some other stuff
-- and even more
-
-This is how **it works**.
-`;
-
 export default function Speaker() {
   const {presentationSlug} = useParams();
   const {
