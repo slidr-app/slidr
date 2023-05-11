@@ -15,7 +15,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 export default function Viewer({slideUrl}: {slideUrl: string}) {
   const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
-  const postConfetti = useConfetti(slideUrl, useBroadcastSupaBase, setFire);
+  const {postConfetti} = useConfetti(slideUrl, useBroadcastSupaBase, setFire);
   const {setSlideCount, slideIndex, setSlideIndex} = useSlideIndex(
     useBroadcastSupaBase,
     slideUrl,
@@ -32,38 +32,41 @@ export default function Viewer({slideUrl}: {slideUrl: string}) {
   }
 
   return (
-    <div className="max-w-md mx-auto flex flex-col justify-center gap-4 py-2">
-      <Document
-        className="w-full aspect-video"
-        file={slideUrl}
-        loading={<Message>Loading...</Message>}
-        error={<Message>Loading failed.</Message>}
-        noData={<Message>No PDF file found.</Message>}
-        onLoadSuccess={(pdf) => {
-          setSlideCount(pdf.numPages);
-        }}
-      >
-        <Page
-          key={`page-${slideIndex}`}
-          className="w-full h-full"
-          pageIndex={slideIndex}
-        />
-      </Document>
+    <div className="flex flex-col gap-4 p-4 position-relative overflow-x-hidden overflow-y-auto min-h-screen">
+      <div className="max-w-2xl mx-auto">
+        <Document
+          className="w-full aspect-video"
+          file={slideUrl}
+          loading={<Message>Loading...</Message>}
+          error={<Message>Loading failed.</Message>}
+          noData={<Message>No PDF file found.</Message>}
+          onLoadSuccess={(pdf) => {
+            setSlideCount(pdf.numPages);
+          }}
+        >
+          <Page
+            key={`page-${slideIndex}`}
+            className="w-full h-full"
+            pageIndex={slideIndex}
+          />
+        </Document>
+      </div>
 
       <Confetti fire={fire} />
-      <button
-        type="button"
-        className="btn position-relative"
-        onClick={() => {
-          setFire({});
-          postConfetti({});
-        }}
-      >
-        Boom 🎉
-      </button>
-
-      <div className="prose text-center position-relative">
-        <a href="https://devrel.codyfactory.eu">Learn more</a>
+      <div className="max-w-lg mx-auto flex flex-col gap-4">
+        <button
+          type="button"
+          className="btn position-relative"
+          onClick={() => {
+            setFire({});
+            postConfetti({});
+          }}
+        >
+          Boom 🎉
+        </button>
+        <div className="prose text-center position-relative">
+          <a href="https://devrel.codyfactory.eu">Learn more</a>
+        </div>
       </div>
     </div>
   );

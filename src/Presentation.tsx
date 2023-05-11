@@ -108,7 +108,8 @@ function Presentation({slideUrl}: {slideUrl: string}) {
   }
 
   const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
-  useConfetti(slideUrl, useBroadcastChannel, setFire);
+  const [reset, setReset] = useState<boolean | Record<string, unknown>>(false);
+  useConfetti(slideUrl, useBroadcastChannel, setFire, setReset);
   useConfetti(slideUrl, useBroadcastSupaBase, setFire);
 
   return (
@@ -151,7 +152,7 @@ function Presentation({slideUrl}: {slideUrl: string}) {
           </div>
         </div> */}
       </Document>
-      <Confetti fire={fire} />
+      <Confetti fire={fire} reset={reset} />
       <div className="position-absolute top-4 w-40 h-[calc(100%_-_12rem)] right-4 animate-longbounce">
         <div className=" bg-white p-2 w-40 h-40">
           <QRCode

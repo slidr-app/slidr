@@ -47,11 +47,9 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
     [navPrevious, navNext],
   );
   useKeys(keyHandlers);
-  const postConfettiBroadcastChannel = useConfetti(
-    slideUrl,
-    useBroadcastChannel,
-  );
-  const postConfettiBroadcastSupaBase = useConfetti(
+  const {postConfetti: postConfettiBroadcastChannel, postConfettiReset} =
+    useConfetti(slideUrl, useBroadcastChannel);
+  const {postConfetti: postConfettiBroadcastSupaBase} = useConfetti(
     slideUrl,
     useBroadcastSupaBase,
   );
@@ -152,6 +150,15 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
             }}
           >
             🎉 supabase
+          </button>
+          <button
+            type="button"
+            className="btn py-6"
+            onClick={() => {
+              postConfettiReset({});
+            }}
+          >
+            🚫
           </button>
         </div>
       </div>
