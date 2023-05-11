@@ -11,6 +11,7 @@ import QRCode from 'react-qr-code';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import clsx from 'clsx';
+import {useParams} from 'react-router-dom';
 import './pdf.css';
 import {useSlideIndex} from './use-slide-index';
 import useKeys from './use-keys';
@@ -19,11 +20,13 @@ import useBroadcastChannel from './use-broadcast-channel';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import useBroadcastSupaBase from './use-broadcast-supabase';
 import Confetti from './Confetti';
+import {presentations} from './presentation-urls';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
-function Presentation({slideUrl}: {slideUrl: string}) {
+function Presentation() {
+  const {presentationSlug} = useParams();
   const {
     slideIndex,
     setSlideIndex,
@@ -34,11 +37,11 @@ function Presentation({slideUrl}: {slideUrl: string}) {
     setSlideCount,
     navNext,
     navPrevious,
-  } = useSlideIndex(useBroadcastChannel, slideUrl);
+  } = useSlideIndex(useBroadcastChannel, presentationSlug!);
 
   const {setSlideIndex: setSupaBaseSlideIndex} = useSlideIndex(
     useBroadcastSupaBase,
-    slideUrl,
+    presentationSlug!,
   );
 
   useEffect(() => {
@@ -109,13 +112,13 @@ function Presentation({slideUrl}: {slideUrl: string}) {
 
   const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
   const [reset, setReset] = useState<boolean | Record<string, unknown>>(false);
-  useConfetti(slideUrl, useBroadcastChannel, setFire, setReset);
-  useConfetti(slideUrl, useBroadcastSupaBase, setFire);
+  useConfetti(presentationSlug!, useBroadcastChannel, setFire, setReset);
+  useConfetti(presentationSlug!, useBroadcastSupaBase, setFire);
 
   return (
     <div className="pdf-container w-screen h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
       <Document
-        file={slideUrl}
+        file={presentations[presentationSlug!]}
         className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))]"
         loading={<Message>Loading...</Message>}
         error={<Message>Loading failed.</Message>}

@@ -2,9 +2,10 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
-import {useMemo, type PropsWithChildren} from 'react';
+import {useMemo, type PropsWithChildren, useEffect, useState} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
+import {useParams} from 'react-router-dom';
 import {useSlideIndex} from './use-slide-index';
 import './pdf.css';
 import useKeys from './use-keys';
@@ -12,6 +13,7 @@ import useConfetti from './use-confetti';
 import useBroadcastChannel from './use-broadcast-channel';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import useBroadcastSupaBase from './use-broadcast-supabase';
+import {notes, presentations} from './presentation-urls';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -25,7 +27,8 @@ const markdown = `# Start here
 This is how **it works**.
 `;
 
-export default function Speaker({slideUrl}: {slideUrl: string}) {
+export default function Speaker() {
+  const {presentationSlug} = useParams();
   const {
     slideIndex,
     setSlideIndex,
@@ -35,7 +38,7 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
     slideCount,
     navNext,
     navPrevious,
-  } = useSlideIndex(useBroadcastChannel, slideUrl);
+  } = useSlideIndex(useBroadcastChannel, presentationSlug!);
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
   const keyHandlers = useMemo(
     () =>
@@ -48,11 +51,25 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
   );
   useKeys(keyHandlers);
   const {postConfetti: postConfettiBroadcastChannel, postConfettiReset} =
-    useConfetti(slideUrl, useBroadcastChannel);
+    useConfetti(presentationSlug!, useBroadcastChannel);
   const {postConfetti: postConfettiBroadcastSupaBase} = useConfetti(
-    slideUrl,
+    presentationSlug!,
     useBroadcastSupaBase,
   );
+
+  const [notesMarkdown, setNotesMarkdown] = useState<string>();
+  useEffect(() => {
+    async function fetchNotes() {
+      console.log('notes', notes, presentationSlug);
+      if (notes.has(presentationSlug!)) {
+        const notesResponse = await fetch(notes.get(presentationSlug!)!);
+        const notesData = await notesResponse.text();
+        setNotesMarkdown(notesData);
+      }
+    }
+
+    void fetchNotes();
+  }, [presentationSlug]);
 
   function Message({children}: PropsWithChildren) {
     return (
@@ -67,7 +84,7 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
       <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto resize-x w-md lt-sm:w-full">
         <div className="text-center">Slide: {slideIndex}</div>
         <Document
-          file={slideUrl}
+          file={presentations[presentationSlug!]}
           className="grid grid-cols-2 gap-4 items-center"
           loading={<Message>Loading...</Message>}
           error={<Message>Loading failed.</Message>}
@@ -164,8 +181,10 @@ export default function Speaker({slideUrl}: {slideUrl: string}) {
       </div>
       <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto">
         <div className="text-center">Speaker Notes</div>
-        <div className="p-2 prose">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
+        <div className="text-sm p-2 prose">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {notesMarkdown ?? ''}
+          </ReactMarkdown>
         </div>
       </div>
       {/* <div className="grid grid-cols-3 gap-4 content-start"> */}

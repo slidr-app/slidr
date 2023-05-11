@@ -9,36 +9,25 @@ import Presentation from './Presentation.tsx';
 import Speaker from './Speaker.tsx';
 import Viewer from './Viewer.tsx';
 import Home from './Home.tsx';
-
-const presentations = import.meta.glob('./presentations/*.pdf', {
-  as: 'url',
-  eager: true,
-});
-
-const presentationNameUrlEntries: Array<[string, string]> = Object.entries(
-  presentations,
-).map(([name, url]) => [name.split('/').at(-1)!.replace('.pdf', ''), url]);
-
-const routes = presentationNameUrlEntries.flatMap(([name, url]) => [
-  {path: `/${name}`, element: <Presentation slideUrl={url} />},
-  {path: `/${name}/speaker`, element: <Speaker slideUrl={url} />},
-  {path: `/${name}/view`, element: <Viewer slideUrl={url} />},
-]);
-
-console.log(presentations, routes);
+import {presentations} from './presentation-urls.ts';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-      <Home
-        presentations={presentationNameUrlEntries.map(
-          ([presentation]) => presentation,
-        )}
-      />
-    ),
+    element: <Home presentationSlugs={Object.keys(presentations)} />,
   },
-  ...routes,
+  {
+    path: '/:presentationSlug',
+    element: <Presentation />,
+  },
+  {
+    path: '/:presentationSlug/view',
+    element: <Viewer />,
+  },
+  {
+    path: '/:presentationSlug/speaker',
+    element: <Speaker />,
+  },
 ]);
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(

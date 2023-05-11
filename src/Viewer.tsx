@@ -3,22 +3,29 @@ import * as pdfjs from 'pdfjs-dist';
 import {useState, type PropsWithChildren} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
+import {useParams} from 'react-router-dom';
 import useConfetti from './use-confetti';
 import './pdf.css';
 import {useSlideIndex} from './use-slide-index';
 import useBroadcastSupaBase from './use-broadcast-supabase';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import Confetti from './Confetti';
+import {presentations} from './presentation-urls';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
-export default function Viewer({slideUrl}: {slideUrl: string}) {
+export default function Viewer() {
+  const {presentationSlug} = useParams();
   const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
-  const {postConfetti} = useConfetti(slideUrl, useBroadcastSupaBase, setFire);
+  const {postConfetti} = useConfetti(
+    presentationSlug!,
+    useBroadcastSupaBase,
+    setFire,
+  );
   const {setSlideCount, slideIndex, setSlideIndex} = useSlideIndex(
     useBroadcastSupaBase,
-    slideUrl,
+    presentationSlug!,
     true,
   );
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
@@ -36,7 +43,7 @@ export default function Viewer({slideUrl}: {slideUrl: string}) {
       <div className="max-w-2xl mx-auto">
         <Document
           className="w-full aspect-video"
-          file={slideUrl}
+          file={presentations[presentationSlug!]}
           loading={<Message>Loading...</Message>}
           error={<Message>Loading failed.</Message>}
           noData={<Message>No PDF file found.</Message>}
