@@ -7,7 +7,30 @@ import transformerVariantGroup from '@unocss/transformer-variant-group';
 import transformerDirectives from '@unocss/transformer-directives';
 
 export default defineConfig({
-  presets: [presetUno(), presetIcons(), presetTypography()],
+  presets: [
+    presetUno(),
+    presetIcons(),
+    presetTypography({
+      // By default h2 and others have huge top margin, make them more reasonable
+      cssExtend: {
+        h1: {
+          'margin-top': '1rem',
+        },
+        h2: {
+          'margin-top': '1rem',
+        },
+        h3: {
+          'margin-top': '1rem',
+        },
+        h4: {
+          'margin-top': '1rem',
+        },
+        h5: {
+          'margin-top': '1rem',
+        },
+      },
+    }),
+  ],
   transformers: [transformerDirectives(), transformerVariantGroup()],
   shortcuts: {
     btn: 'py-2 px-2 font-semibold rounded-md shadow-md shadow-gray-500 bg-white text-black',

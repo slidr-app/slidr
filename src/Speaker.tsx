@@ -2,10 +2,11 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
-import {useMemo, type PropsWithChildren, useEffect, useState} from 'react';
+import {useMemo, type PropsWithChildren, useState, useCallback} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
+import clsx from 'clsx';
 import {useSlideIndex} from './use-slide-index';
 import './pdf.css';
 import useKeys from './use-keys';
@@ -18,6 +19,21 @@ import useNotes from './use-notes';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
+
+const textSizes = [
+  'text-xs',
+  'text-sm',
+  'text-base',
+  'text-lg',
+  'text-xl',
+  'text-2xl',
+  'text-3xl',
+  'text-4xl',
+  'text-5xl',
+  'text-6xl',
+  'text-7xl',
+  'text-8xl',
+];
 
 export default function Speaker() {
   const {presentationSlug} = useParams();
@@ -50,6 +66,21 @@ export default function Speaker() {
     presentationSlug!,
     useBroadcastSupaBase,
   );
+  const [textSize, setTextSize] = useState('text-base');
+  const zoom = useCallback((zoomIn: boolean) => {
+    return (currentSize: string) => {
+      const currentIndex = textSizes.indexOf(currentSize);
+      if (currentIndex === -1) {
+        return 'text-base';
+      }
+
+      const nextIndex = Math.min(
+        Math.max(currentIndex + (zoomIn ? 1 : -1), 0),
+        textSizes.length - 1,
+      );
+      return textSizes[nextIndex];
+    };
+  }, []);
 
   function Message({children}: PropsWithChildren) {
     return (
@@ -160,8 +191,31 @@ export default function Speaker() {
         </div>
       </div>
       <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto">
-        <div className="text-center">Speaker Notes</div>
-        <div className="text-sm p-2 prose">
+        <div className="self-center">Speaker Notes</div>
+        <div className="self-center grid grid-cols-3 gap-4">
+          <button
+            className="btn"
+            type="button"
+            onClick={() => {
+              setTextSize(zoom(false));
+            }}
+          >
+            zoom out
+          </button>
+          <div className="flex justify-center items-center text-base">
+            <div>{textSize.replace('text-', '')}</div>
+          </div>
+          <button
+            className="btn"
+            type="button"
+            onClick={() => {
+              setTextSize(zoom(true));
+            }}
+          >
+            zoom in
+          </button>
+        </div>
+        <div className={clsx('p-2 prose', textSize)}>
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
             {notes.get(slideIndex) ?? ''}
           </ReactMarkdown>
