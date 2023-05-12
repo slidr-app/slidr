@@ -16,13 +16,13 @@ export default function useSearchParametersSlideIndex(
     }
 
     if (searchParameterSlideIndex === null) {
-      setSearchParameters({slide: '0'}, {replace: true});
+      setSearchParameters({slide: '1'}, {replace: true});
       setSlideIndex(0);
       return;
     }
 
     if (firstRender) {
-      setSlideIndex(Number.parseInt(searchParameterSlideIndex, 10));
+      setSlideIndex(Number.parseInt(searchParameterSlideIndex, 10) - 1);
       setFirstRender(false);
     }
   }, [
@@ -38,6 +38,6 @@ export default function useSearchParametersSlideIndex(
       return;
     }
 
-    setSearchParameters({slide: String(slideIndex)}, {replace: true});
+    setSearchParameters({slide: String(slideIndex + 1)}, {replace: true});
   }, [slideIndex, firstRender, setSearchParameters]);
 }
