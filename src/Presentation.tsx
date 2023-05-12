@@ -156,8 +156,8 @@ function Presentation() {
         </div> */}
       </Document>
       <Confetti fire={fire} reset={reset} />
-      <div className="position-absolute top-4 w-40 h-[calc(100%_-_12rem)] right-4 animate-longbounce">
-        <div className=" bg-white p-2 w-40 h-40">
+      <div className="position-absolute top-1rem w-10rem h-[calc(100%_-_10rem_-_2rem)] right-4 animate-longbounce 2xl:w-12rem 2xl:h-[calc(100%_-_12rem_-_2rem)] lt-sm:w-8rem lt-sm:h-[calc(100%_-_8rem_-_2rem)]">
+        <div className=" bg-white p-2 w-10rem h-10rem 2xl:w-12rem 2xl:h-12rem lt-sm:w-8rem lt-sm:h-8rem">
           <QRCode
             value={`${window.location.origin}${window.location.pathname}/view${window.location.search}`}
             // Size={128}
