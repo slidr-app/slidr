@@ -13,13 +13,16 @@ import useConfetti from './use-confetti';
 import useBroadcastChannel from './use-broadcast-channel';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import useBroadcastSupaBase from './use-broadcast-supabase';
-import {notes, presentations} from './presentation-urls';
+import {presentations} from './presentation-urls';
+import useNotes from './use-notes';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 export default function Speaker() {
   const {presentationSlug} = useParams();
+  const notes = useNotes(presentationSlug!);
+  console.log('notes', notes);
   const {
     slideIndex,
     setSlideIndex,
@@ -47,20 +50,6 @@ export default function Speaker() {
     presentationSlug!,
     useBroadcastSupaBase,
   );
-
-  const [notesMarkdown, setNotesMarkdown] = useState<string>();
-  useEffect(() => {
-    async function fetchNotes() {
-      console.log('notes', notes, presentationSlug);
-      if (notes.has(presentationSlug!)) {
-        const notesResponse = await fetch(notes.get(presentationSlug!)!);
-        const notesData = await notesResponse.text();
-        setNotesMarkdown(notesData);
-      }
-    }
-
-    void fetchNotes();
-  }, [presentationSlug]);
 
   function Message({children}: PropsWithChildren) {
     return (
@@ -174,7 +163,7 @@ export default function Speaker() {
         <div className="text-center">Speaker Notes</div>
         <div className="text-sm p-2 prose">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {notesMarkdown ?? ''}
+            {notes.get(slideIndex) ?? ''}
           </ReactMarkdown>
         </div>
       </div>
