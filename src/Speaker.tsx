@@ -94,8 +94,8 @@ export default function Speaker() {
 
   return (
     <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:flex lt-sm:flex-col lt-sm:overflow-auto lt-sm:h-auto">
-      <div className="overflow-x-hidden overflow-y-auto resize-x w-md lt-sm:w-full h-full">
-        <div className="flex flex-col gap-4 ">
+      <div className="overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full h-full">
+        <div className="flex flex-col gap-4">
           <div className="text-center">Slide: {slideIndex + 1}</div>
           <Document
             file={presentations[presentationSlug!]}
@@ -110,20 +110,20 @@ export default function Speaker() {
             <Page
               key={`page-${slideIndex}`}
               pageIndex={slideIndex}
-              className="w-full h-full col-span-2"
+              className="w-full col-span-2"
             />
             {slideIndex > 0 && (
               <Page
                 key={`page-${prevSlideIndex}`}
                 pageIndex={prevSlideIndex}
-                className="w-full h-full pr-2"
+                className="w-full pr-2"
               />
             )}
             {slideIndex < slideCount - 1 && (
               <Page
                 key={`page-${nextSlideIndex}`}
                 pageIndex={nextSlideIndex}
-                className="w-full h-full pl-2"
+                className="w-full pl-2"
               />
             )}
           </Document>

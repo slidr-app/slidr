@@ -8,7 +8,7 @@ export default function Toggle({
   onCheckChange: () => void;
 }) {
   return (
-    <div className="flex items-center justify-center w-full mb-12">
+    <div className="flex items-center justify-center w-full">
       <label htmlFor="toggleB" className="flex items-center cursor-pointer">
         <div className="mr-3 font-medium">
           local <div className="i-tabler-device-laptop ml-2" />
