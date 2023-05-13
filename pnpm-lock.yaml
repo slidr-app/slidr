@@ -42,6 +42,9 @@ devDependencies:
   '@iconify-json/fluent-emoji-flat':
     specifier: ^1.1.11
     version: 1.1.11
+  '@iconify-json/tabler':
+    specifier: ^1.1.75
+    version: 1.1.75
   '@types/react':
     specifier: ^18.0.28
     version: 18.2.6
@@ -727,6 +730,12 @@ packages:
 
   /@iconify-json/fluent-emoji-flat@1.1.11:
     resolution: {integrity: sha512-TXPnI/5w/3ANY3klilbua09EAOO1sTtZa1NZnGsPYYYBPcYFbroxojtIE3CK9yLkkM4vZa2TM0thhJpKAAtcug==}
+    dependencies:
+      '@iconify/types': 2.0.0
+    dev: true
+
+  /@iconify-json/tabler@1.1.75:
+    resolution: {integrity: sha512-xjqRSGXExigKe8gX6nuD07gjeUvGf3AqGQIkgGquf1x1UaCxrXT0JYcKlk9cZPEJo5aHQfZqyhrOBgFLO19Mag==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true

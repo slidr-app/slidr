@@ -9,7 +9,12 @@ import transformerDirectives from '@unocss/transformer-directives';
 export default defineConfig({
   presets: [
     presetUno(),
-    presetIcons(),
+    presetIcons({
+      extraProperties: {
+        display: 'inline-block',
+        'vertical-align': 'middle',
+      },
+    }),
     presetTypography({
       // By default h2 and others have huge top margin, make them more reasonable
       cssExtend: {
@@ -33,7 +38,7 @@ export default defineConfig({
   ],
   transformers: [transformerDirectives(), transformerVariantGroup()],
   shortcuts: {
-    btn: 'py-2 px-2 font-semibold rounded-md shadow-md shadow-gray-500 bg-white text-black',
+    btn: 'py-2 px-4 font-semibold rounded-md shadow-md shadow-gray-500 bg-white text-black',
   },
   // https://github.com/unocss/unocss/discussions/2012
   theme: {

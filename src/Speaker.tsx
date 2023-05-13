@@ -16,6 +16,7 @@ import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import useBroadcastSupaBase from './use-broadcast-supabase';
 import {presentations} from './presentation-urls';
 import useNotes from './use-notes';
+import Toggle from './Toggle';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -38,6 +39,7 @@ const textSizes = [
 export default function Speaker() {
   const {presentationSlug} = useParams();
   const notes = useNotes(presentationSlug!);
+  const [isWide, setIsWide] = useState(false);
   console.log('notes', notes);
   const {
     slideIndex,
@@ -92,102 +94,112 @@ export default function Speaker() {
 
   return (
     <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:flex lt-sm:flex-col lt-sm:overflow-auto lt-sm:h-auto">
-      <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto resize-x w-md lt-sm:w-full">
-        <div className="text-center">Slide: {slideIndex + 1}</div>
-        <Document
-          file={presentations[presentationSlug!]}
-          className="grid grid-cols-2 gap-4 items-center"
-          loading={<Message>Loading...</Message>}
-          error={<Message>Loading failed.</Message>}
-          noData={<Message>No PDF file found.</Message>}
-          onLoadSuccess={(pdf) => {
-            setSlideCount(pdf.numPages);
-          }}
-        >
-          <Page
-            key={`page-${slideIndex}`}
-            pageIndex={slideIndex}
-            className="w-full h-full col-span-2"
-          />
-          {slideIndex > 0 && (
+      <div className="overflow-x-hidden overflow-y-auto resize-x w-md lt-sm:w-full h-full">
+        <div className="flex flex-col gap-4 ">
+          <div className="text-center">Slide: {slideIndex + 1}</div>
+          <Document
+            file={presentations[presentationSlug!]}
+            className="grid grid-cols-2 gap-4 items-center"
+            loading={<Message>Loading...</Message>}
+            error={<Message>Loading failed.</Message>}
+            noData={<Message>No PDF file found.</Message>}
+            onLoadSuccess={(pdf) => {
+              setSlideCount(pdf.numPages);
+            }}
+          >
             <Page
-              key={`page-${prevSlideIndex}`}
-              pageIndex={prevSlideIndex}
-              className="w-full h-full pr-2"
+              key={`page-${slideIndex}`}
+              pageIndex={slideIndex}
+              className="w-full h-full col-span-2"
             />
-          )}
-          {slideIndex < slideCount - 1 && (
-            <Page
-              key={`page-${nextSlideIndex}`}
-              pageIndex={nextSlideIndex}
-              className="w-full h-full pl-2"
-            />
-          )}
-        </Document>
-        <div className="grid grid-cols-2 gap-6">
-          <button
-            type="button"
-            className="btn py-6"
-            onClick={() => {
-              navPrevious();
-            }}
-          >
-            prev
-          </button>
-          <button
-            type="button"
-            className="btn py-6"
-            onClick={() => {
-              navNext();
-            }}
-          >
-            next
-          </button>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => {
-              setSlideIndex(0);
-            }}
-          >
-            start
-          </button>
-          <button
-            type="button"
-            className="btn"
-            onClick={() => {
-              setSlideIndex(slideCount - 1);
-            }}
-          >
-            end
-          </button>
-          <button
-            type="button"
-            className="btn py-6"
-            onClick={() => {
-              postConfettiBroadcastChannel({});
-            }}
-          >
-            🎉 local
-          </button>
-          <button
-            type="button"
-            className="btn py-6"
-            onClick={() => {
-              postConfettiBroadcastSupaBase({});
-            }}
-          >
-            🎉 supabase
-          </button>
-          <button
-            type="button"
-            className="btn py-6"
-            onClick={() => {
-              postConfettiReset({});
-            }}
-          >
-            🚫
-          </button>
+            {slideIndex > 0 && (
+              <Page
+                key={`page-${prevSlideIndex}`}
+                pageIndex={prevSlideIndex}
+                className="w-full h-full pr-2"
+              />
+            )}
+            {slideIndex < slideCount - 1 && (
+              <Page
+                key={`page-${nextSlideIndex}`}
+                pageIndex={nextSlideIndex}
+                className="w-full h-full pl-2"
+              />
+            )}
+          </Document>
+          <div className="self-center grid grid-cols-2 gap-6">
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                navPrevious();
+              }}
+            >
+              <div className="i-tabler-circle-arrow-left text-4xl" />
+            </button>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                navNext();
+              }}
+            >
+              <div className="i-tabler-circle-arrow-right text-4xl" />
+            </button>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                setSlideIndex(0);
+              }}
+            >
+              <div className="i-tabler-circle-chevrons-left" />
+            </button>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                setSlideIndex(slideCount - 1);
+              }}
+            >
+              <div className="i-tabler-circle-chevrons-right" />
+            </button>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                postConfettiBroadcastChannel({});
+              }}
+            >
+              🎉 local
+            </button>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => {
+                postConfettiBroadcastSupaBase({});
+              }}
+            >
+              🎉 supabase
+            </button>
+            <button
+              type="button"
+              className="btn col-span-2"
+              onClick={() => {
+                postConfettiReset({});
+              }}
+            >
+              🚫
+            </button>
+            <div className="col-span-2">
+              <Toggle
+                checked={isWide}
+                onCheckChange={() => {
+                  setIsWide((previous) => !previous);
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
       <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto">
@@ -200,7 +212,7 @@ export default function Speaker() {
               setTextSize(zoom(false));
             }}
           >
-            zoom out
+            <div className="i-tabler-zoom-out" />
           </button>
           <div className="flex justify-center items-center text-base">
             <div>{textSize.replace('text-', '')}</div>
@@ -212,7 +224,7 @@ export default function Speaker() {
               setTextSize(zoom(true));
             }}
           >
-            zoom in
+            <div className="i-tabler-zoom-in" />
           </button>
         </div>
         <div className={clsx('p-2 prose', textSize)}>
