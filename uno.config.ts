@@ -38,7 +38,7 @@ export default defineConfig({
   ],
   transformers: [transformerDirectives(), transformerVariantGroup()],
   shortcuts: {
-    btn: 'py-2 px-4 font-semibold rounded-md shadow-md shadow-gray-500 bg-white text-black',
+    btn: 'py-2 px-4 font-semibold rounded-md shadow-xl shadow-teal-800 border-teal border-2',
   },
   // https://github.com/unocss/unocss/discussions/2012
   theme: {
