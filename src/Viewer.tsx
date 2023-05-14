@@ -1,6 +1,6 @@
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
-import {useState, type PropsWithChildren} from 'react';
+import {useState, type PropsWithChildren, useEffect} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
@@ -17,6 +17,9 @@ pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 export default function Viewer() {
   const {presentationSlug} = useParams();
+  useEffect(() => {
+    document.title = `Present - ${presentationSlug!} - Audience`;
+  }, [presentationSlug]);
   const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
   const {postConfetti} = useConfetti(
     presentationSlug!,

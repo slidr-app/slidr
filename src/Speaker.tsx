@@ -2,7 +2,13 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
-import {useMemo, type PropsWithChildren, useState, useCallback} from 'react';
+import {
+  useMemo,
+  type PropsWithChildren,
+  useState,
+  useCallback,
+  useEffect,
+} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
@@ -38,6 +44,10 @@ const textSizes = [
 
 export default function Speaker() {
   const {presentationSlug} = useParams();
+  useEffect(() => {
+    document.title = `Present - ${presentationSlug!} - Speaker`;
+  }, [presentationSlug]);
+
   const notes = useNotes(presentationSlug!);
   const [isWide, setIsWide] = useState(false);
 
@@ -233,8 +243,6 @@ export default function Speaker() {
           </ReactMarkdown>
         </div>
       </div>
-      {/* <div className="grid grid-cols-3 gap-4 content-start"> */}
-      {/* </div> */}
     </div>
   );
 }

@@ -27,6 +27,10 @@ pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 function Presentation() {
   const {presentationSlug} = useParams();
+  useEffect(() => {
+    document.title = `Present - ${presentationSlug!}`;
+  }, [presentationSlug]);
+
   const {
     slideIndex,
     setSlideIndex,

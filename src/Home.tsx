@@ -1,3 +1,4 @@
+import {useEffect} from 'react';
 import {Link} from 'react-router-dom';
 
 export default function Home({
@@ -5,6 +6,10 @@ export default function Home({
 }: {
   presentationSlugs: string[];
 }) {
+  useEffect(() => {
+    document.title = `Present - Home`;
+  }, []);
+
   return (
     <div className="max-w-md mx-auto p-4 flex flex-col">
       {presentationSlugs.map((presentationSlug) => (
