@@ -1,10 +1,4 @@
-import {
-  useState,
-  type PropsWithChildren,
-  useEffect,
-  useMemo,
-  useCallback,
-} from 'react';
+import {useState, useEffect, useMemo, useCallback} from 'react';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
 import QRCode from 'react-qr-code';
@@ -21,6 +15,8 @@ import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import useBroadcastSupaBase from './use-broadcast-supabase';
 import Confetti from './Confetti';
 import {presentations} from './presentation-urls';
+import Message from './Message';
+import Loading from './Loading';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -93,6 +89,8 @@ function Presentation() {
         'w-full h-full important-position-absolute top-0 left-0 opacity-100',
       )}
       width={Math.min(window.innerWidth, window.innerHeight * (16 / 9))}
+      loading={<Loading message="Loading page..." />}
+      error={<Message>Failed to load page.</Message>}
     />
   );
   const pageOver = (
@@ -103,16 +101,10 @@ function Presentation() {
         'w-full h-full important-position-absolute top-0 left-0 opacity-0',
       )}
       width={Math.min(window.innerWidth, window.innerHeight * (16 / 9))}
+      loading={<Loading message="Loading page..." />}
+      error={<Message>Failed to load page.</Message>}
     />
   );
-
-  function Message({children}: PropsWithChildren) {
-    return (
-      <div className="position-absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
-        <div>{children}</div>
-      </div>
-    );
-  }
 
   const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
   const [reset, setReset] = useState<boolean | Record<string, unknown>>(false);
@@ -124,8 +116,8 @@ function Presentation() {
       <Document
         file={presentations[presentationSlug!]}
         className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))]"
-        loading={<Message>Loading...</Message>}
-        error={<Message>Loading failed.</Message>}
+        loading={<Loading message="Loading pdf..." />}
+        error={<Message>Loading PDF failed.</Message>}
         noData={<Message>No PDF file found.</Message>}
         onLoadSuccess={(pdf) => {
           setSlideCount(pdf.numPages);
@@ -141,6 +133,8 @@ function Presentation() {
           pageIndex={slideIndex}
           width={Math.min(window.innerWidth, window.innerHeight * (16 / 9))}
           className="transition transition-opacity duration-500 ease-linear opacity-100 w-full h-full important-position-absolute top-0 left-0"
+          loading={<Loading message="Loading page..." />}
+          error={<Message>Failed to load page.</Message>}
         />
         {/* Preload the next page (if there is one) */}
         {((forward && slideIndex < slideCount - 1) ||

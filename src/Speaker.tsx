@@ -23,6 +23,8 @@ import useBroadcastSupaBase from './use-broadcast-supabase';
 import {presentations} from './presentation-urls';
 import useNotes from './use-notes';
 import Toggle from './Toggle';
+import Loading from './Loading';
+import Message from './Message';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -94,14 +96,6 @@ export default function Speaker() {
     };
   }, []);
 
-  function Message({children}: PropsWithChildren) {
-    return (
-      <div className="position-absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
-        <div>{children}</div>
-      </div>
-    );
-  }
-
   return (
     <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:flex lt-sm:flex-col lt-sm:overflow-auto lt-sm:h-auto">
       <div className="overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full h-full">
@@ -110,8 +104,8 @@ export default function Speaker() {
           <Document
             file={presentations[presentationSlug!]}
             className="grid grid-cols-2 gap-4 items-center"
-            loading={<Message>Loading...</Message>}
-            error={<Message>Loading failed.</Message>}
+            loading={<Loading message="Loading pdf..." />}
+            error={<Message>Loading PDF failed.</Message>}
             noData={<Message>No PDF file found.</Message>}
             onLoadSuccess={(pdf) => {
               setSlideCount(pdf.numPages);
@@ -121,12 +115,16 @@ export default function Speaker() {
               key={`page-${slideIndex}`}
               pageIndex={slideIndex}
               className="w-full col-span-2"
+              loading={<Loading message="Loading page..." />}
+              error={<Message>Failed to load page.</Message>}
             />
             {slideIndex > 0 && (
               <Page
                 key={`page-${prevSlideIndex}`}
                 pageIndex={prevSlideIndex}
                 className="w-full pr-2"
+                loading={<Loading message="Loading page..." />}
+                error={<Message>Failed to load page.</Message>}
               />
             )}
             {slideIndex < slideCount - 1 && (
@@ -134,6 +132,8 @@ export default function Speaker() {
                 key={`page-${nextSlideIndex}`}
                 pageIndex={nextSlideIndex}
                 className="w-full pl-2"
+                loading={<Loading message="Loading page..." />}
+                error={<Message>Failed to load page.</Message>}
               />
             )}
           </Document>
@@ -145,7 +145,7 @@ export default function Speaker() {
                 navPrevious();
               }}
             >
-              <div className="i-tabler-circle-arrow-left text-4xl" />
+              <div className="i-tabler-circle-arrow-left w-9 h-9" />
             </button>
             <button
               type="button"
@@ -154,7 +154,7 @@ export default function Speaker() {
                 navNext();
               }}
             >
-              <div className="i-tabler-circle-arrow-right text-4xl" />
+              <div className="i-tabler-circle-arrow-right w-9 h-9" />
             </button>
             <button
               type="button"
@@ -163,7 +163,7 @@ export default function Speaker() {
                 setSlideIndex(0);
               }}
             >
-              <div className="i-tabler-circle-chevrons-left" />
+              <div className="i-tabler-circle-chevrons-left w-6 h-6" />
             </button>
             <button
               type="button"
@@ -172,7 +172,7 @@ export default function Speaker() {
                 setSlideIndex(slideCount - 1);
               }}
             >
-              <div className="i-tabler-circle-chevrons-right" />
+              <div className="i-tabler-circle-chevrons-right w-6 h-6" />
             </button>
             <button
               type="button"
@@ -181,7 +181,8 @@ export default function Speaker() {
                 postConfettiBroadcastChannel({});
               }}
             >
-              🎉 local
+              <div className="i-tabler-confetti w-6 h-6 mr-2" />
+              local
             </button>
             <button
               type="button"
@@ -190,7 +191,8 @@ export default function Speaker() {
                 postConfettiBroadcastSupaBase({});
               }}
             >
-              🎉 supabase
+              <div className="i-tabler-confetti w-6 h-6 mr-2" />
+              supabase
             </button>
             <button
               type="button"
@@ -199,7 +201,7 @@ export default function Speaker() {
                 postConfettiReset({});
               }}
             >
-              🚫
+              <div className="i-tabler-circle-off w-6 h-6 mr-2" />
             </button>
             <div className="col-span-2">
               <Toggle

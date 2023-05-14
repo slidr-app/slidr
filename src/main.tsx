@@ -7,6 +7,7 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import './index.css';
 import Home from './Home.tsx';
 import {presentations} from './presentation-urls.ts';
+import Message from './Loading.tsx';
 
 const Viewer = lazy(async () => import('./Viewer.tsx'));
 const Speaker = lazy(async () => import('./Speaker.tsx'));
@@ -33,10 +34,14 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(
   <React.StrictMode>
-    <div className="text-white font-sans text-xl">
-      <Suspense fallback={<div>wait</div>}>
-        <RouterProvider router={router} />
-      </Suspense>
-    </div>
+    <Suspense
+      fallback={
+        <div className="h-screen w-screen">
+          <Message />
+        </div>
+      }
+    >
+      <RouterProvider router={router} />
+    </Suspense>
   </React.StrictMode>,
 );

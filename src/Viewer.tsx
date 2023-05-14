@@ -11,6 +11,8 @@ import useBroadcastSupaBase from './use-broadcast-supabase';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import Confetti from './Confetti';
 import {presentations} from './presentation-urls';
+import Loading from './Loading';
+import Message from './Message';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -33,22 +35,14 @@ export default function Viewer() {
   );
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
-  function Message({children}: PropsWithChildren) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center">
-        <div>{children}</div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-4 p-4 position-relative overflow-x-hidden overflow-y-auto min-h-screen">
       <div className="max-w-2xl mx-auto">
         <Document
           className="w-full aspect-video"
           file={presentations[presentationSlug!]}
-          loading={<Message>Loading...</Message>}
-          error={<Message>Loading failed.</Message>}
+          loading={<Loading message="Loading pdf..." />}
+          error={<Message>Loading PDF failed.</Message>}
           noData={<Message>No PDF file found.</Message>}
           onLoadSuccess={(pdf) => {
             setSlideCount(pdf.numPages);
@@ -58,6 +52,8 @@ export default function Viewer() {
             key={`page-${slideIndex}`}
             className="w-full h-full"
             pageIndex={slideIndex}
+            loading={<Loading message="Loading page..." />}
+            error={<Message>Failed to load page.</Message>}
           />
         </Document>
       </div>
@@ -72,7 +68,7 @@ export default function Viewer() {
             postConfetti({});
           }}
         >
-          Boom 🎉
+          <div className="i-tabler-confetti w-8 h-8" />
         </button>
         <div className="prose text-center position-relative">
           <a href="https://devrel.codyfactory.eu">Learn more</a>
