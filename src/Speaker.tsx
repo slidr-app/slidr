@@ -203,14 +203,6 @@ export default function Speaker() {
             >
               <div className="i-tabler-circle-off w-6 h-6 mr-2" />
             </button>
-            <div className="col-span-2">
-              <Toggle
-                checked={isWide}
-                onCheckChange={() => {
-                  setIsWide((previous) => !previous);
-                }}
-              />
-            </div>
           </div>
         </div>
       </div>
