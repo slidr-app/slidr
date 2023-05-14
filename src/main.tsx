@@ -1,15 +1,16 @@
 // eslint-disable-line unicorn/filename-case
-import React from 'react';
+import React, {lazy, Suspense} from 'react';
 import ReactDOM from 'react-dom/client';
 import '@unocss/reset/tailwind.css';
 import 'virtual:uno.css';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import './index.css';
-import Presentation from './Presentation.tsx';
-import Speaker from './Speaker.tsx';
-import Viewer from './Viewer.tsx';
 import Home from './Home.tsx';
 import {presentations} from './presentation-urls.ts';
+
+const Viewer = lazy(async () => import('./Viewer.tsx'));
+const Speaker = lazy(async () => import('./Speaker.tsx'));
+const Presentation = lazy(async () => import('./Presentation.tsx'));
 
 const router = createBrowserRouter([
   {
@@ -33,7 +34,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.querySelector('#root')!).render(
   <React.StrictMode>
     <div className="text-white font-sans text-xl">
-      <RouterProvider router={router} />
+      <Suspense fallback={<div>wait</div>}>
+        <RouterProvider router={router} />
+      </Suspense>
     </div>
   </React.StrictMode>,
 );
