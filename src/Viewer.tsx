@@ -1,13 +1,13 @@
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
-import {useState, type PropsWithChildren, useEffect} from 'react';
+import {useState, useEffect} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
 import useConfetti from './use-confetti';
 import './pdf.css';
 import {useSlideIndex} from './use-slide-index';
-import useBroadcastSupaBase from './use-broadcast-supabase';
+import useBroadcastSupabase from './use-broadcast-supabase';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import Confetti from './Confetti';
 import {presentations} from './presentation-urls';
@@ -25,11 +25,11 @@ export default function Viewer() {
   const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
   const {postConfetti} = useConfetti(
     presentationSlug!,
-    useBroadcastSupaBase,
+    useBroadcastSupabase,
     setFire,
   );
   const {setSlideCount, slideIndex, setSlideIndex} = useSlideIndex(
-    useBroadcastSupaBase,
+    useBroadcastSupabase,
     presentationSlug!,
     true,
   );

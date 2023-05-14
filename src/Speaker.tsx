@@ -2,13 +2,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
-import {
-  useMemo,
-  type PropsWithChildren,
-  useState,
-  useCallback,
-  useEffect,
-} from 'react';
+import {useMemo, useState, useCallback, useEffect} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
@@ -19,10 +13,9 @@ import useKeys from './use-keys';
 import useConfetti from './use-confetti';
 import useBroadcastChannel from './use-broadcast-channel';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
-import useBroadcastSupaBase from './use-broadcast-supabase';
+import useBroadcastSupabase from './use-broadcast-supabase';
 import {presentations} from './presentation-urls';
 import useNotes from './use-notes';
-import Toggle from './Toggle';
 import Loading from './Loading';
 import Message from './Message';
 
@@ -51,7 +44,6 @@ export default function Speaker() {
   }, [presentationSlug]);
 
   const notes = useNotes(presentationSlug!);
-  const [isWide, setIsWide] = useState(false);
 
   const {
     slideIndex,
@@ -78,7 +70,7 @@ export default function Speaker() {
     useConfetti(presentationSlug!, useBroadcastChannel);
   const {postConfetti: postConfettiBroadcastSupaBase} = useConfetti(
     presentationSlug!,
-    useBroadcastSupaBase,
+    useBroadcastSupabase,
   );
   const [textSize, setTextSize] = useState('text-base');
   const zoom = useCallback((zoomIn: boolean) => {

@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import supabase from './supabase';
 import {type UseChannel} from './use-channel';
 
-const useBroadcastSupaBase: UseChannel = function (
+const useBroadcastSupabase: UseChannel = function (
   channelId,
   eventId,
   onIncoming,
@@ -43,4 +43,4 @@ const useBroadcastSupaBase: UseChannel = function (
   return postMessage;
 };
 
-export default useBroadcastSupaBase;
+export default useBroadcastSupabase;

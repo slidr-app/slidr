@@ -12,7 +12,7 @@ import useKeys from './use-keys';
 import useConfetti from './use-confetti';
 import useBroadcastChannel from './use-broadcast-channel';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
-import useBroadcastSupaBase from './use-broadcast-supabase';
+import useBroadcastSupabase from './use-broadcast-supabase';
 import Confetti from './Confetti';
 import {presentations} from './presentation-urls';
 import Message from './Message';
@@ -39,15 +39,15 @@ function Presentation() {
     navPrevious,
   } = useSlideIndex(useBroadcastChannel, presentationSlug!);
 
-  const {setSlideIndex: setSupaBaseSlideIndex} = useSlideIndex(
-    useBroadcastSupaBase,
+  const {setSlideIndex: setSupabaseSlideIndex} = useSlideIndex(
+    useBroadcastSupabase,
     presentationSlug!,
   );
 
   useEffect(() => {
     console.log('updating', slideIndex);
-    setSupaBaseSlideIndex(slideIndex);
-  }, [slideIndex, setSupaBaseSlideIndex]);
+    setSupabaseSlideIndex(slideIndex);
+  }, [slideIndex, setSupabaseSlideIndex]);
 
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
@@ -61,6 +61,16 @@ function Presentation() {
     [],
   );
 
+  const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
+  const [reset, setReset] = useState<boolean | Record<string, unknown>>(false);
+
+  const resetConfetti = useCallback(() => {
+    setReset({});
+  }, [setReset]);
+
+  useConfetti(presentationSlug!, useBroadcastChannel, setFire, resetConfetti);
+  useConfetti(presentationSlug!, useBroadcastSupabase, setFire);
+
   const keyHandlers = useMemo(
     () =>
       new Map([
@@ -68,8 +78,9 @@ function Presentation() {
         ['ArrowRight', navNext],
         ['Space', navNext],
         ['KeyS', openSpeakerWindow],
+        ['KeyC', resetConfetti],
       ]),
-    [navPrevious, navNext, openSpeakerWindow],
+    [navPrevious, navNext, openSpeakerWindow, resetConfetti],
   );
   useKeys(keyHandlers);
 
@@ -105,11 +116,6 @@ function Presentation() {
       error={<Message>Failed to load page.</Message>}
     />
   );
-
-  const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
-  const [reset, setReset] = useState<boolean | Record<string, unknown>>(false);
-  useConfetti(presentationSlug!, useBroadcastChannel, setFire, setReset);
-  useConfetti(presentationSlug!, useBroadcastSupaBase, setFire);
 
   return (
     <div className="pdf-container w-screen h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
