@@ -7,6 +7,7 @@ export default function Toggle({
   checked: boolean;
   onCheckChange: () => void;
 }) {
+  // Inspired from https://codepen.io/lhermann/pen/EBGZRZ
   return (
     <div className="flex items-center justify-center w-full">
       <label htmlFor="toggleB" className="flex items-center cursor-pointer">

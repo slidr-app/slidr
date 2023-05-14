@@ -40,7 +40,7 @@ export default function Speaker() {
   const {presentationSlug} = useParams();
   const notes = useNotes(presentationSlug!);
   const [isWide, setIsWide] = useState(false);
-  console.log('notes', notes);
+
   const {
     slideIndex,
     setSlideIndex,

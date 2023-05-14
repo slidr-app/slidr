@@ -18,8 +18,6 @@ export function useSlideIndex(
 } {
   const [slideIndex, setSlideIndex] = useState(0);
   const [slideCount, setSlideCount] = useState(0);
-  // Const [postSlideIndex, setPostSlideIndex] =
-  //   useState<(index: number) => void>();
   const [forward, setForward] = useState(true);
 
   const previousSlideIndex = useMemo(
@@ -35,7 +33,6 @@ export function useSlideIndex(
     (index: number) => {
       setForward(index >= slideIndex);
       setSlideIndex(index);
-      // SetSearchParameters({slide: String(index)}, {replace: true});
     },
     [slideIndex],
   );

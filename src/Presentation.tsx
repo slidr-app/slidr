@@ -142,18 +142,6 @@ function Presentation() {
         {((forward && slideIndex < slideCount - 1) ||
           (!forward && slideIndex > 0)) &&
           pageOver}
-        {/* </div> */}
-        {/* <div className="position-absolute w-40 h-[calc(100%_-_11rem)] right-4 animate-longbounce">
-          <div className=" bg-white p-2 w-40 h-40">
-            <QRCode
-              value={`${window.location.origin}${window.location.pathname}/view${window.location.search}`}
-              // Size={128}
-              // Level="M"
-              className="w-full h-full"
-              style={{width: '100%', height: 'auto', maxWidth: '100%'}}
-            />
-          </div>
-        </div> */}
       </Document>
       <Confetti fire={fire} reset={reset} />
       <div className="position-absolute top-1rem w-10rem h-[calc(100%_-_10rem_-_2rem)] right-4 animate-longbounce 2xl:w-12rem 2xl:h-[calc(100%_-_12rem_-_2rem)] lt-sm:w-8rem lt-sm:h-[calc(100%_-_8rem_-_2rem)]">
