@@ -2,7 +2,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
-import {useMemo, useState, useCallback, useEffect} from 'react';
+import {useMemo, useState, useCallback, useEffect, useRef} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
@@ -88,6 +88,15 @@ export default function Speaker() {
     };
   }, []);
 
+  // Calculate the correct width for the pdf pages
+  // This ensures that they are rendered at the ideal resolution, rather than scaled by css
+  const previousRef = useRef<HTMLDivElement>(null);
+  const nextRef = useRef<HTMLDivElement>(null);
+  const currentRef = useRef<HTMLDivElement>(null);
+  const previousWidth = previousRef.current?.clientWidth;
+  const nextWidth = nextRef.current?.clientWidth;
+  const currentWidth = currentRef.current?.clientWidth;
+
   return (
     <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:(flex flex-col overflow-auto h-auto w-full)">
       <div className="flex flex-col overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full">
@@ -103,38 +112,47 @@ export default function Speaker() {
               setSlideCount(pdf.numPages);
             }}
           >
-            <Page
-              key={`page-${slideIndex}`}
-              pageIndex={slideIndex}
-              className="w-full col-span-2 aspect-video"
-              {...pageMessageProperties}
-            />
-            {slideIndex > 0 ? (
+            <div ref={currentRef} className="w-full col-span-2 aspect-video">
               <Page
-                key={`page-${prevSlideIndex}`}
-                pageIndex={prevSlideIndex}
-                className="w-full pr-2 col-start-1 aspect-video"
+                key={`page-${slideIndex}`}
+                pageIndex={slideIndex}
+                className="w-full h-full"
+                width={currentWidth}
                 {...pageMessageProperties}
               />
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center">
-                <div className="i-tabler-circle-filled text-green text-4xl" />
-                <div className="">start</div>
-              </div>
-            )}
-            {slideIndex < slideCount - 1 ? (
-              <Page
-                key={`page-${nextSlideIndex}`}
-                pageIndex={nextSlideIndex}
-                className="w-full pl-2 col-start-2 aspect-video"
-                {...pageMessageProperties}
-              />
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center">
-                <div className="i-tabler-circle-filled text-red text-4xl" />
-                <div className="">end</div>
-              </div>
-            )}
+            </div>
+            <div ref={previousRef} className="w-full aspect-video col-start-1">
+              {slideIndex > 0 ? (
+                <Page
+                  key={`page-${prevSlideIndex}`}
+                  pageIndex={prevSlideIndex}
+                  className="w-full h-full"
+                  width={previousWidth}
+                  {...pageMessageProperties}
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center">
+                  <div className="i-tabler-circle-filled text-green text-4xl" />
+                  <div className="">start</div>
+                </div>
+              )}
+            </div>
+            <div ref={nextRef} className="w-full aspect-video col-start-2">
+              {slideIndex < slideCount - 1 ? (
+                <Page
+                  key={`page-${nextSlideIndex}`}
+                  pageIndex={nextSlideIndex}
+                  className="w-full h-full"
+                  width={nextWidth}
+                  {...pageMessageProperties}
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center">
+                  <div className="i-tabler-circle-filled text-red text-4xl" />
+                  <div className="">end</div>
+                </div>
+              )}
+            </div>
           </Document>
           <div className="self-center grid grid-cols-2 gap-6">
             <button
