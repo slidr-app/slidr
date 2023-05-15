@@ -108,21 +108,31 @@ export default function Speaker() {
               className="w-full col-span-2"
               {...pageMessageProperties}
             />
-            {slideIndex > 0 && (
+            {slideIndex > 0 ? (
               <Page
                 key={`page-${prevSlideIndex}`}
                 pageIndex={prevSlideIndex}
-                className="w-full pr-2"
+                className="w-full pr-2 col-start-1"
                 {...pageMessageProperties}
               />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center">
+                <div className="i-tabler-circle-filled text-green text-4xl" />
+                <div className="">start</div>
+              </div>
             )}
-            {slideIndex < slideCount - 1 && (
+            {slideIndex < slideCount - 1 ? (
               <Page
                 key={`page-${nextSlideIndex}`}
                 pageIndex={nextSlideIndex}
-                className="w-full pl-2"
+                className="w-full pl-2 col-start-2"
                 {...pageMessageProperties}
               />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center">
+                <div className="i-tabler-circle-filled text-red text-4xl" />
+                <div className="">end</div>
+              </div>
             )}
           </Document>
           <div className="self-center grid grid-cols-2 gap-6">
