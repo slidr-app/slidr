@@ -1,6 +1,6 @@
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
@@ -34,9 +34,12 @@ export default function Viewer() {
   );
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
+  const pdfRef = useRef<HTMLDivElement>(null);
+  const pdfWidth = pdfRef.current?.clientWidth;
+
   return (
     <div className="flex flex-col gap-4 p-4 position-relative overflow-x-hidden overflow-y-auto min-h-screen">
-      <div className="max-w-2xl mx-auto">
+      <div ref={pdfRef} className="max-w-2xl mx-auto w-full">
         <Document
           className="w-full aspect-video"
           file={presentations[presentationSlug!]}
@@ -49,6 +52,7 @@ export default function Viewer() {
             key={`page-${slideIndex}`}
             className="w-full h-full"
             pageIndex={slideIndex}
+            width={pdfWidth}
             {...pageMessageProperties}
           />
         </Document>
