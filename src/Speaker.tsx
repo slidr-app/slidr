@@ -91,8 +91,8 @@ export default function Speaker() {
     <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:flex lt-sm:flex-col lt-sm:overflow-auto lt-sm:h-auto">
       <div className="overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full h-full">
         <div className="flex flex-col gap-4">
-          <div className="self-center text-2xl border-b-2 border-color-teal shadow-xl shadow-teal-800 w-full text-center pb-2">
-            Slide: {slideIndex + 1}
+          <div className="self-center w-full header">
+            Slide: <span className="font-bold">{slideIndex + 1}</span>
           </div>
           <Document
             file={presentations[presentationSlug!]}
@@ -195,9 +195,7 @@ export default function Speaker() {
         </div>
       </div>
       <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto">
-        <div className="self-center text-2xl border-b-2 border-color-teal shadow-xl shadow-teal-800 w-full text-center pb-2">
-          Speaker Notes
-        </div>
+        <div className="self-center w-full header">Speaker Notes</div>
         <div className="self-center grid grid-cols-3 gap-4">
           <button
             className="btn"
