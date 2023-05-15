@@ -11,8 +11,7 @@ import useBroadcastSupabase from './use-broadcast-supabase';
 import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import Confetti from './Confetti';
 import {presentations} from './presentation-urls';
-import Loading from './Loading';
-import Message from './Message';
+import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -41,9 +40,7 @@ export default function Viewer() {
         <Document
           className="w-full aspect-video"
           file={presentations[presentationSlug!]}
-          loading={<Loading message="Loading pdf..." />}
-          error={<Message>Loading PDF failed.</Message>}
-          noData={<Message>No PDF file found.</Message>}
+          {...pdfMessageProperties}
           onLoadSuccess={(pdf) => {
             setSlideCount(pdf.numPages);
           }}
@@ -52,8 +49,7 @@ export default function Viewer() {
             key={`page-${slideIndex}`}
             className="w-full h-full"
             pageIndex={slideIndex}
-            loading={<Loading message="Loading page..." />}
-            error={<Message>Failed to load page.</Message>}
+            {...pageMessageProperties}
           />
         </Document>
       </div>

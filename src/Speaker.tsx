@@ -16,8 +16,7 @@ import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import useBroadcastSupabase from './use-broadcast-supabase';
 import {presentations} from './presentation-urls';
 import useNotes from './use-notes';
-import Loading from './Loading';
-import Message from './Message';
+import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -68,7 +67,7 @@ export default function Speaker() {
   useKeys(keyHandlers);
   const {postConfetti: postConfettiBroadcastChannel, postConfettiReset} =
     useConfetti(presentationSlug!, useBroadcastChannel);
-  const {postConfetti: postConfettiBroadcastSupaBase} = useConfetti(
+  const {postConfetti: postConfettiBroadcastSupabase} = useConfetti(
     presentationSlug!,
     useBroadcastSupabase,
   );
@@ -92,13 +91,13 @@ export default function Speaker() {
     <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:flex lt-sm:flex-col lt-sm:overflow-auto lt-sm:h-auto">
       <div className="overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full h-full">
         <div className="flex flex-col gap-4">
-          <div className="text-center">Slide: {slideIndex + 1}</div>
+          <div className="self-center text-2xl border-b-2 border-color-teal shadow-xl shadow-teal-800 w-full text-center pb-2">
+            Slide: {slideIndex + 1}
+          </div>
           <Document
             file={presentations[presentationSlug!]}
             className="grid grid-cols-2 gap-4 items-center"
-            loading={<Loading message="Loading pdf..." />}
-            error={<Message>Loading PDF failed.</Message>}
-            noData={<Message>No PDF file found.</Message>}
+            {...pdfMessageProperties}
             onLoadSuccess={(pdf) => {
               setSlideCount(pdf.numPages);
             }}
@@ -107,16 +106,14 @@ export default function Speaker() {
               key={`page-${slideIndex}`}
               pageIndex={slideIndex}
               className="w-full col-span-2"
-              loading={<Loading message="Loading page..." />}
-              error={<Message>Failed to load page.</Message>}
+              {...pageMessageProperties}
             />
             {slideIndex > 0 && (
               <Page
                 key={`page-${prevSlideIndex}`}
                 pageIndex={prevSlideIndex}
                 className="w-full pr-2"
-                loading={<Loading message="Loading page..." />}
-                error={<Message>Failed to load page.</Message>}
+                {...pageMessageProperties}
               />
             )}
             {slideIndex < slideCount - 1 && (
@@ -124,8 +121,7 @@ export default function Speaker() {
                 key={`page-${nextSlideIndex}`}
                 pageIndex={nextSlideIndex}
                 className="w-full pl-2"
-                loading={<Loading message="Loading page..." />}
-                error={<Message>Failed to load page.</Message>}
+                {...pageMessageProperties}
               />
             )}
           </Document>
@@ -180,7 +176,7 @@ export default function Speaker() {
               type="button"
               className="btn"
               onClick={() => {
-                postConfettiBroadcastSupaBase({});
+                postConfettiBroadcastSupabase({});
               }}
             >
               <div className="i-tabler-confetti w-6 h-6 mr-2" />
@@ -199,7 +195,9 @@ export default function Speaker() {
         </div>
       </div>
       <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto">
-        <div className="self-center">Speaker Notes</div>
+        <div className="self-center text-2xl border-b-2 border-color-teal shadow-xl shadow-teal-800 w-full text-center pb-2">
+          Speaker Notes
+        </div>
         <div className="self-center grid grid-cols-3 gap-4">
           <button
             className="btn"
