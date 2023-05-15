@@ -63,4 +63,7 @@ export default defineConfig({
       // Wiggle: 'wiggle 1s ease-in-out infinite',
     },
   },
+  // Safelist width percentages used for the progress bar
+  // eslint-disable-next-line unicorn/no-useless-spread
+  safelist: [...Array.from({length: 101}, (_, i) => `w-[${i + 1}%]`)],
 });

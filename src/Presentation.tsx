@@ -15,6 +15,7 @@ import useBroadcastSupabase from './use-broadcast-supabase';
 import Confetti from './Confetti';
 import {presentations} from './presentation-urls';
 import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
+import ProgressBar from './ProgressBar';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -173,6 +174,7 @@ function Presentation() {
           />
         </div>
       </div>
+      <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
     </div>
   );
 }

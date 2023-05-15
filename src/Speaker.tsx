@@ -17,6 +17,7 @@ import useBroadcastSupabase from './use-broadcast-supabase';
 import {presentations} from './presentation-urls';
 import useNotes from './use-notes';
 import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
+import ProgressBar from './ProgressBar';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -237,6 +238,7 @@ export default function Speaker() {
           </div>
         </div>
       </div>
+      <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
     </div>
   );
 }
