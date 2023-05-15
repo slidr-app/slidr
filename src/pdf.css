@@ -45,3 +45,9 @@
 .react-pdf__Page__annotations.annotationLayer {
   --uno: important-w-full important-h-full;
 }
+
+/* Allow selecting of the text layer (otherwise it is below the hidden slide and confetti) */
+.textLayer span,
+.textLayer br {
+  z-index: 1;
+}
