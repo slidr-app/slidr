@@ -89,15 +89,15 @@ export default function Speaker() {
   }, []);
 
   return (
-    <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:flex lt-sm:flex-col lt-sm:overflow-auto lt-sm:h-auto">
-      <div className="overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full h-full">
+    <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:(flex flex-col overflow-auto h-auto w-full)">
+      <div className="flex flex-col overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full">
         <div className="flex flex-col gap-4">
           <div className="self-center w-full header">
             Slide: <span className="font-bold">{slideIndex + 1}</span>
           </div>
           <Document
             file={presentations[presentationSlug!]}
-            className="grid grid-cols-2 gap-4 items-center"
+            className="grid grid-cols-2 gap-4"
             {...pdfMessageProperties}
             onLoadSuccess={(pdf) => {
               setSlideCount(pdf.numPages);
@@ -106,14 +106,14 @@ export default function Speaker() {
             <Page
               key={`page-${slideIndex}`}
               pageIndex={slideIndex}
-              className="w-full col-span-2"
+              className="w-full col-span-2 aspect-video"
               {...pageMessageProperties}
             />
             {slideIndex > 0 ? (
               <Page
                 key={`page-${prevSlideIndex}`}
                 pageIndex={prevSlideIndex}
-                className="w-full pr-2 col-start-1"
+                className="w-full pr-2 col-start-1 aspect-video"
                 {...pageMessageProperties}
               />
             ) : (
@@ -126,7 +126,7 @@ export default function Speaker() {
               <Page
                 key={`page-${nextSlideIndex}`}
                 pageIndex={nextSlideIndex}
-                className="w-full pl-2 col-start-2"
+                className="w-full pl-2 col-start-2 aspect-video"
                 {...pageMessageProperties}
               />
             ) : (
