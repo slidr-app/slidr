@@ -65,5 +65,5 @@ export default defineConfig({
   },
   // Safelist width percentages used for the progress bar
   // eslint-disable-next-line unicorn/no-useless-spread
-  safelist: [...Array.from({length: 101}, (_, i) => `w-[${i + 1}%]`)],
+  safelist: [...Array.from({length: 101}, (_, i) => `w-[${i}%]`)],
 });
