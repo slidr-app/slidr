@@ -194,35 +194,37 @@ export default function Speaker() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-4 overflow-x-hidden overflow-y-auto">
-        <div className="self-center w-full header">Speaker Notes</div>
-        <div className="self-center grid grid-cols-3 gap-4">
-          <button
-            className="btn"
-            type="button"
-            onClick={() => {
-              setTextSize(zoom(false));
-            }}
-          >
-            <div className="i-tabler-zoom-out" />
-          </button>
-          <div className="flex justify-center items-center text-base">
-            <div>{textSize.replace('text-', '')}</div>
+      <div className="overflow-x-hidden overflow-y-auto w-full h-full">
+        <div className="flex flex-col gap-4">
+          <div className="self-center w-full header">Speaker Notes</div>
+          <div className="self-center grid grid-cols-3 gap-4">
+            <button
+              className="btn"
+              type="button"
+              onClick={() => {
+                setTextSize(zoom(false));
+              }}
+            >
+              <div className="i-tabler-zoom-out" />
+            </button>
+            <div className="flex justify-center items-center text-base">
+              <div>{textSize.replace('text-', '')}</div>
+            </div>
+            <button
+              className="btn"
+              type="button"
+              onClick={() => {
+                setTextSize(zoom(true));
+              }}
+            >
+              <div className="i-tabler-zoom-in" />
+            </button>
           </div>
-          <button
-            className="btn"
-            type="button"
-            onClick={() => {
-              setTextSize(zoom(true));
-            }}
-          >
-            <div className="i-tabler-zoom-in" />
-          </button>
-        </div>
-        <div className={clsx('p-2 prose', textSize)}>
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {notes.get(slideIndex) ?? ''}
-          </ReactMarkdown>
+          <div className={clsx('p-2 prose max-w-full', textSize)}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {notes.get(slideIndex) ?? ''}
+            </ReactMarkdown>
+          </div>
         </div>
       </div>
     </div>

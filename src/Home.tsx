@@ -12,9 +12,11 @@ export default function Home({
 
   return (
     <div className="flex flex-col items-center mt-2">
-      <div className="header self-center w-full text-3xl">
-        Present!
-        <div className="i-tabler-microphone-2 ml-2" />
+      <div className="w-full px-4">
+        <div className="header self-center w-full text-3xl">
+          Present!
+          <div className="i-tabler-microphone-2 ml-2" />
+        </div>
       </div>
       <div className="p-4 grid grid-cols-[auto_auto_auto] gap-y-6">
         {presentationSlugs.map((presentationSlug) => (
