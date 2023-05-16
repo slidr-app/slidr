@@ -7,6 +7,7 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
 import clsx from 'clsx';
+import {useSwipeable} from 'react-swipeable';
 import {useSlideIndex} from './use-slide-index';
 import './pdf.css';
 import useKeys from './use-keys';
@@ -55,6 +56,14 @@ export default function Speaker() {
     navNext,
     navPrevious,
   } = useSlideIndex(useBroadcastChannel, presentationSlug!);
+  const swipeHandlers = useSwipeable({
+    onSwipedRight() {
+      navPrevious();
+    },
+    onSwipedLeft() {
+      navNext();
+    },
+  });
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
   const keyHandlers = useMemo(
     () =>
@@ -98,7 +107,10 @@ export default function Speaker() {
   const currentWidth = currentRef.current?.clientWidth;
 
   return (
-    <div className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:(flex flex-col overflow-auto h-auto w-full)">
+    <div
+      className="p-4 grid grid-cols-[auto_1fr] gap-5 w-screen h-screen overflow-hidden lt-sm:(flex flex-col overflow-auto h-auto w-full)"
+      {...swipeHandlers}
+    >
       <div className="flex flex-col overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full">
         <div className="flex flex-col gap-4">
           <div className="self-center w-full header">
@@ -257,6 +269,10 @@ export default function Speaker() {
         </div>
       </div>
       <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
+      {/* <div
+        className="position-absolute top-0 left-0 h-full w-full"
+        {...swipeHandlers}
+      /> */}
     </div>
   );
 }

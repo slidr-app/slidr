@@ -5,6 +5,7 @@ import QRCode from 'react-qr-code';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
+import {useSwipeable} from 'react-swipeable';
 import './pdf.css';
 import {useSlideIndex} from './use-slide-index';
 import useKeys from './use-keys';
@@ -37,6 +38,15 @@ function Presentation() {
     navNext,
     navPrevious,
   } = useSlideIndex(useBroadcastChannel, presentationSlug!);
+
+  const swipeHandlers = useSwipeable({
+    onSwipedRight() {
+      navPrevious();
+    },
+    onSwipedLeft() {
+      navNext();
+    },
+  });
 
   const {setSlideIndex: setSupabaseSlideIndex} = useSlideIndex(
     useBroadcastSupabase,
@@ -144,6 +154,8 @@ function Presentation() {
     );
   }
 
+  console.log('handlers', swipeHandlers);
+
   return (
     <div className="pdf-container w-screen h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
       <Document
@@ -175,6 +187,13 @@ function Presentation() {
         </div>
       </div>
       <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
+      <div
+        className="position-absolute top-0 left-0 h-full w-full"
+        onClick={() => {
+          navNext();
+        }}
+        {...swipeHandlers}
+      />
     </div>
   );
 }

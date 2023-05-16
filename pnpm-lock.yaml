@@ -34,6 +34,9 @@ dependencies:
   react-router-dom:
     specifier: ^6.11.1
     version: 6.11.1(react-dom@18.2.0)(react@18.2.0)
+  react-swipeable:
+    specifier: ^7.0.0
+    version: 7.0.0(react@18.2.0)
   remark-gfm:
     specifier: ^3.0.1
     version: 3.0.1
@@ -7254,6 +7257,14 @@ packages:
       react: '>=16.8'
     dependencies:
       '@remix-run/router': 1.6.1
+      react: 18.2.0
+    dev: false
+
+  /react-swipeable@7.0.0(react@18.2.0):
+    resolution: {integrity: sha512-NI7KGfQ6gwNFN0Hor3vytYW3iRfMMaivGEuxcADOOfBCx/kqwXE8IfHFxEcxSUkxCYf38COLKYd9EMYZghqaUA==}
+    peerDependencies:
+      react: ^16.8.3 || ^17 || ^18
+    dependencies:
       react: 18.2.0
     dev: false
 
