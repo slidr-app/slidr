@@ -1,6 +1,27 @@
 # present
 
-*Crazy interactive presentation framework*
+## *Crazy interactive presentation framework 🎉*
+
+<br><br>
+
+![Presentation](./example-confetti.gif)
+
+_Main presentation view_
+
+
+<br><br>
+
+![Speaker](./speaker-view.png)
+
+_Speaker view with notes_
+
+<br><br>
+
+![Audience](./audience-view.png)
+
+_Mobile friendly audience view... go ahead, throw some confetti on the main screen 🎉!_
+
+<br><br>
 
 ## Quickstart
 
