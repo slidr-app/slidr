@@ -8,7 +8,7 @@ export default function Confetti({fire, reset}: {fire: any; reset?: any}) {
       fire={fire} // eslint-disable-line @typescript-eslint/no-unsafe-assignment
       reset={reset} // eslint-disable-line @typescript-eslint/no-unsafe-assignment
       angle={90}
-      className="position-absolute top-0 left-0 w-screen h-full min-h-screen"
+      className="position-fixed top-0 left-0 w-screen h-screen"
       colors={[
         '#26ccff',
         '#a25afd',
