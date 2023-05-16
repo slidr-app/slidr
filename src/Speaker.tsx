@@ -269,10 +269,6 @@ export default function Speaker() {
         </div>
       </div>
       <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
-      {/* <div
-        className="position-absolute top-0 left-0 h-full w-full"
-        {...swipeHandlers}
-      /> */}
     </div>
   );
 }

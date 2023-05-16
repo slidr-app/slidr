@@ -12,6 +12,7 @@ import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
 import Confetti from './Confetti';
 import {presentations} from './presentation-urls';
 import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
+import ProgressBar from './ProgressBar';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -27,7 +28,7 @@ export default function Viewer() {
     useBroadcastSupabase,
     setFire,
   );
-  const {setSlideCount, slideIndex, setSlideIndex} = useSlideIndex(
+  const {setSlideCount, slideIndex, setSlideIndex, slideCount} = useSlideIndex(
     useBroadcastSupabase,
     presentationSlug!,
     true,
@@ -38,7 +39,7 @@ export default function Viewer() {
   const pdfWidth = pdfRef.current?.clientWidth;
 
   return (
-    <div className="flex flex-col gap-4 p-4 position-relative overflow-x-hidden overflow-y-auto min-h-screen">
+    <div className="flex flex-col gap-4 p-4 position-relative overflow-x-hidden overflow-y-auto min-h-screen w-screen">
       <div ref={pdfRef} className="max-w-2xl mx-auto w-full">
         <Document
           className="w-full aspect-video"
@@ -74,6 +75,7 @@ export default function Viewer() {
           <a href="https://devrel.codyfactory.eu">Learn more</a>
         </div>
       </div>
+      <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
     </div>
   );
 }
