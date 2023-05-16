@@ -157,7 +157,7 @@ function Presentation() {
   console.log('handlers', swipeHandlers);
 
   return (
-    <div className="pdf-container w-screen h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
+    <div className="pdf-container h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
       <Document
         file={presentations[presentationSlug!]}
         className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))]"
