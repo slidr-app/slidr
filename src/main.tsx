@@ -6,7 +6,6 @@ import 'virtual:uno.css';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import './index.css';
 import Home from './Home.tsx';
-import {presentations} from './presentation-urls.ts';
 import Message from './Loading.tsx';
 
 const Viewer = lazy(async () => import('./Viewer.tsx'));
@@ -16,7 +15,7 @@ const Presentation = lazy(async () => import('./Presentation.tsx'));
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home presentationSlugs={Object.keys(presentations)} />,
+    element: <Home />,
   },
   {
     path: '/:presentationSlug',

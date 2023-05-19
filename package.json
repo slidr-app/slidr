@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && pnpm run thumbs && vite build",
     "lint": "xo",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "thumbs": "rimraf src/presentations/thumbs && mkdir src/presentations/thumbs && node ./bin/generate-title-pdf.js && node ./bin/generate-title-png.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.21.0",
@@ -44,9 +45,15 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
     "firebase-tools": "^11.30.0",
+    "imagetools-core": "^4.0.3",
+    "pdf-img-convert": "^1.2.1",
+    "pdf-lib": "^1.17.1",
+    "rimraf": "^5.0.1",
     "typescript": "^5.0.2",
     "unocss": "^0.51.12",
     "vite": "^4.3.2",
+    "vite-imagetools": "^5.0.4",
+    "vite-plugin-run": "^0.4.1",
     "xo": "^0.54.2"
   }
 }

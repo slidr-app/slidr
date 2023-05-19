@@ -38,9 +38,11 @@ export default defineConfig({
   ],
   transformers: [transformerDirectives(), transformerVariantGroup()],
   shortcuts: {
-    btn: 'py-2 px-4 font-semibold rounded-md shadow-xl shadow-teal-800 border-teal border-2',
+    'border-primary': 'rounded-md border-2 border-teal',
+    'shadow-primary': 'shadow-xl shadow-teal-800',
+    btn: 'py-2 px-4 font-semibold shadow-primary  border-primary',
     header:
-      'text-2xl border-b-2 border-l-2 border-r-2 rounded-b-md border-color-teal shadow-xl shadow-teal-800 text-center pb-2',
+      'text-2xl border-primary border-t-none rounded-t-none shadow-primary text-center pb-2',
   },
   // https://github.com/unocss/unocss/discussions/2012
   theme: {

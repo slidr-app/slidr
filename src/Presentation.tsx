@@ -1,4 +1,4 @@
-import {useState, useEffect, useMemo, useCallback} from 'react';
+import {useState, useEffect, useMemo, useCallback, useRef} from 'react';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
 import QRCode from 'react-qr-code';
@@ -118,6 +118,8 @@ function Presentation() {
     );
   }
 
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   // Current slide transitions its opacity so that it fades in
   // It should have already been rendered (opacity 0) over
   const slideCurrent = (
@@ -126,6 +128,7 @@ function Presentation() {
       className="transition transition-opacity duration-500 ease-linear opacity-100 w-full h-full important-position-absolute top-0 left-0"
       pageIndex={slideIndex}
       width={slideWidth}
+      canvasRef={canvasRef}
       {...pageMessageProperties}
     />
   );
@@ -194,6 +197,17 @@ function Presentation() {
         }}
         {...swipeHandlers}
       />
+      {/* <div className="position-fixed bottom-2 w-full flex flex-row justify-center">
+        <button
+          type="button"
+          onClick={() => {
+            const dataUrl = canvasRef.current?.toDataURL();
+            console.log({dataUrl});
+          }}
+        >
+          Click me
+        </button>
+      </div> */}
     </div>
   );
 }
