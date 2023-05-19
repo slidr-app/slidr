@@ -5,12 +5,12 @@ import '@unocss/reset/tailwind.css';
 import 'virtual:uno.css';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import './index.css';
-import Home from './Home.tsx';
 import Message from './Loading.tsx';
 
 const Viewer = lazy(async () => import('./Viewer.tsx'));
 const Speaker = lazy(async () => import('./Speaker.tsx'));
 const Presentation = lazy(async () => import('./Presentation.tsx'));
+const Home = lazy(async () => import('./Home.tsx'));
 
 const router = createBrowserRouter([
   {
