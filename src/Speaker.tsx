@@ -40,6 +40,11 @@ const textSizes = [
 
 export default function Speaker() {
   const {presentationSlug} = useParams();
+
+  if (presentations[presentationSlug!] === undefined) {
+    throw new Error(`Presentation '${presentationSlug!}' does not exist`);
+  }
+
   useEffect(() => {
     document.title = `Present - ${presentationSlug!} - Speaker`;
   }, [presentationSlug]);

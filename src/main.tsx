@@ -6,6 +6,7 @@ import 'virtual:uno.css';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import './index.css';
 import Message from './Loading.tsx';
+import ErrorPage from './ErrorPage.tsx';
 
 const Viewer = lazy(async () => import('./Viewer.tsx'));
 const Speaker = lazy(async () => import('./Speaker.tsx'));
@@ -16,18 +17,26 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Home />,
+    errorElement: <ErrorPage />,
   },
   {
     path: '/:presentationSlug',
     element: <Presentation />,
+    errorElement: <ErrorPage />,
   },
   {
     path: '/:presentationSlug/view',
     element: <Viewer />,
+    errorElement: <ErrorPage />,
   },
   {
     path: '/:presentationSlug/speaker',
     element: <Speaker />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '*',
+    element: <ErrorPage />,
   },
 ]);
 

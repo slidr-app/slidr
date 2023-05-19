@@ -23,6 +23,11 @@ pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 function Presentation() {
   const {presentationSlug} = useParams();
+
+  if (presentations[presentationSlug!] === undefined) {
+    throw new Error(`Presentation '${presentationSlug!}' does not exist`);
+  }
+
   useEffect(() => {
     document.title = `Present - ${presentationSlug!}`;
   }, [presentationSlug]);
