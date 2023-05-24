@@ -42,7 +42,7 @@ export default defineConfig({
     'shadow-primary': 'shadow-xl shadow-teal-800',
     btn: 'py-2 px-4 font-semibold shadow-primary  border-primary',
     header:
-      'text-2xl border-primary border-t-none rounded-t-none shadow-primary text-center pb-2',
+      'text-2xl border-primary border-t-none rounded-t-none shadow-primary text-center py-2 font-semibold',
   },
   // https://github.com/unocss/unocss/discussions/2012
   theme: {

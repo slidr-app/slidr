@@ -113,7 +113,7 @@ export default function Speaker() {
 
   return (
     <div
-      className="p-4 grid grid-cols-[auto_1fr] gap-5 h-screen overflow-hidden lt-sm:(flex flex-col overflow-auto h-auto w-full)"
+      className="p-4 pt-0 grid grid-cols-[auto_1fr] gap-5 h-screen overflow-hidden lt-sm:(flex flex-col overflow-auto h-auto w-full)"
       {...swipeHandlers}
     >
       <div className="flex flex-col overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full">

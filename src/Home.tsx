@@ -21,7 +21,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center mt-2">
+    <div className="flex flex-col items-center">
       <div className="w-full px-4">
         <div className="header self-center w-full text-3xl">
           Present!
