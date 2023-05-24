@@ -74,8 +74,22 @@ export default function Viewer() {
             postConfetti({});
           }}
         >
-          <div className="i-tabler-confetti w-8 h-8" />
+          <div className="i-fluent-emoji-flat-party-popper w-8 h-8" />
         </button>
+        <div className="grid grid-cols-4 gap-4">
+          <button className="btn" type="button">
+            <div className="i-fluent-emoji-flat-red-heart w-8 h-8" />
+          </button>
+          <button className="btn" type="button">
+            <div className="i-fluent-emoji-flat-smiling-face w-8 h-8" />
+          </button>
+          <button className="btn" type="button">
+            <div className="i-fluent-emoji-flat-clapping-hands w-8 h-8" />
+          </button>
+          <button className="btn" type="button">
+            <div className="i-fluent-emoji-flat-exploding-head w-8 h-8" />
+          </button>
+        </div>
         <div className="prose text-center position-relative">
           <a href="https://devrel.codyfactory.eu">Learn more</a>
         </div>
