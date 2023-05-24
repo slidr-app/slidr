@@ -52,12 +52,36 @@ export default defineConfig({
             0%, 100% { transform: translateY(+100%) }
             50% { transform: translateY(0) }
           }`,
+        emoji: `{
+          from,to {
+            transform: translate3d(0,0,0);
+          }
+          0% {
+            bottom: -100px;
+            opacity: 1;
+          }
+          10%,30%,50%,70%,90% {
+            transform: translate3d(calc(var(--reaction-bounce-distance) * -1),0,0);
+          }
+          20%,40%,60%,80% {
+            transform: translate3d(var(--reaction-bounce-distance),0,0);
+          }
+          60% {
+            opacity: 1;
+          }
+          100% {
+            bottom: 90vh;
+            opacity: 0;
+          }
+        }`,
       },
       durations: {
         longbounce: '120s',
+        emoji: 'var(--reaction-duration)',
       },
       timingFns: {
         longbounce: 'ease-in-out',
+        emoji: 'ease-out',
       },
       counts: {
         longbounce: 'infinite',

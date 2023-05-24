@@ -17,6 +17,8 @@ import Confetti from './Confetti';
 import {presentations} from './presentation-urls';
 import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
 import ProgressBar from './ProgressBar';
+import Reactions from './Reactions';
+import useReactions from './use-reactions';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -82,6 +84,10 @@ function Presentation() {
     setReset({});
   }, [setReset]);
 
+  const throwConfetti = useCallback(() => {
+    setFire({});
+  }, [setFire]);
+
   useConfetti(presentationSlug!, useBroadcastChannel, setFire, resetConfetti);
   useConfetti(presentationSlug!, useBroadcastSupabase, setFire);
 
@@ -92,9 +98,10 @@ function Presentation() {
         ['ArrowRight', navNext],
         ['Space', navNext],
         ['KeyS', openSpeakerWindow],
-        ['KeyC', resetConfetti],
+        ['KeyR', resetConfetti],
+        ['KeyC', throwConfetti],
       ]),
-    [navPrevious, navNext, openSpeakerWindow, resetConfetti],
+    [navPrevious, navNext, openSpeakerWindow, resetConfetti, throwConfetti],
   );
   useKeys(keyHandlers);
 
@@ -162,7 +169,7 @@ function Presentation() {
     );
   }
 
-  console.log('handlers', swipeHandlers);
+  const {reactions, removeReaction, addReaction} = useReactions();
 
   return (
     <div className="pdf-container h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
@@ -182,6 +189,7 @@ function Presentation() {
         {slideOver()}
       </Document>
       <Confetti fire={fire} reset={reset} />
+      <Reactions reactions={reactions} removeReaction={removeReaction} />
       {/* Inspired from https://stackoverflow.com/a/44233700 */}
       <div className="position-fixed top-1rem w-10rem h-[calc(100%_-_10rem_-_2rem)] right-4 animate-longbounce 2xl:w-12rem 2xl:h-[calc(100%_-_12rem_-_2rem)] lt-sm:w-8rem lt-sm:h-[calc(100%_-_8rem_-_2rem)]">
         <div className=" bg-white p-2 w-10rem h-10rem 2xl:w-12rem 2xl:h-12rem lt-sm:w-8rem lt-sm:h-8rem">
@@ -202,6 +210,7 @@ function Presentation() {
         }}
         {...swipeHandlers}
       />
+
       {/* <div className="position-fixed bottom-2 w-full flex flex-row justify-center">
         <button
           type="button"
@@ -213,6 +222,24 @@ function Presentation() {
           Click me
         </button>
       </div> */}
+      <button
+        type="button"
+        className="absolute bottom-0 left-0"
+        onClick={() => {
+          addReaction('i-fluent-emoji-flat-red-heart');
+        }}
+      >
+        heart
+      </button>
+      <button
+        type="button"
+        className="absolute bottom-0 left-20"
+        onClick={() => {
+          addReaction('i-fluent-emoji-flat-smiling-face');
+        }}
+      >
+        smile
+      </button>
     </div>
   );
 }
