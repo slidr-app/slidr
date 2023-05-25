@@ -14,9 +14,7 @@ export default function parseNotes(markdown: string) {
         noteSection,
       );
 
-    console.log('section', noteSection);
     if (match === null) {
-      console.log('no match', lastSlideIndex);
       slideNotes.set(lastSlideIndex + 1, noteSection);
       lastSlideIndex++;
       continue;
@@ -36,7 +34,6 @@ export default function parseNotes(markdown: string) {
       slideIndex < firstIndex + range;
       slideIndex++
     ) {
-      console.log('match', firstIndex, range);
       slideNotes.set(slideIndex, slideNote);
     }
 

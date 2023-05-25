@@ -17,7 +17,6 @@ export default function useRemoteReactions({
 } {
   const postReaction = useCallback(
     (icon: string) => {
-      console.log('posting', icon);
       postMessage?.({id: 'reaction', icon});
     },
     [postMessage],
@@ -28,8 +27,7 @@ export default function useRemoteReactions({
       [
         'reaction',
         (payload: Payload) => {
-          console.log('incomming!');
-          onReaction?.(payload.icon!);
+          onReaction?.(payload.icon as string);
         },
       ],
     ],

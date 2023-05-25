@@ -72,7 +72,6 @@ function Presentation() {
     postMessage: postBroadcastSupabase,
   });
   useEffect(() => {
-    console.log('updating', slideIndex);
     setSupabaseSlideIndex(slideIndex);
   }, [slideIndex, setSupabaseSlideIndex]);
 

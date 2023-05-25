@@ -11,8 +11,6 @@ import {pdfMessageProperties, pageMessageProperties} from './PdfMessages.tsx';
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
-console.log('thumbs', thumbs);
-
 const presentationSlugs = Object.keys(presentations).sort();
 
 export default function Home() {
