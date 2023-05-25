@@ -22,6 +22,7 @@ import ProgressBar from './ProgressBar';
 import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
 import ReactionControls from './ReactionControls';
 import useRemoteReactions from './use-remote-reactions';
+import Timer from './Timer';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -148,8 +149,14 @@ export default function Speaker() {
     >
       <div className="flex flex-col overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full">
         <div className="flex flex-col gap-4">
-          <div className="self-center w-full header">
-            Slide: <span className="font-bold">{slideIndex + 1}</span>
+          <div className="w-full header flex flex-row gap-4 justify-evenly">
+            <div>
+              Slide:{' '}
+              <span className="font-bold font-mono">{slideIndex + 1}</span>
+            </div>
+            <div>
+              <Timer />
+            </div>
           </div>
           <Document
             file={presentations[presentationSlug!]}
