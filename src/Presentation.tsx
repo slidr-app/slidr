@@ -66,14 +66,11 @@ function Presentation() {
   } = useChannelHandlers();
   const postBroadcastSupabase = useBroadcastSupabase({
     channelId: presentationSlug!,
-    // OnIncoming: () => undefined, // Don't care about incoming messages
     onIncoming: handleIncomingBroadcastSupabase,
   });
-  const {
-    setSlideIndex: setSupabaseSlideIndex,
-    // Handlers: broadcastSupabaseHandlers,
-  } = useSlideIndex({postMessage: postBroadcastSupabase});
-  // UseCombinedHandlers(setHandlersBroadcastSupabase, broadcastSupabaseHandlers);
+  const {setSlideIndex: setSupabaseSlideIndex} = useSlideIndex({
+    postMessage: postBroadcastSupabase,
+  });
   useEffect(() => {
     console.log('updating', slideIndex);
     setSupabaseSlideIndex(slideIndex);
@@ -94,32 +91,25 @@ function Presentation() {
   const throwConfetti = useCallback(() => {
     setFire({});
   }, [setFire]);
-  const resetConfetti = useCallback(() => {
-    setReset({});
-  }, [setReset]);
 
-  const {
-    // PostConfetti: postConfettiBroadcastChannel,
-    // postConfettiReset: postConfettiResetBroadcastChannel,
-    handlers: handlersConfettiBroadcastChannel,
-  } = useConfetti({
-    postMessage: postBroadcastChannel,
-    onConfetti: setFire,
-    onReset: setReset,
-  });
-
-  const {
-    // PostConfetti: postConfettiBroadcastSupabase,
-    // postConfettiReset: postConfettiResetBroadcastSupabase,
-    handlers: handlersConfettiBroadcastSupabase,
-  } = useConfetti({
-    // PostMessage: postBroadcastSupabase,
-    onConfetti: setFire,
-  });
-
-  const {reactions, removeReaction, addReaction} = useReactions();
+  const {reactions, removeReaction, addReaction, clearReactions} =
+    useReactions();
   const {handlers: handlersReactions} = useRemoteReactions({
     onReaction: addReaction,
+  });
+  const resetAllReactions = useCallback(() => {
+    setReset({});
+    clearReactions();
+  }, [setReset, clearReactions]);
+
+  const {handlers: handlersConfettiBroadcastChannel} = useConfetti({
+    postMessage: postBroadcastChannel,
+    onConfetti: setFire,
+    onReset: resetAllReactions,
+  });
+
+  const {handlers: handlersConfettiBroadcastSupabase} = useConfetti({
+    onConfetti: setFire,
   });
 
   useCombinedHandlers(
@@ -149,10 +139,10 @@ function Presentation() {
         ['ArrowRight', navNext],
         ['Space', navNext],
         ['KeyS', openSpeakerWindow],
-        ['KeyR', resetConfetti],
+        ['KeyR', resetAllReactions],
         ['KeyC', throwConfetti],
       ]),
-    [navPrevious, navNext, openSpeakerWindow, resetConfetti, throwConfetti],
+    [navPrevious, navNext, openSpeakerWindow, resetAllReactions, throwConfetti],
   );
   useKeys(keyHandlers);
 

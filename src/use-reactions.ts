@@ -9,6 +9,7 @@ export default function useReactions(): {
   removeReaction: (reaction: Reaction) => void;
   addReaction: (icon: string) => void;
   reactions: Reaction[];
+  clearReactions: () => void;
 } {
   const [reactions, setReactions] = useState<{
     nextIndex: number;
@@ -46,5 +47,17 @@ export default function useReactions(): {
     [setReactions],
   );
 
-  return {removeReaction, addReaction, reactions: reactions.currentReactions};
+  const clearReactions = useCallback(() => {
+    setReactions((currentReactions) => ({
+      ...currentReactions,
+      currentReactions: [],
+    }));
+  }, [setReactions]);
+
+  return {
+    removeReaction,
+    addReaction,
+    reactions: reactions.currentReactions,
+    clearReactions,
+  };
 }
