@@ -266,27 +266,27 @@ export default function Speaker() {
       <div className="overflow-x-hidden overflow-y-auto w-full h-full">
         <div className="flex flex-col gap-4">
           <div className="self-center w-full header">Speaker Notes</div>
-          <div className="self-center grid grid-cols-3 gap-4">
+          <div className="self-center flex flex-row gap-4 flex-wrap">
             <button
-              className="btn"
-              type="button"
-              onClick={() => {
-                setTextSize(zoom(false));
-              }}
-            >
-              <div className="i-tabler-zoom-out" />
-            </button>
-            <div className="flex justify-center items-center text-base">
-              <div>{textSize.replace('text-', '')}</div>
-            </div>
-            <button
-              className="btn"
+              className="btn flex-shrink-0"
               type="button"
               onClick={() => {
                 setTextSize(zoom(true));
               }}
             >
               <div className="i-tabler-zoom-in" />
+            </button>
+            <div className="flex justify-center items-center text-base flex-shrink-0">
+              <div>{textSize.replace('text-', '')}</div>
+            </div>
+            <button
+              className="btn flex-shrink-0"
+              type="button"
+              onClick={() => {
+                setTextSize(zoom(false));
+              }}
+            >
+              <div className="i-tabler-zoom-out" />
             </button>
           </div>
           <div className={clsx('p-2 prose max-w-full', textSize)}>
