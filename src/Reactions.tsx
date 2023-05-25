@@ -12,7 +12,7 @@ function Reaction({
   // Keep a ref to the reaction div so we can add the random style vars
   const reactionRef = useRef<HTMLDivElement>(null);
 
-  // Define the randome style vars (only once!)
+  // Define the random style vars (only once!)
   const xRandom = useMemo(() => `${Math.random() * 100}%`, []);
   const durationRandom = useMemo(() => `${Math.random() * 13 + 2}s`, []);
   const bounceDistanceRandom = useMemo(() => `${Math.random() * 15 + 5}px`, []);
@@ -48,16 +48,8 @@ function Reaction({
       ref={reactionRef}
       style={{left: `var(--reaction-x-offset)`}}
       className={clsx(
-        'animate-emoji',
-        // 'animate-jello',
-        // 'animate-shake-x',
-        'absolute',
-        'bottom--100px',
-        'bottom--12',
+        'animate-emoji absolute bottom--100px bottom--12 leading-none text-size-12 overflow-visible',
         icon,
-        'leading-none',
-        'text-size-12',
-        'overflow-visible',
       )}
     />
   );
@@ -70,18 +62,9 @@ export default function Reactions({
   reactions: ReactionType[];
   removeReaction: (reaction: ReactionType) => void;
 }) {
-  console.log('reactions', reactions);
-
   return (
     <div className="fixed top-0 left-0 h-screen w-screen">
-      <div
-        className={clsx(
-          'relative left-[calc(3rem_+_20px)]',
-          'h-full',
-          'w-[calc(calc(100vw_-_6rem)_-_40px)]',
-          'max-h-screen',
-        )}
-      >
+      <div className="relative left-[calc(3rem_+_20px)] h-full w-[calc(calc(100vw_-_6rem)_-_40px)] max-h-screen">
         {reactions.map((reaction) => (
           <Reaction
             key={reaction.id}
