@@ -1,11 +1,17 @@
 import {useCallback, useState, useMemo} from 'react';
-import {type UseChannel} from './use-channel';
+import {
+  type HandlerEntries,
+  type Handler,
+  type Payload,
+} from './use-channel-handlers';
 
-export function useSlideIndex(
-  useChannel: UseChannel,
-  presentationName: string,
-  ignorePost?: boolean,
-): {
+export function useSlideIndex({
+  ignorePost,
+  postMessage,
+}: {
+  ignorePost?: boolean;
+  postMessage: Handler;
+}): {
   slideIndex: number;
   setSlideIndex: (index: number) => void;
   forward: boolean;
@@ -15,6 +21,7 @@ export function useSlideIndex(
   setSlideCount: (count: number) => void;
   navNext: () => void;
   navPrevious: () => void;
+  handlers: HandlerEntries;
 } {
   const [slideIndex, setSlideIndex] = useState(0);
   const [slideCount, setSlideCount] = useState(0);
@@ -37,10 +44,11 @@ export function useSlideIndex(
     [slideIndex],
   );
 
-  const postSlideIndex = useChannel(
-    `${presentationName}_slide_index`,
-    'slide_index',
-    updateSlideIndex,
+  const postSlideIndex = useCallback(
+    (index: number) => {
+      postMessage({id: 'slide index', index});
+    },
+    [postMessage],
   );
 
   const updateSlideIndexAndPost = useCallback(
@@ -61,7 +69,20 @@ export function useSlideIndex(
     updateSlideIndexAndPost(previousSlideIndex);
   }, [updateSlideIndexAndPost, previousSlideIndex]);
 
+  const handlers = useMemo<HandlerEntries>(
+    () => [
+      [
+        'slide index',
+        (payload: Payload) => {
+          updateSlideIndex(payload.index!);
+        },
+      ],
+    ],
+    [updateSlideIndex],
+  );
+
   return {
+    handlers,
     slideIndex,
     setSlideIndex: updateSlideIndexAndPost,
     forward,

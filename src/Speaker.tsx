@@ -19,6 +19,7 @@ import {presentations} from './presentation-urls';
 import useNotes from './use-notes';
 import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
 import ProgressBar from './ProgressBar';
+import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -51,16 +52,46 @@ export default function Speaker() {
 
   const notes = useNotes(presentationSlug!);
 
+  // Sync the slide index with the broadcast channel (speaker view)
+  const {
+    handleIncomingBroadcast: handleIncomingBroadcastChannel,
+    setHandlers: setHandlersBroadcastChannel,
+  } = useChannelHandlers();
+  const postBroadcastChannel = useBroadcastChannel({
+    channelId: presentationSlug!,
+    onIncoming: handleIncomingBroadcastChannel,
+  });
   const {
     slideIndex,
     setSlideIndex,
-    nextSlideIndex,
     prevSlideIndex,
-    setSlideCount,
+    nextSlideIndex,
     slideCount,
+    setSlideCount,
     navNext,
     navPrevious,
-  } = useSlideIndex(useBroadcastChannel, presentationSlug!);
+    handlers: handlersSlideIndexBroadcastChannel,
+  } = useSlideIndex({postMessage: postBroadcastChannel});
+  useCombinedHandlers(
+    setHandlersBroadcastChannel,
+    handlersSlideIndexBroadcastChannel,
+  );
+  useSearchParametersSlideIndex(setSlideIndex, slideIndex);
+
+  // We fire and reset confetti on the broadcast channel (ignoring incoming confetti)
+  const {
+    postConfetti: postConfettiBroadcastChannel,
+    postConfettiReset: postConfettiResetBroadcastChannel,
+  } = useConfetti({postMessage: postBroadcastChannel});
+  const postBroadcastSupabase = useBroadcastSupabase({
+    channelId: presentationSlug!,
+  });
+  // We fire confetti on the supabase channel (never reset, ignore incoming confetti)
+  const {postConfetti: postConfettiBroadcastSupabase} = useConfetti({
+    postMessage: postBroadcastSupabase,
+  });
+
+  // Swipe and key bindings
   const swipeHandlers = useSwipeable({
     onSwipedRight() {
       navPrevious();
@@ -69,7 +100,6 @@ export default function Speaker() {
       navNext();
     },
   });
-  useSearchParametersSlideIndex(setSlideIndex, slideIndex);
   const keyHandlers = useMemo(
     () =>
       new Map([
@@ -80,12 +110,8 @@ export default function Speaker() {
     [navPrevious, navNext],
   );
   useKeys(keyHandlers);
-  const {postConfetti: postConfettiBroadcastChannel, postConfettiReset} =
-    useConfetti(presentationSlug!, useBroadcastChannel);
-  const {postConfetti: postConfettiBroadcastSupabase} = useConfetti(
-    presentationSlug!,
-    useBroadcastSupabase,
-  );
+
+  // Speaker note sizes
   const [textSize, setTextSize] = useState('text-base');
   const zoom = useCallback((zoomIn: boolean) => {
     return (currentSize: string) => {
@@ -212,7 +238,7 @@ export default function Speaker() {
               type="button"
               className="btn"
               onClick={() => {
-                postConfettiBroadcastChannel({});
+                postConfettiBroadcastChannel();
               }}
             >
               <div className="i-tabler-confetti w-6 h-6 mr-2" />
@@ -222,7 +248,7 @@ export default function Speaker() {
               type="button"
               className="btn"
               onClick={() => {
-                postConfettiBroadcastSupabase({});
+                postConfettiBroadcastSupabase();
               }}
             >
               <div className="i-tabler-confetti w-6 h-6 mr-2" />
@@ -232,7 +258,7 @@ export default function Speaker() {
               type="button"
               className="btn col-span-2"
               onClick={() => {
-                postConfettiReset({});
+                postConfettiResetBroadcastChannel();
               }}
             >
               <div className="i-tabler-circle-off w-6 h-6 mr-2" />

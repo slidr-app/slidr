@@ -1,24 +1,44 @@
-import {type UseChannel} from './use-channel';
+import {useCallback, useMemo} from 'react';
+import {type HandlerEntries, type Handler} from './use-channel-handlers';
 
-export default function useConfetti(
-  presentationName: string,
-  useChannel: UseChannel,
-  onConfetti?: (data: any) => void,
-  onReset?: (data: any) => void,
-): {
-  postConfetti: (payload: any) => void;
-  postConfettiReset: (payload: any) => void;
+export default function useConfetti({
+  postMessage,
+  onConfetti,
+  onReset,
+}: {
+  postMessage: Handler;
+  onConfetti?: (data: any) => void;
+  onReset?: (data: any) => void;
+}): {
+  postConfetti: () => void;
+  postConfettiReset: () => void;
+  handlers: HandlerEntries;
 } {
-  const postConfetti = useChannel(
-    `${presentationName}_confetti`,
-    'confetti',
-    onConfetti,
+  const postConfetti = useCallback(() => {
+    postMessage({id: 'confetti'});
+  }, [postMessage]);
+
+  const postConfettiReset = useCallback(() => {
+    postMessage({id: 'confetti reset'});
+  }, [postMessage]);
+
+  const handlers = useMemo<HandlerEntries>(
+    () => [
+      [
+        'confetti',
+        () => {
+          onConfetti?.({});
+        },
+      ],
+      [
+        'confetti reset',
+        () => {
+          onReset?.({});
+        },
+      ],
+    ],
+    [onConfetti, onReset],
   );
 
-  const postConfettiReset = useChannel(
-    `${presentationName}_confetti_reset`,
-    'confetti_reset',
-    onReset,
-  );
-  return {postConfetti, postConfettiReset};
+  return {postConfetti, postConfettiReset, handlers};
 }

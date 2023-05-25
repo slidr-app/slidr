@@ -1,12 +1,7 @@
 import {useEffect, useState} from 'react';
-import {type UseChannel} from './use-channel';
+import {type Payload, type UseChannel} from './use-channel-handlers';
 
-const useBroadcastChannel: UseChannel = function (
-  channelId,
-  // @ts-expect-error matching call sig
-  eventId,
-  onIncoming,
-) {
+const useBroadcastChannel: UseChannel = function ({channelId, onIncoming}) {
   const [postMessage, setPostMessage] = useState<() => void>(
     () => () => undefined,
   );
@@ -16,7 +11,7 @@ const useBroadcastChannel: UseChannel = function (
     const channelMessageHandler = (event: MessageEvent) => {
       console.log('incoming bc', channelId, event);
       if (onIncoming) {
-        onIncoming(event.data);
+        onIncoming(event.data as Payload);
       }
     };
 
