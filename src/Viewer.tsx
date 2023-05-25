@@ -114,8 +114,12 @@ export default function Viewer() {
           postReaction(icon);
         }}
       />
-      <div className="prose text-center relative">
-        <a href="https://devrel.codyfactory.eu">Learn more</a>
+      <div className="prose text-center relative self-center">
+        <a href="https://devrel.codyfactory.eu">
+          <button type="button" className="btn">
+            Learn More
+          </button>
+        </a>
       </div>
       <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
     </div>
