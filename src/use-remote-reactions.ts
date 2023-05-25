@@ -27,7 +27,7 @@ export default function useRemoteReactions({
       [
         'reaction',
         (payload: Payload) => {
-          onReaction?.(payload.icon as string);
+          onReaction?.(payload.icon!);
         },
       ],
     ],
