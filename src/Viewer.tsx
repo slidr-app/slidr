@@ -13,33 +13,55 @@ import Confetti from './Confetti';
 import {presentations} from './presentation-urls';
 import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
 import ProgressBar from './ProgressBar';
+import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 export default function Viewer() {
+  // Determine the presentation and update the page title
   const {presentationSlug} = useParams();
 
   if (presentations[presentationSlug!] === undefined) {
+    // Intentionally throw so we can show our error page
     throw new Error(`Presentation '${presentationSlug!}' does not exist`);
   }
 
   useEffect(() => {
     document.title = `Present - ${presentationSlug!} - Audience`;
   }, [presentationSlug]);
-  const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
-  const {postConfetti} = useConfetti(
-    presentationSlug!,
-    useBroadcastSupabase,
-    setFire,
-  );
-  const {setSlideCount, slideIndex, setSlideIndex, slideCount} = useSlideIndex(
-    useBroadcastSupabase,
-    presentationSlug!,
-    true,
-  );
+
+  // Setup supabase broadcast channel
+  const {handleIncomingBroadcast, setHandlers} = useChannelHandlers();
+  const postBroadcastMessage = useBroadcastSupabase({
+    channelId: presentationSlug!,
+    onIncoming: handleIncomingBroadcast,
+  });
+
+  // Track the slide index from the broadcast channel
+  const {
+    setSlideCount,
+    slideIndex,
+    setSlideIndex,
+    slideCount,
+    handlers: slideIndexHandlers,
+  } = useSlideIndex({
+    postMessage: postBroadcastMessage,
+    ignorePost: true,
+  });
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
+  // Configure the confetti to use the broadcast channel
+  const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
+  const {postConfetti, handlers: confettiHandlers} = useConfetti({
+    postMessage: postBroadcastMessage,
+    onConfetti: setFire,
+  });
+
+  // Combine all of the incoming message handlers
+  useCombinedHandlers(setHandlers, confettiHandlers, slideIndexHandlers);
+
+  // Optimize the rendering of pdf pages by tracking the container width
   const pdfRef = useRef<HTMLDivElement>(null);
   const pdfWidth = pdfRef.current?.clientWidth;
 
@@ -71,7 +93,7 @@ export default function Viewer() {
           className="btn position-relative"
           onClick={() => {
             setFire({});
-            postConfetti({});
+            postConfetti();
           }}
         >
           <div className="i-tabler-confetti w-8 h-8" />

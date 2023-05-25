@@ -1,30 +1,34 @@
 import {useEffect, useState} from 'react';
 import supabase from './supabase';
-import {type UseChannel} from './use-channel';
+import {
+  type Payload,
+  type Handler,
+  type UseChannel,
+} from './use-channel-handlers';
 
-const useBroadcastSupabase: UseChannel = function (
-  channelId,
-  eventId,
-  onIncoming,
-) {
-  const [postMessage, setPostMessage] = useState<
-    (payload: Record<string, any>) => void
-  >(() => () => undefined);
+const useBroadcastSupabase: UseChannel = function ({channelId, onIncoming}) {
+  const [postMessage, setPostMessage] = useState<Handler>(
+    () => () => undefined,
+  );
 
   useEffect(() => {
     const channel = supabase.channel(channelId);
 
+    // Broadcast channel doesn't have an eventId.
+    // Just use the channelId.
+    const eventId = channelId;
+
     channel
       .on('broadcast', {event: eventId}, (message) => {
-        console.log('incomming supabase', channelId, eventId, message);
+        console.log('incoming supabase', channelId, eventId, message);
         if (onIncoming) {
-          onIncoming(message.payload);
+          onIncoming(message.payload as Payload);
         }
       })
       .subscribe((status) => {
         console.log('supabase subscription', status);
         if (status === 'SUBSCRIBED') {
-          setPostMessage(() => async (payload: Record<string, any>) => {
+          setPostMessage(() => async (payload: Payload) => {
             console.log('posting supabase data', channelId, payload);
             void channel.send({
               type: 'broadcast',
@@ -38,7 +42,7 @@ const useBroadcastSupabase: UseChannel = function (
     return () => {
       void channel.unsubscribe();
     };
-  }, [onIncoming, channelId, eventId]);
+  }, [onIncoming, channelId]);
 
   return postMessage;
 };

@@ -17,6 +17,7 @@ import Confetti from './Confetti';
 import {presentations} from './presentation-urls';
 import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
 import ProgressBar from './ProgressBar';
+import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -32,6 +33,15 @@ function Presentation() {
     document.title = `Present - ${presentationSlug!}`;
   }, [presentationSlug]);
 
+  // Sync the slide index with the broadcast channel (speaker view)
+  const {
+    handleIncomingBroadcast: handleIncomingBroadcastChannel,
+    setHandlers: setHandlersBroadcastChannel,
+  } = useChannelHandlers();
+  const postBroadcastChannel = useBroadcastChannel({
+    channelId: presentationSlug!,
+    onIncoming: handleIncomingBroadcastChannel,
+  });
   const {
     slideIndex,
     setSlideIndex,
@@ -42,28 +52,29 @@ function Presentation() {
     setSlideCount,
     navNext,
     navPrevious,
-  } = useSlideIndex(useBroadcastChannel, presentationSlug!);
+    handlers: handlersSlideIndexBroadcastChannel,
+  } = useSlideIndex({postMessage: postBroadcastChannel});
+  useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
-  const swipeHandlers = useSwipeable({
-    onSwipedRight() {
-      navPrevious();
-    },
-    onSwipedLeft() {
-      navNext();
-    },
+  // Broadcast the slide index with supabase
+  const {
+    handleIncomingBroadcast: handleIncomingBroadcastSupabase,
+    setHandlers: setHandlersBroadcastSupabase,
+  } = useChannelHandlers();
+  const postBroadcastSupabase = useBroadcastSupabase({
+    channelId: presentationSlug!,
+    // OnIncoming: () => undefined, // Don't care about incoming messages
+    onIncoming: handleIncomingBroadcastSupabase,
   });
-
-  const {setSlideIndex: setSupabaseSlideIndex} = useSlideIndex(
-    useBroadcastSupabase,
-    presentationSlug!,
-  );
-
+  const {
+    setSlideIndex: setSupabaseSlideIndex,
+    // Handlers: broadcastSupabaseHandlers,
+  } = useSlideIndex({postMessage: postBroadcastSupabase});
+  // UseCombinedHandlers(setHandlersBroadcastSupabase, broadcastSupabaseHandlers);
   useEffect(() => {
     console.log('updating', slideIndex);
     setSupabaseSlideIndex(slideIndex);
   }, [slideIndex, setSupabaseSlideIndex]);
-
-  useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
   const openSpeakerWindow = useCallback(
     () =>
@@ -77,14 +88,48 @@ function Presentation() {
 
   const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
   const [reset, setReset] = useState<boolean | Record<string, unknown>>(false);
-
   const resetConfetti = useCallback(() => {
     setReset({});
   }, [setReset]);
 
-  useConfetti(presentationSlug!, useBroadcastChannel, setFire, resetConfetti);
-  useConfetti(presentationSlug!, useBroadcastSupabase, setFire);
+  const {
+    // PostConfetti: postConfettiBroadcastChannel,
+    // postConfettiReset: postConfettiResetBroadcastChannel,
+    handlers: handlersConfettiBroadcastChannel,
+  } = useConfetti({
+    postMessage: postBroadcastChannel,
+    onConfetti: setFire,
+    onReset: setReset,
+  });
 
+  const {
+    // PostConfetti: postConfettiBroadcastSupabase,
+    // postConfettiReset: postConfettiResetBroadcastSupabase,
+    handlers: handlersConfettiBroadcastSupabase,
+  } = useConfetti({
+    postMessage: postBroadcastSupabase,
+    onConfetti: setFire,
+  });
+
+  useCombinedHandlers(
+    setHandlersBroadcastChannel,
+    handlersConfettiBroadcastChannel,
+    handlersSlideIndexBroadcastChannel,
+  );
+  useCombinedHandlers(
+    setHandlersBroadcastSupabase,
+    handlersConfettiBroadcastSupabase,
+  );
+
+  // Swipe and key bindings
+  const swipeHandlers = useSwipeable({
+    onSwipedRight() {
+      navPrevious();
+    },
+    onSwipedLeft() {
+      navNext();
+    },
+  });
   const keyHandlers = useMemo(
     () =>
       new Map([
@@ -98,6 +143,7 @@ function Presentation() {
   );
   useKeys(keyHandlers);
 
+  // Optimize render of slides with the page width
   const slideWidth = Math.min(window.innerWidth, window.innerHeight * (16 / 9));
 
   // Show a slide under to fade the current slide on top of it
