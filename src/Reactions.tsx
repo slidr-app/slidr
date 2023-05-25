@@ -2,6 +2,10 @@ import clsx from 'clsx';
 import {useEffect, useMemo, useRef} from 'react';
 import {type Reaction as ReactionType} from './use-reactions';
 
+// This file is inspired from these 2 articles:
+// https://eng.butter.us/awesome-floating-emoji-reactions-using-framer-motion-styled-components-and-lottie-36b9f479a9f9
+// https://www.daily.co/blog/add-flying-emoji-reactions-to-a-custom-daily-video-call/
+
 function Reaction({
   onReactionDone,
   icon = 'i-fluent-emoji-flat-red-heart',
@@ -12,7 +16,10 @@ function Reaction({
   // Keep a ref to the reaction div so we can add the random style vars
   const reactionRef = useRef<HTMLDivElement>(null);
 
-  // Define the random style vars (only once!)
+  // Define the random style vars (only once per mount!)
+  // Maybe one day css can do random natively???
+  // In the meantime, we do random JS
+  // Inspired from: https://css-tricks.com/random-numbers-css/
   const xRandom = useMemo(() => `${Math.random() * 100}%`, []);
   const durationRandom = useMemo(() => `${Math.random() * 13 + 2}s`, []);
   const bounceDistanceRandom = useMemo(() => `${Math.random() * 15 + 5}px`, []);
