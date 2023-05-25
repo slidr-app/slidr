@@ -57,6 +57,7 @@ function Reaction({
         icon,
         'leading-none',
         'text-size-12',
+        'overflow-visible',
       )}
     />
   );
@@ -72,22 +73,28 @@ export default function Reactions({
   console.log('reactions', reactions);
 
   return (
-    <div
-      className={clsx(
-        'absolute top-0 left-3rem',
-        'h-screen',
-        'w-[calc(100vw_-_6rem)]',
-      )}
-    >
-      {reactions.map((reaction) => (
-        <Reaction
-          key={reaction.id}
-          icon={reaction.icon}
-          onReactionDone={() => {
-            removeReaction(reaction);
-          }}
-        />
-      ))}
+    <div className="absolute top-0 left-0 h-full w-full">
+      <div
+        className={clsx(
+          'relative left-[calc(3rem_+_20px)]',
+          'h-full',
+          'w-[calc(calc(100vw_-_6rem)_-_40px)]',
+          // 'overflow-x-visible overflow-y-hidden',
+          'max-h-screen',
+          // 'overflow-y-hidden overflow-x-visible',
+          // 'overflow-y-hidden overflow-x-visible',
+        )}
+      >
+        {reactions.map((reaction) => (
+          <Reaction
+            key={reaction.id}
+            icon={reaction.icon}
+            onReactionDone={() => {
+              removeReaction(reaction);
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }

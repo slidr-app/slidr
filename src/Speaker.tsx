@@ -20,6 +20,8 @@ import useNotes from './use-notes';
 import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
 import ProgressBar from './ProgressBar';
 import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
+import ReactionControls from './ReactionControls';
+import useRemoteReactions from './use-remote-reactions';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -79,15 +81,17 @@ export default function Speaker() {
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
   // We fire and reset confetti on the broadcast channel (ignoring incoming confetti)
-  const {
-    postConfetti: postConfettiBroadcastChannel,
-    postConfettiReset: postConfettiResetBroadcastChannel,
-  } = useConfetti({postMessage: postBroadcastChannel});
+  const {postConfettiReset: postConfettiResetBroadcastChannel} = useConfetti({
+    postMessage: postBroadcastChannel,
+  });
   const postBroadcastSupabase = useBroadcastSupabase({
     channelId: presentationSlug!,
   });
   // We fire confetti on the supabase channel (never reset, ignore incoming confetti)
   const {postConfetti: postConfettiBroadcastSupabase} = useConfetti({
+    postMessage: postBroadcastSupabase,
+  });
+  const {postReaction} = useRemoteReactions({
     postMessage: postBroadcastSupabase,
   });
 
@@ -197,66 +201,52 @@ export default function Speaker() {
               )}
             </div>
           </Document>
-          <div className="self-center grid grid-cols-2 gap-6">
+          <div className="self-center flex flex-col gap-6">
+            <div className="grid grid-cols-2 gap-6">
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  navPrevious();
+                }}
+              >
+                <div className="i-tabler-circle-arrow-left w-9 h-9" />
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  navNext();
+                }}
+              >
+                <div className="i-tabler-circle-arrow-right w-9 h-9" />
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  setSlideIndex(0);
+                }}
+              >
+                <div className="i-tabler-circle-chevrons-left w-6 h-6" />
+              </button>
+              <button
+                type="button"
+                className="btn"
+                onClick={() => {
+                  setSlideIndex(slideCount - 1);
+                }}
+              >
+                <div className="i-tabler-circle-chevrons-right w-6 h-6" />
+              </button>
+            </div>
+            <ReactionControls
+              handleConfetti={postConfettiBroadcastSupabase}
+              handleReaction={postReaction}
+            />
             <button
               type="button"
               className="btn"
-              onClick={() => {
-                navPrevious();
-              }}
-            >
-              <div className="i-tabler-circle-arrow-left w-9 h-9" />
-            </button>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => {
-                navNext();
-              }}
-            >
-              <div className="i-tabler-circle-arrow-right w-9 h-9" />
-            </button>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => {
-                setSlideIndex(0);
-              }}
-            >
-              <div className="i-tabler-circle-chevrons-left w-6 h-6" />
-            </button>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => {
-                setSlideIndex(slideCount - 1);
-              }}
-            >
-              <div className="i-tabler-circle-chevrons-right w-6 h-6" />
-            </button>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => {
-                postConfettiBroadcastChannel();
-              }}
-            >
-              <div className="i-tabler-confetti w-6 h-6 mr-2" />
-              local
-            </button>
-            <button
-              type="button"
-              className="btn"
-              onClick={() => {
-                postConfettiBroadcastSupabase();
-              }}
-            >
-              <div className="i-tabler-confetti w-6 h-6 mr-2" />
-              supabase
-            </button>
-            <button
-              type="button"
-              className="btn col-span-2"
               onClick={() => {
                 postConfettiResetBroadcastChannel();
               }}

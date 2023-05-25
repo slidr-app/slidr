@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from 'react';
 
-export type Payload = {id: string; index?: number};
+export type Payload = {id: string; index?: number; icon?: string};
 export type Handler = (payload: Payload) => void;
 export type HandlerEntry = [string, Handler];
 export type HandlerEntries = HandlerEntry[];

@@ -14,6 +14,10 @@ import {presentations} from './presentation-urls';
 import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
 import ProgressBar from './ProgressBar';
 import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
+import useRemoteReactions from './use-remote-reactions';
+import useReactions from './use-reactions';
+import Reactions from './Reactions';
+import ReactionControls from './ReactionControls';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -58,15 +62,27 @@ export default function Viewer() {
     onConfetti: setFire,
   });
 
+  // Configure reaction broadcasting
+  const {reactions, removeReaction, addReaction} = useReactions();
+  const {postReaction, handlers: handlersReactions} = useRemoteReactions({
+    postMessage: postBroadcastMessage,
+    onReaction: addReaction,
+  });
+
   // Combine all of the incoming message handlers
-  useCombinedHandlers(setHandlers, confettiHandlers, slideIndexHandlers);
+  useCombinedHandlers(
+    setHandlers,
+    confettiHandlers,
+    slideIndexHandlers,
+    handlersReactions,
+  );
 
   // Optimize the rendering of pdf pages by tracking the container width
   const pdfRef = useRef<HTMLDivElement>(null);
   const pdfWidth = pdfRef.current?.clientWidth;
 
   return (
-    <div className="flex flex-col gap-4 p-4 position-relative overflow-x-hidden overflow-y-auto">
+    <div className="flex flex-col gap-4 p-4 position-relative overflow-x-hidden overflow-y-auto min-h-screen">
       <div ref={pdfRef} className="max-w-2xl mx-auto w-full">
         <Document
           className="w-full aspect-video"
@@ -87,34 +103,19 @@ export default function Viewer() {
       </div>
 
       <Confetti fire={fire} />
-      <div className="max-w-lg mx-auto flex flex-col gap-4">
-        <button
-          type="button"
-          className="btn position-relative"
-          onClick={() => {
-            setFire({});
-            postConfetti();
-          }}
-        >
-          <div className="i-fluent-emoji-flat-party-popper w-8 h-8" />
-        </button>
-        <div className="grid grid-cols-4 gap-4">
-          <button className="btn" type="button">
-            <div className="i-fluent-emoji-flat-red-heart w-8 h-8" />
-          </button>
-          <button className="btn" type="button">
-            <div className="i-fluent-emoji-flat-smiling-face w-8 h-8" />
-          </button>
-          <button className="btn" type="button">
-            <div className="i-fluent-emoji-flat-clapping-hands w-8 h-8" />
-          </button>
-          <button className="btn" type="button">
-            <div className="i-fluent-emoji-flat-exploding-head w-8 h-8" />
-          </button>
-        </div>
-        <div className="prose text-center position-relative">
-          <a href="https://devrel.codyfactory.eu">Learn more</a>
-        </div>
+      <Reactions reactions={reactions} removeReaction={removeReaction} />
+      <ReactionControls
+        handleConfetti={() => {
+          setFire({});
+          postConfetti();
+        }}
+        handleReaction={(icon) => {
+          addReaction(icon);
+          postReaction(icon);
+        }}
+      />
+      <div className="prose text-center relative">
+        <a href="https://devrel.codyfactory.eu">Learn more</a>
       </div>
       <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
     </div>

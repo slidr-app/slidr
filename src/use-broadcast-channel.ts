@@ -8,6 +8,7 @@ const useBroadcastChannel: UseChannel = function ({channelId, onIncoming}) {
 
   useEffect(() => {
     const channel = new BroadcastChannel(channelId);
+    let channelOpen = true;
     const channelMessageHandler = (event: MessageEvent) => {
       console.log('incoming bc', channelId, event);
       if (onIncoming) {
@@ -18,10 +19,13 @@ const useBroadcastChannel: UseChannel = function ({channelId, onIncoming}) {
     channel.addEventListener('message', channelMessageHandler);
     setPostMessage(() => (payload: any) => {
       console.log('posting bc data', channelId, payload);
-      channel.postMessage(payload);
+      if (channelOpen) {
+        channel.postMessage(payload);
+      }
     });
 
     return () => {
+      channelOpen = false;
       channel.removeEventListener('message', channelMessageHandler);
       channel.close();
     };

@@ -20,6 +20,7 @@ import ProgressBar from './ProgressBar';
 import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
 import Reactions from './Reactions';
 import useReactions from './use-reactions';
+import useRemoteReactions from './use-remote-reactions';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -112,8 +113,13 @@ function Presentation() {
     // postConfettiReset: postConfettiResetBroadcastSupabase,
     handlers: handlersConfettiBroadcastSupabase,
   } = useConfetti({
-    postMessage: postBroadcastSupabase,
+    // PostMessage: postBroadcastSupabase,
     onConfetti: setFire,
+  });
+
+  const {reactions, removeReaction, addReaction} = useReactions();
+  const {handlers: handlersReactions} = useRemoteReactions({
+    onReaction: addReaction,
   });
 
   useCombinedHandlers(
@@ -124,6 +130,7 @@ function Presentation() {
   useCombinedHandlers(
     setHandlersBroadcastSupabase,
     handlersConfettiBroadcastSupabase,
+    handlersReactions,
   );
 
   // Swipe and key bindings
@@ -214,8 +221,6 @@ function Presentation() {
     );
   }
 
-  const {reactions, removeReaction, addReaction} = useReactions();
-
   return (
     <div className="pdf-container h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
       <Document
@@ -255,36 +260,6 @@ function Presentation() {
         }}
         {...swipeHandlers}
       />
-
-      {/* <div className="position-fixed bottom-2 w-full flex flex-row justify-center">
-        <button
-          type="button"
-          onClick={() => {
-            const dataUrl = canvasRef.current?.toDataURL();
-            console.log({dataUrl});
-          }}
-        >
-          Click me
-        </button>
-      </div> */}
-      <button
-        type="button"
-        className="absolute bottom-0 left-0"
-        onClick={() => {
-          addReaction('i-fluent-emoji-flat-red-heart');
-        }}
-      >
-        heart
-      </button>
-      <button
-        type="button"
-        className="absolute bottom-0 left-20"
-        onClick={() => {
-          addReaction('i-fluent-emoji-flat-smiling-face');
-        }}
-      >
-        smile
-      </button>
     </div>
   );
 }

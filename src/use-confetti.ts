@@ -6,7 +6,7 @@ export default function useConfetti({
   onConfetti,
   onReset,
 }: {
-  postMessage: Handler;
+  postMessage?: Handler;
   onConfetti?: (data: any) => void;
   onReset?: (data: any) => void;
 }): {
@@ -15,11 +15,11 @@ export default function useConfetti({
   handlers: HandlerEntries;
 } {
   const postConfetti = useCallback(() => {
-    postMessage({id: 'confetti'});
+    postMessage?.({id: 'confetti'});
   }, [postMessage]);
 
   const postConfettiReset = useCallback(() => {
-    postMessage({id: 'confetti reset'});
+    postMessage?.({id: 'confetti reset'});
   }, [postMessage]);
 
   const handlers = useMemo<HandlerEntries>(

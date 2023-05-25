@@ -18,6 +18,8 @@ const useBroadcastSupabase: UseChannel = function ({channelId, onIncoming}) {
     // Just use the channelId.
     const eventId = channelId;
 
+    let channelOpen = false;
+
     channel
       .on('broadcast', {event: eventId}, (message) => {
         console.log('incoming supabase', channelId, eventId, message);
@@ -28,6 +30,7 @@ const useBroadcastSupabase: UseChannel = function ({channelId, onIncoming}) {
       .subscribe((status) => {
         console.log('supabase subscription', status);
         if (status === 'SUBSCRIBED') {
+          channelOpen = true;
           setPostMessage(() => async (payload: Payload) => {
             console.log('posting supabase data', channelId, payload);
             void channel.send({
@@ -40,7 +43,9 @@ const useBroadcastSupabase: UseChannel = function ({channelId, onIncoming}) {
       });
 
     return () => {
-      void channel.unsubscribe();
+      if (channelOpen) {
+        void channel.unsubscribe();
+      }
     };
   }, [onIncoming, channelId]);
 
