@@ -21,7 +21,7 @@ import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
 import Reactions from './Reactions';
 import useReactions from './use-reactions';
 import useRemoteReactions from './use-remote-reactions';
-import Toolbar from './Toobar';
+import Toolbar from './Toolbar';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
