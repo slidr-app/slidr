@@ -235,8 +235,6 @@ function Presentation() {
         <div className=" bg-white p-2 w-10rem h-10rem 2xl:w-12rem 2xl:h-12rem lt-sm:w-8rem lt-sm:h-8rem">
           <QRCode
             value={`${window.location.origin}${window.location.pathname}/view${window.location.search}`}
-            // Size={128}
-            // level="Q"
             className="w-full h-full"
             style={{width: '100%', height: 'auto', maxWidth: '100%'}}
           />
