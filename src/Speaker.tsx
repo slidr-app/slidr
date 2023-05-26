@@ -23,6 +23,7 @@ import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
 import ReactionControls from './ReactionControls';
 import useRemoteReactions from './use-remote-reactions';
 import Timer from './Timer';
+import {useSearchParametersSessionId} from './use-search-parameter-session-id';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -52,6 +53,8 @@ export default function Speaker() {
   useEffect(() => {
     document.title = `Present - ${presentationSlug!} - Speaker`;
   }, [presentationSlug]);
+
+  const sessionId = useSearchParametersSessionId();
 
   const notes = useNotes(presentationSlug!);
 
@@ -87,6 +90,7 @@ export default function Speaker() {
   });
   const postBroadcastSupabase = useBroadcastSupabase({
     channelId: presentationSlug!,
+    sessionId,
   });
   // We fire confetti on the supabase channel (never reset, ignore incoming confetti)
   const {postConfetti: postConfettiBroadcastSupabase} = useConfetti({

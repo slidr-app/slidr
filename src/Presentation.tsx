@@ -22,6 +22,7 @@ import Reactions from './Reactions';
 import useReactions from './use-reactions';
 import useRemoteReactions from './use-remote-reactions';
 import Toolbar from './Toolbar';
+import {useSearchParametersSessionId} from './use-search-parameter-session-id';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -36,6 +37,8 @@ function Presentation() {
   useEffect(() => {
     document.title = `Present - ${presentationSlug!}`;
   }, [presentationSlug]);
+
+  const sessionId = useSearchParametersSessionId(true);
 
   // Sync the slide index with the broadcast channel (speaker view)
   const {
@@ -67,6 +70,7 @@ function Presentation() {
   } = useChannelHandlers();
   const postBroadcastSupabase = useBroadcastSupabase({
     channelId: presentationSlug!,
+    sessionId,
     onIncoming: handleIncomingBroadcastSupabase,
   });
   const {setSlideIndex: setSupabaseSlideIndex} = useSlideIndex({

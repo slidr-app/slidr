@@ -18,6 +18,7 @@ import useRemoteReactions from './use-remote-reactions';
 import useReactions from './use-reactions';
 import Reactions from './Reactions';
 import ReactionControls from './ReactionControls';
+import {useSearchParametersSessionId} from './use-search-parameter-session-id';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -35,10 +36,13 @@ export default function Viewer() {
     document.title = `Present - ${presentationSlug!} - Audience`;
   }, [presentationSlug]);
 
+  const sessionId = useSearchParametersSessionId();
+
   // Setup supabase broadcast channel
   const {handleIncomingBroadcast, setHandlers} = useChannelHandlers();
   const postBroadcastMessage = useBroadcastSupabase({
     channelId: presentationSlug!,
+    sessionId,
     onIncoming: handleIncomingBroadcast,
   });
 

@@ -5,14 +5,6 @@ export type Handler = (payload: Payload) => void;
 export type HandlerEntry = [string, Handler];
 export type HandlerEntries = HandlerEntry[];
 
-export type UseChannel = ({
-  channelId,
-  onIncoming,
-}: {
-  channelId: string;
-  onIncoming?: Handler | undefined;
-}) => (payload: any) => void;
-
 export function useChannelHandlers() {
   const [handlers, setHandlers] = useState<Map<string, Handler>>(new Map());
 

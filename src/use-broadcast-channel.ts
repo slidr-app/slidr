@@ -1,7 +1,13 @@
 import {useEffect, useState} from 'react';
-import {type Payload, type UseChannel} from './use-channel-handlers';
+import {type Handler, type Payload} from './use-channel-handlers';
 
-const useBroadcastChannel: UseChannel = function ({channelId, onIncoming}) {
+export default function useBroadcastChannel({
+  channelId,
+  onIncoming,
+}: {
+  channelId: string;
+  onIncoming?: Handler;
+}): Handler {
   const [postMessage, setPostMessage] = useState<() => void>(
     () => () => undefined,
   );
@@ -32,6 +38,4 @@ const useBroadcastChannel: UseChannel = function ({channelId, onIncoming}) {
   }, [onIncoming, channelId]);
 
   return postMessage;
-};
-
-export default useBroadcastChannel;
+}

@@ -1,17 +1,26 @@
 import {useEffect, useState} from 'react';
 import supabase from './supabase';
-import {
-  type Payload,
-  type Handler,
-  type UseChannel,
-} from './use-channel-handlers';
+import {type Payload, type Handler} from './use-channel-handlers';
 
-const useBroadcastSupabase: UseChannel = function ({channelId, onIncoming}) {
+export default function useBroadcastSupabase({
+  channelId,
+  sessionId,
+  onIncoming,
+}: {
+  channelId: string;
+  sessionId: string;
+  onIncoming?: Handler;
+}): Handler {
   const [postMessage, setPostMessage] = useState<Handler>(
     () => () => undefined,
   );
 
   useEffect(() => {
+    if (sessionId.length === 0) {
+      // Don't connect unless we have a session id
+      return;
+    }
+
     const channel = supabase.channel(channelId);
 
     // Broadcast channel doesn't have an eventId.
@@ -50,9 +59,7 @@ const useBroadcastSupabase: UseChannel = function ({channelId, onIncoming}) {
         void channel.unsubscribe();
       }
     };
-  }, [onIncoming, channelId]);
+  }, [onIncoming, channelId, sessionId]);
 
   return postMessage;
-};
-
-export default useBroadcastSupabase;
+}

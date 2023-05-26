@@ -16,7 +16,18 @@ export default function useSearchParametersSlideIndex(
     }
 
     if (searchParameterSlideIndex === null) {
-      setSearchParameters({slide: '1'}, {replace: true});
+      setSearchParameters(
+        (currentSearchParameters) => {
+          const nextSearchParameters = new URLSearchParams(
+            currentSearchParameters,
+          );
+          nextSearchParameters.set('slide', '1');
+          return nextSearchParameters;
+        },
+        {
+          replace: true,
+        },
+      );
       setSlideIndex(0);
       return;
     }
@@ -38,6 +49,15 @@ export default function useSearchParametersSlideIndex(
       return;
     }
 
-    setSearchParameters({slide: String(slideIndex + 1)}, {replace: true});
+    setSearchParameters(
+      (currentSearchParameters) => {
+        const nextSearchParameters = new URLSearchParams(
+          currentSearchParameters,
+        );
+        nextSearchParameters.set('slide', String(slideIndex + 1));
+        return nextSearchParameters;
+      },
+      {replace: true},
+    );
   }, [slideIndex, firstRender, setSearchParameters]);
 }
