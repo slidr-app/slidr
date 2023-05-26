@@ -33,6 +33,9 @@ const useBroadcastSupabase: UseChannel = function ({channelId, onIncoming}) {
           channelOpen = true;
           setPostMessage(() => async (payload: Payload) => {
             console.log('posting supabase data', channelId, payload);
+            console.log('channel state', channel.state);
+            console.log('channel timeout', channel.timeout);
+            console.log('channel', channel);
             void channel.send({
               type: 'broadcast',
               event: eventId,
