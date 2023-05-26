@@ -126,10 +126,10 @@ We are starting from the bottom (or the backend): to solve the 20% that is hard.
 DevEx: runs anywhere\
 Community
 
-FIts mental model of devs: improve devex decrease TTM\
+Fits mental model of devs: improve devex decrease TTM\
 Most devs understand designing systems based on RDB. Maybe not the best but everyone understands.\
 PSQL you can do whatever you want.\
-Challenge: works well if you have a connection pool. Need a pool to allow for massive scaling. (800 c / server
+Challenge: works well if you have a connection pool. Need a pool to allow for massive scaling. (800 c / server)
 
 DB that runs on my machine, or anywhere (not cloud based)\
 SQL because it’s popular, devex, dev experience\
@@ -138,11 +138,12 @@ Psql best RDB + has nosql features (JSON support)
 
 TLS Handshake is expensive?
 
-JSON: started in v9… v14/v15rc
+JSON: started in v9… v15/v16beta
 
 <!-- +4 -->
 Easy to test\
-Node.js backend framework with highest developer satisfaction rating (state of js 2021)
+Node.js backend framework with highest developer satisfaction rating (state of js 2021)\
+State of js 2022 -> 3rd most common backend framework
 
 Very easy to migrate to a modular application.
 
@@ -151,6 +152,14 @@ Expose APIs
   - Plugins with fastify (team can work on different API functionality
   - Graphql federation
 - If APIs match business domain (what graphql provides), don’t need to manage global state in react application
+
+<!-- +1..+2 -->
+Pause from stack, answer the big question: why graphQL
+
+<!-- +1 -->
+* Bad reputation: slow, no longer the case in 2023
+* Caching, federation -> API gateway
+* Cluster with shared cache
 
 <!-- +3 -->
 Expose APIs
