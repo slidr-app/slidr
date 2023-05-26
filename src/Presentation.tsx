@@ -21,6 +21,7 @@ import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
 import Reactions from './Reactions';
 import useReactions from './use-reactions';
 import useRemoteReactions from './use-remote-reactions';
+import Toolbar from './Toobar';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -244,10 +245,18 @@ function Presentation() {
       <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
       <div
         className="position-absolute top-0 left-0 h-full w-full"
-        onClick={() => {
-          navNext();
-        }}
+        onClick={navNext}
         {...swipeHandlers}
+      />
+      <Toolbar
+        onNext={navNext}
+        onPrevious={navPrevious}
+        onStart={() => {
+          setSlideIndex(0);
+        }}
+        onEnd={() => {
+          setSlideIndex(slideCount - 1);
+        }}
       />
     </div>
   );

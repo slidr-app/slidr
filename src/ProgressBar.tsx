@@ -12,7 +12,7 @@ export default function ProgressBar({
   return (
     <div
       className={clsx(
-        'fixed bottom-0 left-0 h-1 transition-all duration-500 ease-out',
+        'fixed bottom-0 left-0 h-1 transition-all duration-500 ease-out z-1',
         `w-[${progressPercentage}%]`,
         progressPercentage > 90
           ? 'bg-red'
