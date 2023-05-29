@@ -88,7 +88,7 @@ export default function Speaker() {
   const {postConfettiReset: postConfettiResetBroadcastChannel} = useConfetti({
     postMessage: postBroadcastChannel,
   });
-  const postBroadcastSupabase = useBroadcastSupabase({
+  const {postMessage: postBroadcastSupabase} = useBroadcastSupabase({
     channelId: presentationSlug!,
     sessionId,
   });

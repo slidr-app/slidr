@@ -1,4 +1,6 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
+import {type REALTIME_SUBSCRIBE_STATES} from '@supabase/supabase-js';
+import {useDebounce, useDebouncedCallback} from 'use-debounce';
 import supabase from './supabase';
 import {type Payload, type Handler} from './use-channel-handlers';
 
@@ -10,36 +12,93 @@ export default function useBroadcastSupabase({
   channelId: string;
   sessionId: string;
   onIncoming?: Handler;
-}): Handler {
+}): {postMessage: Handler; connected: boolean} {
+  const defaultPostMessage = useCallback(() => {
+    console.log('channel not configured, skipping post message');
+  }, []);
+
   const [postMessage, setPostMessage] = useState<Handler>(
-    () => () => undefined,
+    () => defaultPostMessage,
   );
 
+  const [channelStatus, setChannelStatus] =
+    useState<`${REALTIME_SUBSCRIBE_STATES}`>();
+
+  const [debouncedStatus] = useDebounce(channelStatus, 2000);
+
+  const watchdog = useDebouncedCallback(() => {
+    console.log('Timeout ocurred, reconnecting');
+    setTriggerReconnect({});
+  }, 5000);
+
+  const [triggerReconnect, setTriggerReconnect] = useState({});
+
   useEffect(() => {
+    const handle = setInterval(() => {
+      console.log('sending heartbeat');
+      postMessage({id: 'heartbeat'});
+    }, 2000);
+
+    return () => {
+      clearInterval(handle);
+    };
+  }, [postMessage]);
+
+  useEffect(() => {
+    console.log('debounce status changed', debouncedStatus);
+    if (debouncedStatus === 'SUBSCRIBED' || debouncedStatus === undefined) {
+      console.log('skipping reconnect');
+      return;
+    }
+
+    console.log('disconnect timer fired, reconnecting');
+    setTriggerReconnect({});
+  }, [debouncedStatus]);
+
+  useEffect(() => {
+    console.log({channelId, sessionId, onIncoming});
     if (sessionId.length === 0) {
       // Don't connect unless we have a session id
       return;
     }
 
-    const channel = supabase.channel(channelId);
+    let mounted = true;
 
-    // Broadcast channel doesn't have an eventId.
-    // Just use the channelId.
-    const eventId = channelId;
-
-    let channelOpen = false;
+    console.log('(re)creating channel');
+    const uniqueChannelId = `${channelId}_${sessionId}`;
+    const channel = supabase.channel(uniqueChannelId);
+    const eventId = uniqueChannelId;
 
     channel
       .on('broadcast', {event: eventId}, (message) => {
         console.log('incoming supabase', channelId, eventId, message);
+        if (!mounted) {
+          console.log('no longer mounted, skipping incoming message');
+          return;
+        }
+
         if (onIncoming) {
+          watchdog();
           onIncoming(message.payload as Payload);
         }
       })
-      .subscribe((status) => {
-        console.log('supabase subscription', status);
+      .subscribe((status, error) => {
+        console.log('supabase subscription', status, error);
+
+        if (error) {
+          console.error(error);
+          return;
+        }
+
+        if (!mounted) {
+          console.log('no longer mounted, skipping subscribe callback');
+          return;
+        }
+
+        setChannelStatus(status);
+
         if (status === 'SUBSCRIBED') {
-          channelOpen = true;
+          watchdog();
           setPostMessage(() => async (payload: Payload) => {
             console.log('posting supabase data', channelId, payload);
             console.log('channel state', channel.state);
@@ -51,15 +110,27 @@ export default function useBroadcastSupabase({
               payload,
             });
           });
+          return;
         }
+
+        // Clear the post message handler
+        setPostMessage(() => defaultPostMessage);
       });
 
     return () => {
-      if (channelOpen) {
-        void channel.unsubscribe();
-      }
+      console.log('unmounting');
+      mounted = false;
+      console.log('removing channel');
+      void supabase.removeChannel(channel);
     };
-  }, [onIncoming, channelId, sessionId]);
+  }, [
+    onIncoming,
+    channelId,
+    sessionId,
+    defaultPostMessage,
+    triggerReconnect,
+    watchdog,
+  ]);
 
-  return postMessage;
+  return {postMessage, connected: channelStatus === 'SUBSCRIBED'};
 }

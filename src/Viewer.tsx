@@ -40,12 +40,14 @@ export default function Viewer() {
 
   // Setup supabase broadcast channel
   const {handleIncomingBroadcast, setHandlers} = useChannelHandlers();
-  const postBroadcastMessage = useBroadcastSupabase({
-    channelId: presentationSlug!,
-    sessionId,
-    onIncoming: handleIncomingBroadcast,
-  });
+  const {postMessage: postBroadcastMessage, connected: connectedSupabase} =
+    useBroadcastSupabase({
+      channelId: presentationSlug!,
+      sessionId,
+      onIncoming: handleIncomingBroadcast,
+    });
 
+  console.log({connectedSupabase});
   // Track the slide index from the broadcast channel
   const {
     setSlideCount,

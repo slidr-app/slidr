@@ -68,7 +68,7 @@ function Presentation() {
     handleIncomingBroadcast: handleIncomingBroadcastSupabase,
     setHandlers: setHandlersBroadcastSupabase,
   } = useChannelHandlers();
-  const postBroadcastSupabase = useBroadcastSupabase({
+  const {postMessage: postBroadcastSupabase} = useBroadcastSupabase({
     channelId: presentationSlug!,
     sessionId,
     onIncoming: handleIncomingBroadcastSupabase,

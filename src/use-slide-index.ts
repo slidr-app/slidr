@@ -1,4 +1,4 @@
-import {useCallback, useState, useMemo} from 'react';
+import {useCallback, useState, useMemo, useEffect, useRef} from 'react';
 import {
   type HandlerEntries,
   type Handler,
@@ -36,13 +36,17 @@ export function useSlideIndex({
     [slideIndex, slideCount],
   );
 
-  const updateSlideIndex = useCallback(
-    (index: number) => {
-      setForward(index >= slideIndex);
-      setSlideIndex(index);
-    },
-    [slideIndex],
-  );
+  const updateSlideIndex = useCallback((index: number) => {
+    setSlideIndex(index);
+  }, []);
+
+  // Use and determine direction (forward or not) in a dedicated useEffect
+  // This decouples the changing of the index and the direction flag
+  const previousIndexRef = useRef(1);
+  useEffect(() => {
+    setForward(slideIndex >= previousIndexRef.current);
+    previousIndexRef.current = slideIndex;
+  }, [slideIndex]);
 
   const postSlideIndex = useCallback(
     (index: number) => {
