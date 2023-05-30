@@ -24,8 +24,7 @@
     "react-qr-code": "^2.0.11",
     "react-router-dom": "^6.11.1",
     "react-swipeable": "^7.0.0",
-    "remark-gfm": "^3.0.1",
-    "use-debounce": "^9.0.4"
+    "remark-gfm": "^3.0.1"
   },
   "devDependencies": {
     "@iconify-json/fluent-emoji-flat": "^1.1.11",
