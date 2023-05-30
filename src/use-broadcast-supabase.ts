@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {type REALTIME_SUBSCRIBE_STATES} from '@supabase/supabase-js';
+// Import {useDebounce, useDebouncedCallback} from 'use-debounce';
 import supabase from './supabase';
 import {type Payload, type Handler} from './use-channel-handlers';
 
@@ -48,6 +49,35 @@ export default function useBroadcastSupabase({
     };
   }, []);
 
+  // Const [debouncedStatus] = useDebounce(channelStatus, 2000);
+
+  // const watchdog = useDebouncedCallback(() => {
+  //   console.log('Timeout ocurred, reconnecting');
+  //   setTriggerReconnect({});
+  // }, 5000);
+
+  // UseEffect(() => {
+  //   const handle = setInterval(() => {
+  //     console.log('sending heartbeat');
+  //     postMessage({id: 'heartbeat'});
+  //   }, 2000);
+
+  //   return () => {
+  //     clearInterval(handle);
+  //   };
+  // }, [postMessage]);
+
+  // useEffect(() => {
+  //   console.log('debounce status changed', debouncedStatus);
+  //   if (debouncedStatus === 'SUBSCRIBED' || debouncedStatus === undefined) {
+  //     console.log('skipping reconnect');
+  //     return;
+  //   }
+
+  //   console.log('disconnect timer fired, reconnecting');
+  //   setTriggerReconnect({});
+  // }, [debouncedStatus]);
+
   useEffect(() => {
     console.log({channelId, sessionId, onIncoming});
     if (sessionId.length === 0) {
@@ -71,6 +101,7 @@ export default function useBroadcastSupabase({
         }
 
         if (onIncoming) {
+          // Watchdog();
           onIncoming(message.payload as Payload);
         }
       })
@@ -90,6 +121,7 @@ export default function useBroadcastSupabase({
         setChannelStatus(status);
 
         if (status === 'SUBSCRIBED') {
+          // Watchdog();
           setPostMessage(() => async (payload: Payload) => {
             console.log('posting supabase data', channelId, payload);
             console.log('channel state', channel.state);
@@ -114,7 +146,14 @@ export default function useBroadcastSupabase({
       console.log('removing channel');
       void supabase.removeChannel(channel);
     };
-  }, [onIncoming, channelId, sessionId, defaultPostMessage, triggerReconnect]);
+  }, [
+    onIncoming,
+    channelId,
+    sessionId,
+    defaultPostMessage,
+    triggerReconnect,
+    // Watchdog,
+  ]);
 
   return {postMessage, connected: channelStatus === 'SUBSCRIBED'};
 }
