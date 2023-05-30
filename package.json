@@ -8,7 +8,9 @@
     "build": "tsc && pnpm run thumbs && vite build",
     "lint": "xo",
     "preview": "vite preview",
-    "thumbs": "rimraf src/presentations/thumbs && mkdir src/presentations/thumbs && node ./bin/generate-title-pdf.js"
+    "thumbs": "rimraf src/presentations/thumbs && mkdir src/presentations/thumbs && node ./bin/generate-title-pdf.js",
+    "prepare": "husky install",
+    "prepush": "pnpm run lint && pnpm run build"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.23.0",
@@ -46,6 +48,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
     "firebase-tools": "^11.30.0",
+    "husky": "^8.0.3",
     "imagetools-core": "^4.0.3",
     "pdf-lib": "^1.17.1",
     "rimraf": "^5.0.1",

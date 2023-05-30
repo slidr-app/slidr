@@ -102,6 +102,9 @@ devDependencies:
   firebase-tools:
     specifier: ^11.30.0
     version: 11.30.0
+  husky:
+    specifier: ^8.0.3
+    version: 8.0.3
   imagetools-core:
     specifier: ^4.0.3
     version: 4.0.3
@@ -4760,6 +4763,12 @@ packages:
       ms: 2.1.3
     dev: true
     optional: true
+
+  /husky@8.0.3:
+    resolution: {integrity: sha512-+dQSyqPh4x1hlO1swXBiNb2HzTDN1I2IGLQx1GrBuiqFJfoMrnZWwVmatvSiO+Iz8fBUnf+lekwNo4c2LlXItg==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: true
 
   /iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
