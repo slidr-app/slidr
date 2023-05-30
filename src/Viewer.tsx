@@ -91,7 +91,7 @@ export default function Viewer() {
     <div className="flex flex-col gap-4 p-4 position-relative overflow-x-hidden overflow-y-auto min-h-screen">
       <div ref={pdfRef} className="max-w-2xl mx-auto w-full">
         <Document
-          className="w-full aspect-video"
+          className="w-full aspect-video z--1"
           file={presentations[presentationSlug!]}
           {...pdfMessageProperties}
           onLoadSuccess={(pdf) => {
