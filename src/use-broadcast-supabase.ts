@@ -1,6 +1,6 @@
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {type REALTIME_SUBSCRIBE_STATES} from '@supabase/supabase-js';
-import {useDebounce, useDebouncedCallback} from 'use-debounce';
+// Import {useDebounce, useDebouncedCallback} from 'use-debounce';
 import supabase from './supabase';
 import {type Payload, type Handler} from './use-channel-handlers';
 
@@ -24,36 +24,59 @@ export default function useBroadcastSupabase({
   const [channelStatus, setChannelStatus] =
     useState<`${REALTIME_SUBSCRIBE_STATES}`>();
 
-  const [debouncedStatus] = useDebounce(channelStatus, 2000);
-
-  const watchdog = useDebouncedCallback(() => {
-    console.log('Timeout ocurred, reconnecting');
-    setTriggerReconnect({});
-  }, 5000);
-
   const [triggerReconnect, setTriggerReconnect] = useState({});
 
+  const isVisiblePrevious = useRef(true);
   useEffect(() => {
-    const handle = setInterval(() => {
-      console.log('sending heartbeat');
-      postMessage({id: 'heartbeat'});
-    }, 2000);
+    function visibilityChanged() {
+      console.log('visibility state', document.visibilityState);
+      const isVisible = document.visibilityState === 'visible';
 
-    return () => {
-      clearInterval(handle);
-    };
-  }, [postMessage]);
+      if (isVisible && !isVisiblePrevious.current) {
+        console.log('now visible, reconnect');
+        setTriggerReconnect({});
+      } else {
+        console.log('not visible or first render');
+      }
 
-  useEffect(() => {
-    console.log('debounce status changed', debouncedStatus);
-    if (debouncedStatus === 'SUBSCRIBED' || debouncedStatus === undefined) {
-      console.log('skipping reconnect');
-      return;
+      isVisiblePrevious.current = isVisible;
     }
 
-    console.log('disconnect timer fired, reconnecting');
-    setTriggerReconnect({});
-  }, [debouncedStatus]);
+    document.addEventListener('visibilitychange', visibilityChanged);
+
+    return () => {
+      document.removeEventListener('visibilitychange', visibilityChanged);
+    };
+  }, []);
+
+  // Const [debouncedStatus] = useDebounce(channelStatus, 2000);
+
+  // const watchdog = useDebouncedCallback(() => {
+  //   console.log('Timeout ocurred, reconnecting');
+  //   setTriggerReconnect({});
+  // }, 5000);
+
+  // UseEffect(() => {
+  //   const handle = setInterval(() => {
+  //     console.log('sending heartbeat');
+  //     postMessage({id: 'heartbeat'});
+  //   }, 2000);
+
+  //   return () => {
+  //     clearInterval(handle);
+  //   };
+  // }, [postMessage]);
+
+  // useEffect(() => {
+  //   console.log('debounce status changed', debouncedStatus);
+  //   if (debouncedStatus === 'SUBSCRIBED' || debouncedStatus === undefined) {
+  //     console.log('skipping reconnect');
+  //     return;
+  //   }
+
+  //   console.log('disconnect timer fired, reconnecting');
+  //   setTriggerReconnect({});
+  // }, [debouncedStatus]);
 
   useEffect(() => {
     console.log({channelId, sessionId, onIncoming});
@@ -78,7 +101,7 @@ export default function useBroadcastSupabase({
         }
 
         if (onIncoming) {
-          watchdog();
+          // Watchdog();
           onIncoming(message.payload as Payload);
         }
       })
@@ -98,7 +121,7 @@ export default function useBroadcastSupabase({
         setChannelStatus(status);
 
         if (status === 'SUBSCRIBED') {
-          watchdog();
+          // Watchdog();
           setPostMessage(() => async (payload: Payload) => {
             console.log('posting supabase data', channelId, payload);
             console.log('channel state', channel.state);
@@ -129,7 +152,7 @@ export default function useBroadcastSupabase({
     sessionId,
     defaultPostMessage,
     triggerReconnect,
-    watchdog,
+    // Watchdog,
   ]);
 
   return {postMessage, connected: channelStatus === 'SUBSCRIBED'};
