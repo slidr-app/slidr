@@ -36,8 +36,10 @@ export function useSlideIndex({
     [slideIndex, slideCount],
   );
 
-  const updateSlideIndex = useCallback((index: number) => {
-    setSlideIndex(index);
+  const updateSlideIndex = useCallback((index?: number) => {
+    if (index) {
+      setSlideIndex(index);
+    }
   }, []);
 
   // Use and determine direction (forward or not) in a dedicated useEffect
@@ -78,7 +80,13 @@ export function useSlideIndex({
       [
         'slide index',
         (payload: Payload) => {
-          updateSlideIndex(payload.index!);
+          updateSlideIndex(payload.index);
+        },
+      ],
+      [
+        'heartbeat',
+        (payload: Payload) => {
+          updateSlideIndex(payload.index);
         },
       ],
     ],

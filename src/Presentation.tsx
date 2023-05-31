@@ -79,6 +79,7 @@ function Presentation() {
     onIncoming: handleIncomingBroadcastSupabase,
     // Pause the presentation view after 1 hour
     idleTimeout: 60 * 60 * 1000,
+    heartbeatData: {index: slideIndex},
   });
   const {setSlideIndex: setSupabaseSlideIndex} = useSlideIndex({
     postMessage: postBroadcastSupabase,

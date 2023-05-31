@@ -9,11 +9,13 @@ export default function useBroadcastSupabase({
   sessionId,
   onIncoming,
   idleTimeout,
+  heartbeatData,
 }: {
   channelId: string;
   sessionId: string;
   onIncoming?: Handler;
   idleTimeout: number;
+  heartbeatData?: Record<string, any>;
 }): {
   postMessage: Handler;
   connected: boolean;
@@ -98,13 +100,13 @@ export default function useBroadcastSupabase({
   useEffect(() => {
     const handle = setInterval(() => {
       console.log('sending heartbeat');
-      postMessage({id: 'heartbeat'});
+      postMessage({...heartbeatData, id: 'heartbeat'});
     }, heartbeatInterval);
 
     return () => {
       clearInterval(handle);
     };
-  }, [postMessage]);
+  }, [postMessage, heartbeatData]);
 
   // Const [debouncedStatus] = useDebounce(channelStatus, heartbeatInterval);
 
