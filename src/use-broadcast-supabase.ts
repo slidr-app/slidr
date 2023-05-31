@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {type REALTIME_SUBSCRIBE_STATES} from '@supabase/supabase-js';
-// Import {useDebounce, useDebouncedCallback} from 'use-debounce';
+import {useDebouncedCallback} from 'use-debounce';
 import supabase from './supabase';
 import {type Payload, type Handler} from './use-channel-handlers';
 
@@ -49,23 +49,35 @@ export default function useBroadcastSupabase({
     };
   }, []);
 
-  // Const [debouncedStatus] = useDebounce(channelStatus, 2000);
+  // Send a heartbeat message with this interval.
+  // The shorter the interval, the quicker users will be reconnected (less time disconnected)
+  // The shorter the interval, the more messages are sent through supabase
+  const heartbeatInterval = 5000;
 
-  // const watchdog = useDebouncedCallback(() => {
-  //   console.log('Timeout ocurred, reconnecting');
-  //   setTriggerReconnect({});
-  // }, 5000);
+  // How long to wait for no incoming messages before trying to reconnect
+  // We wait for two heartbeats, plus some margin
+  const watchdogTimeout = heartbeatInterval * 2 + 500;
 
-  // UseEffect(() => {
-  //   const handle = setInterval(() => {
-  //     console.log('sending heartbeat');
-  //     postMessage({id: 'heartbeat'});
-  //   }, 2000);
+  // Reset the connection if the watchdog function (incoming message) is not called after the delay
+  const watchdog = useDebouncedCallback(() => {
+    console.log('Watchdog timeout ocurred, reconnecting');
+    setTriggerReconnect({});
+  }, watchdogTimeout);
 
-  //   return () => {
-  //     clearInterval(handle);
-  //   };
-  // }, [postMessage]);
+  // Send (or attempt to send) a heartbeat at regular intervals
+  // This will trigger resetting of the watchdog timer on other clients
+  useEffect(() => {
+    const handle = setInterval(() => {
+      console.log('sending heartbeat');
+      postMessage({id: 'heartbeat'});
+    }, heartbeatInterval);
+
+    return () => {
+      clearInterval(handle);
+    };
+  }, [postMessage]);
+
+  // Const [debouncedStatus] = useDebounce(channelStatus, heartbeatInterval);
 
   // useEffect(() => {
   //   console.log('debounce status changed', debouncedStatus);
@@ -87,6 +99,9 @@ export default function useBroadcastSupabase({
 
     let mounted = true;
 
+    // Reset the watchdog on every connection attempt
+    watchdog();
+
     console.log('(re)creating channel');
     const uniqueChannelId = `${channelId}_${sessionId}`;
     const channel = supabase.channel(uniqueChannelId);
@@ -101,7 +116,8 @@ export default function useBroadcastSupabase({
         }
 
         if (onIncoming) {
-          // Watchdog();
+          // Reset the watchdog timer on all incoming messages (indicating that we are connected)
+          watchdog();
           onIncoming(message.payload as Payload);
         }
       })
@@ -121,7 +137,6 @@ export default function useBroadcastSupabase({
         setChannelStatus(status);
 
         if (status === 'SUBSCRIBED') {
-          // Watchdog();
           setPostMessage(() => async (payload: Payload) => {
             console.log('posting supabase data', channelId, payload);
             console.log('channel state', channel.state);
@@ -152,7 +167,7 @@ export default function useBroadcastSupabase({
     sessionId,
     defaultPostMessage,
     triggerReconnect,
-    // Watchdog,
+    watchdog,
   ]);
 
   return {postMessage, connected: channelStatus === 'SUBSCRIBED'};
