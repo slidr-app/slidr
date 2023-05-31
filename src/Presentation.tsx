@@ -219,7 +219,7 @@ function Presentation() {
     <div className="pdf-container h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
       <Document
         file={presentations[presentationSlug!]}
-        className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))]"
+        className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))] z--1"
         onLoadSuccess={(pdf) => {
           setSlideCount(pdf.numPages);
         }}
