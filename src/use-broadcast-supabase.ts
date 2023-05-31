@@ -8,11 +8,18 @@ export default function useBroadcastSupabase({
   channelId,
   sessionId,
   onIncoming,
+  idleTimeout,
 }: {
   channelId: string;
   sessionId: string;
   onIncoming?: Handler;
-}): {postMessage: Handler; connected: boolean} {
+  idleTimeout: number;
+}): {
+  postMessage: Handler;
+  connected: boolean;
+  paused: boolean;
+  unPause: () => void;
+} {
   const defaultPostMessage = useCallback(() => {
     console.log('channel not configured, skipping post message');
   }, []);
@@ -25,6 +32,25 @@ export default function useBroadcastSupabase({
     useState<`${REALTIME_SUBSCRIBE_STATES}`>();
 
   const [triggerReconnect, setTriggerReconnect] = useState({});
+  const [paused, setPaused] = useState(false);
+  const [triggerIdleTimerReset, setTriggerIdleTimerReset] = useState({});
+
+  useEffect(() => {
+    console.log('setting up idle timer');
+    setPaused(false);
+    const handle = setTimeout(() => {
+      setPaused(true);
+    }, idleTimeout);
+
+    return () => {
+      clearTimeout(handle);
+    };
+  }, [idleTimeout, triggerIdleTimerReset]);
+
+  const unPause = useCallback(() => {
+    console.log('unpausing');
+    setTriggerIdleTimerReset({});
+  }, []);
 
   const isVisiblePrevious = useRef(true);
   useEffect(() => {
@@ -35,6 +61,9 @@ export default function useBroadcastSupabase({
       if (isVisible && !isVisiblePrevious.current) {
         console.log('now visible, reconnect');
         setTriggerReconnect({});
+
+        // Reconnect (unpause) when visible
+        setTriggerIdleTimerReset({});
       } else {
         console.log('not visible or first render');
       }
@@ -97,6 +126,11 @@ export default function useBroadcastSupabase({
       return;
     }
 
+    // Nothing to do if paused
+    if (paused) {
+      return;
+    }
+
     let mounted = true;
 
     // Reset the watchdog on every connection attempt
@@ -138,6 +172,10 @@ export default function useBroadcastSupabase({
 
         if (status === 'SUBSCRIBED') {
           setPostMessage(() => async (payload: Payload) => {
+            if (payload.id !== 'heartbeat') {
+              setTriggerIdleTimerReset({});
+            }
+
             console.log('posting supabase data', channelId, payload);
             console.log('channel state', channel.state);
             console.log('channel timeout', channel.timeout);
@@ -168,7 +206,13 @@ export default function useBroadcastSupabase({
     defaultPostMessage,
     triggerReconnect,
     watchdog,
+    paused,
   ]);
 
-  return {postMessage, connected: channelStatus === 'SUBSCRIBED'};
+  return {
+    postMessage,
+    connected: channelStatus === 'SUBSCRIBED',
+    paused,
+    unPause,
+  };
 }

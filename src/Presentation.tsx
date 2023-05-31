@@ -23,6 +23,7 @@ import useReactions from './use-reactions';
 import useRemoteReactions from './use-remote-reactions';
 import Toolbar from './Toolbar';
 import {useSearchParametersSessionId} from './use-search-parameter-session-id';
+import Disconnected from './Disconnected';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -68,10 +69,16 @@ function Presentation() {
     handleIncomingBroadcast: handleIncomingBroadcastSupabase,
     setHandlers: setHandlersBroadcastSupabase,
   } = useChannelHandlers();
-  const {postMessage: postBroadcastSupabase} = useBroadcastSupabase({
+  const {
+    postMessage: postBroadcastSupabase,
+    paused,
+    unPause,
+  } = useBroadcastSupabase({
     channelId: presentationSlug!,
     sessionId,
     onIncoming: handleIncomingBroadcastSupabase,
+    // Pause the presentation view after 1 hour
+    idleTimeout: 60 * 60 * 1000,
   });
   const {setSlideIndex: setSupabaseSlideIndex} = useSlideIndex({
     postMessage: postBroadcastSupabase,
@@ -235,7 +242,7 @@ function Presentation() {
       <Confetti fire={fire} reset={reset} />
       <Reactions reactions={reactions} removeReaction={removeReaction} />
       {/* Inspired from https://stackoverflow.com/a/44233700 */}
-      <div className="position-fixed top-1rem w-10rem h-[calc(100%_-_10rem_-_2rem)] right-4 animate-longbounce 2xl:w-12rem 2xl:h-[calc(100%_-_12rem_-_2rem)] lt-sm:w-8rem lt-sm:h-[calc(100%_-_8rem_-_2rem)]">
+      <div className="position-fixed top-1rem w-10rem h-[calc(100%_-_10rem_-_2rem)] right-4 animate-longbounce 2xl:w-12rem 2xl:h-[calc(100%_-_12rem_-_2rem)] lt-sm:w-8rem lt-sm:h-[calc(100%_-_8rem_-_2rem)] z-2">
         <div className=" bg-white p-2 w-10rem h-10rem 2xl:w-12rem 2xl:h-12rem lt-sm:w-8rem lt-sm:h-8rem">
           <QRCode
             value={`${window.location.origin}${window.location.pathname}/view${window.location.search}`}
@@ -250,6 +257,7 @@ function Presentation() {
         onClick={navNext}
         {...swipeHandlers}
       />
+      <Disconnected paused={paused} unPause={unPause} />
       <Toolbar
         onNext={navNext}
         onPrevious={navPrevious}

@@ -24,6 +24,7 @@ import ReactionControls from './ReactionControls';
 import useRemoteReactions from './use-remote-reactions';
 import Timer from './Timer';
 import {useSearchParametersSessionId} from './use-search-parameter-session-id';
+import Disconnected from './Disconnected';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -88,9 +89,15 @@ export default function Speaker() {
   const {postConfettiReset: postConfettiResetBroadcastChannel} = useConfetti({
     postMessage: postBroadcastChannel,
   });
-  const {postMessage: postBroadcastSupabase} = useBroadcastSupabase({
+  const {
+    postMessage: postBroadcastSupabase,
+    paused,
+    unPause,
+  } = useBroadcastSupabase({
     channelId: presentationSlug!,
     sessionId,
+    // Pause the speaker view after 1 hour
+    idleTimeout: 60 * 60 * 1000,
   });
   // We fire confetti on the supabase channel (never reset, ignore incoming confetti)
   const {postConfetti: postConfettiBroadcastSupabase} = useConfetti({
@@ -301,6 +308,7 @@ export default function Speaker() {
         </div>
       </div>
       <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
+      <Disconnected paused={paused} unPause={unPause} />
     </div>
   );
 }

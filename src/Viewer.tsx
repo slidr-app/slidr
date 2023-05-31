@@ -19,6 +19,7 @@ import useReactions from './use-reactions';
 import Reactions from './Reactions';
 import ReactionControls from './ReactionControls';
 import {useSearchParametersSessionId} from './use-search-parameter-session-id';
+import Disconnected from './Disconnected';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -40,12 +41,19 @@ export default function Viewer() {
 
   // Setup supabase broadcast channel
   const {handleIncomingBroadcast, setHandlers} = useChannelHandlers();
-  const {postMessage: postBroadcastMessage, connected: connectedSupabase} =
-    useBroadcastSupabase({
-      channelId: presentationSlug!,
-      sessionId,
-      onIncoming: handleIncomingBroadcast,
-    });
+  const {
+    postMessage: postBroadcastMessage,
+    connected: connectedSupabase,
+    paused,
+    unPause,
+  } = useBroadcastSupabase({
+    channelId: presentationSlug!,
+    sessionId,
+    onIncoming: handleIncomingBroadcast,
+    // Pause supabase after 5 mins of inactivity (no reactions)
+    // Visibility changes will automatically reconnect
+    idleTimeout: 5 * 60 * 1000,
+  });
 
   console.log({connectedSupabase});
   // Track the slide index from the broadcast channel
@@ -100,7 +108,7 @@ export default function Viewer() {
         >
           <Page
             key={`page-${slideIndex}`}
-            className="w-full h-full"
+            className="w-full h-full z--1"
             pageIndex={slideIndex}
             width={pdfWidth}
             {...pageMessageProperties}
@@ -128,6 +136,7 @@ export default function Viewer() {
         </a>
       </div>
       <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
+      <Disconnected paused={paused} unPause={unPause} />
     </div>
   );
 }
