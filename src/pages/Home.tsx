@@ -23,12 +23,12 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="w-full px-4">
+      {/* <div className="w-full px-4">
         <div className="header self-center w-full text-3xl">
           Present!
           <div className="i-tabler-microphone-2 ml-2" />
         </div>
-      </div>
+      </div> */}
       <div className="p-4 grid grid-cols-[600px_auto] lt-md:grid-cols-1 gap-y-8 lt-md:gap-y-0 even:children:lt-md:mb-8">
         {presentationSlugs.map((presentationSlug) => (
           <Fragment key={presentationSlug}>

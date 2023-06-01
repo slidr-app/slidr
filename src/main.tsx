@@ -5,18 +5,36 @@ import '@unocss/reset/tailwind.css';
 import 'virtual:uno.css';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import './index.css';
-import Message from './components/Loading.tsx';
 import ErrorPage from './pages/ErrorPage.tsx';
+import Loading from './components/Loading.tsx';
 
 const Viewer = lazy(async () => import('./pages/Viewer.tsx'));
 const Speaker = lazy(async () => import('./pages/Speaker.tsx'));
 const Presentation = lazy(async () => import('./pages/Presentation.tsx'));
 const Home = lazy(async () => import('./pages/Home.tsx'));
+const DefaultLayout = lazy(async () => import('./layouts/DefaultLayout.tsx'));
+const SignIn = lazy(async () => import('./pages/SignIn.tsx'));
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element: (
+      <DefaultLayout
+        title={
+          <>
+            Present!
+            <div className="i-tabler-microphone-2 ml-2" />
+          </>
+        }
+      >
+        <Home />
+      </DefaultLayout>
+    ),
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/signin',
+    element: <SignIn />,
     errorElement: <ErrorPage />,
   },
   {
@@ -45,7 +63,7 @@ ReactDOM.createRoot(document.querySelector('#root')!).render(
     <Suspense
       fallback={
         <div className="h-screen w-screen">
-          <Message />
+          <Loading />
         </div>
       }
     >
