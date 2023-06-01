@@ -14,6 +14,7 @@ const Presentation = lazy(async () => import('./pages/Presentation.tsx'));
 const Home = lazy(async () => import('./pages/Home.tsx'));
 const DefaultLayout = lazy(async () => import('./layouts/DefaultLayout.tsx'));
 const SignIn = lazy(async () => import('./pages/SignIn.tsx'));
+const Upload = lazy(async () => import('./Upload.tsx'));
 
 const router = createBrowserRouter([
   {
@@ -50,6 +51,11 @@ const router = createBrowserRouter([
   {
     path: '/:presentationSlug/speaker',
     element: <Speaker />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/upload',
+    element: <Upload />,
     errorElement: <ErrorPage />,
   },
   {
