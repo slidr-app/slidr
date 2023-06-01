@@ -3,7 +3,7 @@ import {
   type HandlerEntries,
   type Handler,
   type Payload,
-} from './use-channel-handlers';
+} from '../broadcast/use-channel-handlers';
 
 export function useSlideIndex({
   ignorePost,

@@ -4,22 +4,25 @@ import {useState, useEffect, useRef} from 'react';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
-import useConfetti from './use-confetti';
-import './pdf.css';
-import {useSlideIndex} from './use-slide-index';
-import useBroadcastSupabase from './use-broadcast-supabase';
-import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
-import Confetti from './Confetti';
-import {presentations} from './presentation-urls';
-import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
-import ProgressBar from './ProgressBar';
-import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
-import useRemoteReactions from './use-remote-reactions';
-import useReactions from './use-reactions';
-import Reactions from './Reactions';
-import ReactionControls from './ReactionControls';
-import {useSearchParametersSessionId} from './use-search-parameter-session-id';
-import Disconnected from './Disconnected';
+import useConfetti from '../confetti/use-confetti';
+import '../pdf/pdf.css';
+import {useSlideIndex} from '../slides/use-slide-index';
+import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
+import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
+import Confetti from '../confetti/Confetti';
+import {presentations} from '../slides/presentation-urls';
+import {pageMessageProperties, pdfMessageProperties} from '../pdf/PdfMessages';
+import ProgressBar from '../components/ProgressBar';
+import {
+  useChannelHandlers,
+  useCombinedHandlers,
+} from '../broadcast/use-channel-handlers';
+import useRemoteReactions from '../reactions/use-remote-reactions';
+import useReactions from '../reactions/use-reactions';
+import Reactions from '../reactions/Reactions';
+import ReactionControls from '../reactions/ReactionControls';
+import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
+import Disconnected from '../components/Disconnected';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();

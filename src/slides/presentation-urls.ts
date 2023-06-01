@@ -1,4 +1,4 @@
-const presentationsUrls = import.meta.glob('./presentations/*.pdf', {
+const presentationsUrls = import.meta.glob('../presentations/*.pdf', {
   as: 'url',
   eager: true,
 });
@@ -10,7 +10,7 @@ export const presentations = Object.fromEntries(
   ]),
 );
 
-const noteUrls = import.meta.glob('./presentations/*.md', {
+const noteUrls = import.meta.glob('../presentations/*.md', {
   as: 'url',
   eager: true,
 });
@@ -22,7 +22,7 @@ export const notes = new Map(
   ]),
 );
 
-const thumbUrls = import.meta.glob('./presentations/thumbs/*.pdf', {
+const thumbUrls = import.meta.glob('../presentations/thumbs/*.pdf', {
   as: 'url',
   eager: true,
 });

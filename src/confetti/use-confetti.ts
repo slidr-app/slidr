@@ -1,5 +1,8 @@
 import {useCallback, useMemo} from 'react';
-import {type HandlerEntries, type Handler} from './use-channel-handlers';
+import {
+  type HandlerEntries,
+  type Handler,
+} from '../broadcast/use-channel-handlers';
 
 export default function useConfetti({
   postMessage,

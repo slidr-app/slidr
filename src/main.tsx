@@ -5,13 +5,13 @@ import '@unocss/reset/tailwind.css';
 import 'virtual:uno.css';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import './index.css';
-import Message from './Loading.tsx';
-import ErrorPage from './ErrorPage.tsx';
+import Message from './components/Loading.tsx';
+import ErrorPage from './pages/ErrorPage.tsx';
 
-const Viewer = lazy(async () => import('./Viewer.tsx'));
-const Speaker = lazy(async () => import('./Speaker.tsx'));
-const Presentation = lazy(async () => import('./Presentation.tsx'));
-const Home = lazy(async () => import('./Home.tsx'));
+const Viewer = lazy(async () => import('./pages/Viewer.tsx'));
+const Speaker = lazy(async () => import('./pages/Speaker.tsx'));
+const Presentation = lazy(async () => import('./pages/Presentation.tsx'));
+const Home = lazy(async () => import('./pages/Home.tsx'));
 
 const router = createBrowserRouter([
   {

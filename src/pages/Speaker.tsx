@@ -8,23 +8,26 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
 import clsx from 'clsx';
 import {useSwipeable} from 'react-swipeable';
-import {useSlideIndex} from './use-slide-index';
-import './pdf.css';
-import useKeys from './use-keys';
-import useConfetti from './use-confetti';
-import useBroadcastChannel from './use-broadcast-channel';
-import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
-import useBroadcastSupabase from './use-broadcast-supabase';
-import {presentations} from './presentation-urls';
-import useNotes from './use-notes';
-import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
-import ProgressBar from './ProgressBar';
-import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
-import ReactionControls from './ReactionControls';
-import useRemoteReactions from './use-remote-reactions';
-import Timer from './Timer';
-import {useSearchParametersSessionId} from './use-search-parameter-session-id';
-import Disconnected from './Disconnected';
+import {useSlideIndex} from '../slides/use-slide-index';
+import useKeys from '../use-keys';
+import useConfetti from '../confetti/use-confetti';
+import useBroadcastChannel from '../broadcast/use-broadcast-channel';
+import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
+import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
+import {presentations} from '../slides/presentation-urls';
+import useNotes from '../slides/use-notes';
+import {pageMessageProperties, pdfMessageProperties} from '../pdf/PdfMessages';
+import ProgressBar from '../components/ProgressBar';
+import {
+  useChannelHandlers,
+  useCombinedHandlers,
+} from '../broadcast/use-channel-handlers';
+import ReactionControls from '../reactions/ReactionControls';
+import useRemoteReactions from '../reactions/use-remote-reactions';
+import Timer from '../components/Timer';
+import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
+import Disconnected from '../components/Disconnected';
+import '../pdf/pdf.css';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();

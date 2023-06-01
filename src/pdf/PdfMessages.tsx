@@ -1,5 +1,5 @@
-import Loading from './Loading';
-import Message from './Message';
+import Loading from '../components/Loading';
+import Message from '../components/Message';
 
 const PdfLoading = <Loading message="Loading pdf..." />;
 const PdfError = <Message>Loading PDF failed.</Message>;

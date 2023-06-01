@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
-import {notes} from './presentation-urls';
 import parseNotes from './parse-notes';
+import {notes} from './presentation-urls';
 
 export default function useNotes(presentationSlug: string) {
   const [slideNotes, setSlideNotes] = useState(new Map<number, string>());

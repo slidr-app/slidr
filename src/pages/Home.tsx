@@ -4,9 +4,12 @@ import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-import {presentations, thumbs} from './presentation-urls.ts';
-import './pdf.css';
-import {pdfMessageProperties, pageMessageProperties} from './PdfMessages.tsx';
+import {presentations, thumbs} from '../slides/presentation-urls.ts';
+import {
+  pdfMessageProperties,
+  pageMessageProperties,
+} from '../pdf/PdfMessages.tsx';
+import '../pdf/pdf.css';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();

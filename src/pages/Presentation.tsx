@@ -6,24 +6,27 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
 import {useSwipeable} from 'react-swipeable';
-import './pdf.css';
-import {useSlideIndex} from './use-slide-index';
-import useKeys from './use-keys';
-import useConfetti from './use-confetti';
-import useBroadcastChannel from './use-broadcast-channel';
-import useSearchParametersSlideIndex from './use-search-parameter-slide-index';
-import useBroadcastSupabase from './use-broadcast-supabase';
-import Confetti from './Confetti';
-import {presentations} from './presentation-urls';
-import {pageMessageProperties, pdfMessageProperties} from './PdfMessages';
-import ProgressBar from './ProgressBar';
-import {useChannelHandlers, useCombinedHandlers} from './use-channel-handlers';
-import Reactions from './Reactions';
-import useReactions from './use-reactions';
-import useRemoteReactions from './use-remote-reactions';
-import Toolbar from './Toolbar';
-import {useSearchParametersSessionId} from './use-search-parameter-session-id';
-import Disconnected from './Disconnected';
+import {useSlideIndex} from '../slides/use-slide-index';
+import useKeys from '../use-keys';
+import useConfetti from '../confetti/use-confetti';
+import useBroadcastChannel from '../broadcast/use-broadcast-channel';
+import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
+import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
+import Confetti from '../confetti/Confetti';
+import {presentations} from '../slides/presentation-urls';
+import {pageMessageProperties, pdfMessageProperties} from '../pdf/PdfMessages';
+import ProgressBar from '../components/ProgressBar';
+import {
+  useChannelHandlers,
+  useCombinedHandlers,
+} from '../broadcast/use-channel-handlers';
+import Reactions from '../reactions/Reactions';
+import useReactions from '../reactions/use-reactions';
+import useRemoteReactions from '../reactions/use-remote-reactions';
+import Toolbar from '../components/Toolbar';
+import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
+import Disconnected from '../components/Disconnected';
+import '../pdf/pdf.css';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
