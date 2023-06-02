@@ -16,7 +16,6 @@
     "@supabase/supabase-js": "^2.24.0",
     "@unocss/reset": "^0.52.4",
     "clsx": "^1.2.1",
-    "fflate": "^0.8.0",
     "firebase": "^9.22.1",
     "nanoid": "^4.0.2",
     "pdfjs-dist": "3.6.172",

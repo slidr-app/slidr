@@ -14,7 +14,7 @@ const Presentation = lazy(async () => import('./pages/Presentation.tsx'));
 const Home = lazy(async () => import('./pages/Home.tsx'));
 const DefaultLayout = lazy(async () => import('./layouts/DefaultLayout.tsx'));
 const SignIn = lazy(async () => import('./pages/SignIn.tsx'));
-const Upload = lazy(async () => import('./Upload.tsx'));
+const Upload = lazy(async () => import('./pages/Upload.tsx'));
 
 const router = createBrowserRouter([
   {

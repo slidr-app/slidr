@@ -4,7 +4,6 @@ import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-import {list, ref} from 'firebase/storage';
 import {getDocs, collection} from 'firebase/firestore/lite';
 import {presentations, thumbs} from '../slides/presentation-urls.ts';
 import {
@@ -12,7 +11,7 @@ import {
   pageMessageProperties,
 } from '../pdf/PdfMessages.tsx';
 import '../pdf/pdf.css';
-import {storage, firestore} from '../firebase.ts';
+import {firestore} from '../firebase.ts';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -54,13 +53,13 @@ export default function Home() {
       );
     }
 
-    async function getSlides() {
-      const result = await list(
-        ref(storage, 'presentations/jdXJqOTnjut0SrhjvSqp'),
-      );
+    // Async function getSlides() {
+    //   const result = await list(
+    //     ref(storage, 'presentations/jdXJqOTnjut0SrhjvSqp'),
+    //   );
 
-      console.log('result', result);
-    }
+    //   console.log('result', result);
+    // }
 
     // Void getSlides();
     void getPresentations();
