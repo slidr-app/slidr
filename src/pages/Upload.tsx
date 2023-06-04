@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore/lite';
 import {ref as storageRef, uploadBytes, getDownloadURL} from 'firebase/storage';
 import {nanoid} from 'nanoid';
+import {useDebouncedCallback} from 'use-debounce';
 import {auth, firestore, storage} from '../firebase';
 import '../pdf/pdf.css';
 
@@ -26,8 +27,6 @@ export default function Export() {
   const [uploadDone, setUploadDone] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [presentationRef, setPresentationRef] = useState<DocumentReference>();
-  // Const [ready, setReady] = useState(false);
-  // Const [zipfile, setZipfile] = useState<Uint8Array>();
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     console.log('incoming', acceptedFiles);
 
@@ -59,14 +58,6 @@ export default function Export() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Const [zipEntries, setZipEntries] = useState<Record<string, Uint8Array>>({});
-  // const addPageBlob = useCallback((name: string, data: Uint8Array) => {
-  //   setZipEntries((zipEntries) => ({
-  //     ...zipEntries,
-  //     [name]: data,
-  //   }));
-  // }, []);
-
   const [renderingDone, setRenderingDone] = useState(false);
   const [pageBlob, setPageBlob] = useState<Blob>();
   function pageRendered() {
@@ -87,8 +78,6 @@ export default function Export() {
   const [pageUrls, setPageUrls] = useState<string[]>([]);
   useEffect(() => {
     async function uploadPage() {
-      console.log('uploading page', pageIndex);
-
       const pageStorageRef = storageRef(
         storage,
         `presentations/${presentationRef!.id}/${pageIndex
@@ -99,14 +88,14 @@ export default function Export() {
       await uploadBytes(pageStorageRef, pageBlob!);
       const pageUrl = await getDownloadURL(pageStorageRef);
       setPageUrls((currentUrls) => [...currentUrls, pageUrl]);
-      console.log('uploaded page', pageIndex);
     }
 
     if (!rendering || !pageBlob || !presentationRef) {
       return;
     }
 
-    setUploadPromises((currentPromises) => [...currentPromises, uploadPage()]);
+    const uploadPromise = uploadPage();
+    setUploadPromises((currentPromises) => [...currentPromises, uploadPromise]);
     setPageBlob(undefined);
 
     if (pageIndex < pageCount - 1) {
@@ -116,62 +105,49 @@ export default function Export() {
     }
   }, [rendering, pageBlob, pageIndex, presentationRef, pageCount]);
 
+  const [title, setTitle] = useState('');
+  const [titleSaved, setTitleSaved] = useState('');
+  const [titlePending, setTitlePending] = useState(false);
+  const [titleDone, setTitleDone] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
   useEffect(() => {
     async function updatePages() {
-      if (!presentationRef || !renderingDone) {
+      if (!presentationRef || !renderingDone || uploadDone || uploading) {
         return;
       }
 
+      setUploading(true);
+
       await Promise.all(uploadPromises);
 
-      console.log('setting pages');
-      await updateDoc(presentationRef, {pages: pageUrls, rendered: new Date()});
+      const presentationUpdates: {
+        pages: string[];
+        rendered: Date;
+        title?: string;
+      } = {pages: pageUrls, rendered: new Date()};
+      if (titlePending && title.length > 0) {
+        presentationUpdates.title = title;
+        setTitlePending(false);
+        setTitleSaved(title);
+      }
+
+      await updateDoc(presentationRef, presentationUpdates);
       setUploadDone(true);
-      // SetPresentationRef(undefined);
+      setTitleDone(true);
     }
 
     void updatePages();
-  }, [presentationRef, pageUrls, renderingDone, uploadPromises]);
-
-  // UseEffect(() => {
-  //   if (pageIndex !== pageCount || pageIndex === 0) {
-  //     return;
-  //   }
-
-  //   console.log('entries', zipEntries);
-
-  //   zip(
-  //     zipEntries,
-  //     {
-  //       level: 0,
-  //     },
-  //     (error, data) => {
-  //       if (error) {
-  //         throw error;
-  //       }
-
-  //       console.log('data', data.length);
-
-  //       // Console.log('data', data);
-  //       setZipfile(data);
-  //     },
-  //   );
-  // }, [pageIndex, pageCount, zipEntries]);
-
-  // UseEffect(() => {
-  //   if (!pageBlob) {
-  //     return;
-  //   }
-
-  //   console.log('blob', pageBlob);
-
-  //   const blobUrl = URL.createObjectURL(pageBlob);
-  //   const newTab = window.open(blobUrl, '_blank');
-
-  //   setPageIndex((current) => current + 1);
-  //   // If(pageIndex)
-  //   // setPageIndex()
-  // }, [pageBlob]);
+  }, [
+    presentationRef,
+    pageUrls,
+    renderingDone,
+    uploadPromises,
+    title,
+    titlePending,
+    uploadDone,
+    uploading,
+  ]);
 
   function getUserFeedback() {
     if (file && !rendering) {
@@ -198,11 +174,27 @@ export default function Export() {
 
   const [message, icon] = getUserFeedback();
 
+  useEffect(() => {
+    if (!uploadDone || !presentationRef || titleSaved === title) {
+      return;
+    }
+
+    setTitlePending(false);
+    setTitleSaved(title);
+    void updateDoc(presentationRef, {title});
+    setTitleDone(true);
+  }, [title, uploadDone, presentationRef, titleSaved]);
+
+  // Const [debouncedTitle, setDebouncedTitle] = useState('');
+  const setDebouncedTitle = useDebouncedCallback((nextTitle: string) => {
+    setTitle(nextTitle);
+  }, 1000);
+
   return (
-    <div className="overflow-hidden flex flex-col items-center p-4 gap-4">
+    <div className="overflow-hidden flex flex-col items-center p-4 gap-4 pb-10">
       {!file && (
         <div
-          className="btn rounded-xl p-8 flex flex-col items-center w-screen-sm mb-10"
+          className="btn rounded-xl p-8 flex flex-col items-center w-screen-sm"
           {...getRootProps()}
         >
           <input {...getInputProps()} />
@@ -215,7 +207,8 @@ export default function Export() {
             <>
               <div className="i-tabler-arrow-big-down-lines text-5xl animate-bounce" />
               <div className="text-center">
-                Drag 'n' drop some files here, or click to select files
+                Drag &apos;n&apos; drop some files here, or click to select
+                files
               </div>
             </>
           )}
@@ -252,25 +245,28 @@ export default function Export() {
             style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
           />
           <div>Rendering slide: {pageIndex + 1}</div>
-          <div>Remaining: {pageCount - pageIndex - 1}</div>
         </div>
       )}
-      {/* {zipfile && (
-        <button
-          className="btn"
-          type="button"
-          onClick={() => {
-            window.open(
-              URL.createObjectURL(
-                new Blob([zipfile], {type: 'application/zip'}),
-              ),
-              '_blank',
-            );
+      <div className="btn bg-teal-900 flex flex-row gap-2 items-center w-screen-sm">
+        <input
+          placeholder="Give your presentation a name..."
+          size={50}
+          className="bg-transparent border-none focus-visible:(border-none outline-none) flex-grow"
+          // Value={title}
+          onChange={(event) => {
+            console.log('pending');
+            setTitlePending(true);
+            setTitleDone(false);
+            setDebouncedTitle(event.target.value);
           }}
-        >
-          Download
-        </button>
-      )} */}
+        />
+        <div
+          className={clsx(
+            titlePending && 'i-tabler-loader-3 animate-spin',
+            titleDone && 'i-tabler-check',
+          )}
+        />
+      </div>
     </div>
   );
 }
