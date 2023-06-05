@@ -8,31 +8,21 @@ import {
 export function useSlideIndex({
   ignorePost,
   postMessage,
+  slideCount,
 }: {
   ignorePost?: boolean;
   postMessage: Handler;
+  slideCount: number;
 }): {
   slideIndex: number;
   setSlideIndex: (index: number) => void;
-  prevSlideIndex: number;
-  nextSlideIndex: number;
-  slideCount: number;
-  setSlideCount: (count: number) => void;
   navNext: () => void;
   navPrevious: () => void;
   handlers: HandlerEntries;
 } {
   const [slideIndex, setSlideIndex] = useState(0);
-  const [slideCount, setSlideCount] = useState(0);
-
-  const previousSlideIndex = useMemo(
-    () => Math.max(slideIndex - 1, 0),
-    [slideIndex],
-  );
-  const nextSlideIndex = useMemo(
-    () => Math.min(slideIndex + 1, slideCount - 1),
-    [slideIndex, slideCount],
-  );
+  const previousSlideIndex = Math.max(slideIndex - 1, 0);
+  const nextSlideIndex = Math.min(slideIndex + 1, slideCount - 1);
 
   const updateSlideIndex = useCallback((index?: number) => {
     if (index !== undefined) {
@@ -62,7 +52,6 @@ export function useSlideIndex({
   }, [updateSlideIndexAndPost, nextSlideIndex]);
 
   const navPrevious = useCallback(() => {
-    console.log('nav prev', previousSlideIndex);
     updateSlideIndexAndPost(previousSlideIndex);
   }, [updateSlideIndexAndPost, previousSlideIndex]);
 
@@ -88,10 +77,6 @@ export function useSlideIndex({
     handlers,
     slideIndex,
     setSlideIndex: updateSlideIndexAndPost,
-    prevSlideIndex: previousSlideIndex,
-    nextSlideIndex,
-    slideCount,
-    setSlideCount,
     navNext,
     navPrevious,
   };

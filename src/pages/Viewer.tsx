@@ -1,17 +1,10 @@
-import {Document, Page} from 'react-pdf';
-import * as pdfjs from 'pdfjs-dist';
-import {useState, useEffect, useRef} from 'react';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
+import {useState, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 import useConfetti from '../confetti/use-confetti';
-import '../pdf/pdf.css';
 import {useSlideIndex} from '../slides/use-slide-index';
 import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
 import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
 import Confetti from '../confetti/Confetti';
-import {presentations} from '../slides/presentation-urls';
-import {pageMessageProperties, pdfMessageProperties} from '../pdf/PdfMessages';
 import ProgressBar from '../components/ProgressBar';
 import {
   useChannelHandlers,
@@ -23,22 +16,18 @@ import Reactions from '../reactions/Reactions';
 import ReactionControls from '../reactions/ReactionControls';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
-
-const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
+import Slideshow from '../components/Slideshow';
+import usePresentation from '../components/use-presentation';
 
 export default function Viewer() {
-  // Determine the presentation and update the page title
-  const {presentationSlug} = useParams();
-
-  if (presentations[presentationSlug!] === undefined) {
-    // Intentionally throw so we can show our error page
-    throw new Error(`Presentation '${presentationSlug!}' does not exist`);
-  }
+  const {presentationId} = useParams();
+  const presentation = usePresentation(presentationId);
 
   useEffect(() => {
-    document.title = `Present - ${presentationSlug!} - Audience`;
-  }, [presentationSlug]);
+    document.title = `Present - ${
+      presentation?.title ?? 'Unnamed Presentation'
+    } - Audience`;
+  }, [presentation]);
 
   const sessionId = useSearchParametersSessionId();
 
@@ -50,7 +39,7 @@ export default function Viewer() {
     paused,
     unPause,
   } = useBroadcastSupabase({
-    channelId: presentationSlug!,
+    channelId: presentationId!,
     sessionId,
     onIncoming: handleIncomingBroadcast,
     // Pause supabase after 5 mins of inactivity (no reactions)
@@ -61,14 +50,13 @@ export default function Viewer() {
   console.log({connectedSupabase});
   // Track the slide index from the broadcast channel
   const {
-    setSlideCount,
     slideIndex,
     setSlideIndex,
-    slideCount,
     handlers: slideIndexHandlers,
   } = useSlideIndex({
     postMessage: postBroadcastMessage,
     ignorePost: true,
+    slideCount: presentation?.pages?.length ?? 0,
   });
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
@@ -94,29 +82,10 @@ export default function Viewer() {
     handlersReactions,
   );
 
-  // Optimize the rendering of pdf pages by tracking the container width
-  const pdfRef = useRef<HTMLDivElement>(null);
-  const pdfWidth = pdfRef.current?.clientWidth;
-
   return (
     <div className="flex flex-col gap-4 p-4 position-relative overflow-x-hidden overflow-y-auto min-h-screen">
-      <div ref={pdfRef} className="max-w-2xl mx-auto w-full">
-        <Document
-          className="w-full aspect-video z--1"
-          file={presentations[presentationSlug!]}
-          {...pdfMessageProperties}
-          onLoadSuccess={(pdf) => {
-            setSlideCount(pdf.numPages);
-          }}
-        >
-          <Page
-            key={`page-${slideIndex}`}
-            className="w-full h-full z--1"
-            pageIndex={slideIndex}
-            width={pdfWidth}
-            {...pageMessageProperties}
-          />
-        </Document>
+      <div className="max-w-2xl mx-auto w-full">
+        <Slideshow pageIndex={slideIndex} pages={presentation?.pages ?? []} />
       </div>
 
       <Confetti fire={fire} />
@@ -138,7 +107,10 @@ export default function Viewer() {
           </button>
         </a>
       </div>
-      <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
+      <ProgressBar
+        slideIndex={slideIndex}
+        slideCount={presentation?.pages?.length ?? 0}
+      />
       <Disconnected paused={paused} unPause={unPause} />
     </div>
   );

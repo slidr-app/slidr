@@ -2,7 +2,6 @@ import {useState, useEffect, useMemo, useCallback} from 'react';
 import QRCode from 'react-qr-code';
 import {useParams} from 'react-router-dom';
 import {useSwipeable} from 'react-swipeable';
-import {getDoc, doc} from 'firebase/firestore/lite';
 import {useSlideIndex} from '../slides/use-slide-index';
 import useKeys from '../use-keys';
 import useConfetti from '../confetti/use-confetti';
@@ -22,22 +21,19 @@ import Toolbar from '../components/Toolbar';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
 import Slideshow from '../components/Slideshow';
-import {firestore} from '../firebase';
-import {type PresentationData} from '../PresentationDoc';
+import usePresentation from '../components/use-presentation';
 
 function Presentation() {
-  const {presentationSlug} = useParams();
+  const {presentationId} = useParams();
+  const presentation = usePresentation(presentationId);
 
-  const [pageError, setPageError] = useState<Error>();
-  if (pageError) {
-    throw pageError;
-  }
+  useEffect(() => {
+    document.title = `Present - ${
+      presentation?.title ?? 'Unnamed Presentation'
+    }`;
+  }, [presentation]);
 
   const [forward, setForward] = useState<boolean>(true);
-  useEffect(() => {
-    document.title = `Present - ${presentationSlug!}`;
-  }, [presentationSlug]);
-
   const sessionId = useSearchParametersSessionId(true);
 
   // Sync the slide index with the broadcast channel (speaker view)
@@ -46,42 +42,20 @@ function Presentation() {
     setHandlers: setHandlersBroadcastChannel,
   } = useChannelHandlers();
   const postBroadcastChannel = useBroadcastChannel({
-    channelId: presentationSlug!,
+    channelId: presentationId!,
     onIncoming: handleIncomingBroadcastChannel,
   });
   const {
     slideIndex,
     setSlideIndex,
-    // PrevSlideIndex,
-    // nextSlideIndex,
-    slideCount,
-    setSlideCount,
     navNext: slideNext,
     navPrevious: slidePrevious,
     handlers: handlersSlideIndexBroadcastChannel,
-  } = useSlideIndex({postMessage: postBroadcastChannel});
+  } = useSlideIndex({
+    postMessage: postBroadcastChannel,
+    slideCount: presentation?.pages?.length ?? 0,
+  });
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
-
-  const [presentation, setPresentation] = useState<PresentationData>();
-  useEffect(() => {
-    async function loadPresentation() {
-      const presentationDoc = await getDoc(
-        doc(firestore, 'presentations', presentationSlug!),
-      );
-
-      if (!presentationDoc.exists) {
-        setPageError(
-          new Error(`Presentation '${presentationSlug!}' does not exist`),
-        );
-        return;
-      }
-
-      setPresentation(presentationDoc.data() as PresentationData);
-      setSlideCount((presentationDoc.data() as PresentationData).pages.length);
-    }
-
-    void loadPresentation();
-  }, [presentationSlug, setSlideCount]);
 
   // Broadcast the slide index with supabase
   const {
@@ -93,7 +67,7 @@ function Presentation() {
     paused,
     unPause,
   } = useBroadcastSupabase({
-    channelId: presentationSlug!,
+    channelId: presentationId!,
     sessionId,
     onIncoming: handleIncomingBroadcastSupabase,
     // Pause the presentation view after 1 hour
@@ -102,6 +76,7 @@ function Presentation() {
   });
   const {setSlideIndex: setSupabaseSlideIndex} = useSlideIndex({
     postMessage: postBroadcastSupabase,
+    slideCount: presentation?.pages?.length ?? 0,
   });
   useEffect(() => {
     setSupabaseSlideIndex(slideIndex);
@@ -215,7 +190,10 @@ function Presentation() {
           />
         </div>
       </div>
-      <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
+      <ProgressBar
+        slideIndex={slideIndex}
+        slideCount={presentation?.pages?.length ?? 0}
+      />
       <div
         className="position-absolute top-0 left-0 h-full w-full"
         onClick={() => {
@@ -231,7 +209,7 @@ function Presentation() {
           setSlideIndex(0);
         }}
         onEnd={() => {
-          setSlideIndex(slideCount - 1);
+          setSlideIndex((presentation?.pages?.length ?? 1) - 1);
         }}
       />
     </div>

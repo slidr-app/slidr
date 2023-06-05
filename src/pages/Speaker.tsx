@@ -1,10 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import {Document, Page} from 'react-pdf';
-import * as pdfjs from 'pdfjs-dist';
-import {useMemo, useState, useCallback, useEffect, useRef} from 'react';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
+import {useMemo, useState, useCallback, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 import clsx from 'clsx';
 import {useSwipeable} from 'react-swipeable';
@@ -14,9 +10,7 @@ import useConfetti from '../confetti/use-confetti';
 import useBroadcastChannel from '../broadcast/use-broadcast-channel';
 import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
 import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
-import {presentations} from '../slides/presentation-urls';
 import useNotes from '../slides/use-notes';
-import {pageMessageProperties, pdfMessageProperties} from '../pdf/PdfMessages';
 import ProgressBar from '../components/ProgressBar';
 import {
   useChannelHandlers,
@@ -27,10 +21,8 @@ import useRemoteReactions from '../reactions/use-remote-reactions';
 import Timer from '../components/Timer';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
-import '../pdf/pdf.css';
-
-const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
+import usePresentation from '../components/use-presentation';
+import Slideshow from '../components/Slideshow';
 
 const textSizes = [
   'text-xs',
@@ -48,19 +40,18 @@ const textSizes = [
 ];
 
 export default function Speaker() {
-  const {presentationSlug} = useParams();
-
-  if (presentations[presentationSlug!] === undefined) {
-    throw new Error(`Presentation '${presentationSlug!}' does not exist`);
-  }
+  const {presentationId} = useParams();
+  const presentation = usePresentation(presentationId);
 
   useEffect(() => {
-    document.title = `Present - ${presentationSlug!} - Speaker`;
-  }, [presentationSlug]);
+    document.title = `Present - ${
+      presentation?.title ?? 'Unnamed Presentation'
+    } - Speaker`;
+  }, [presentation]);
 
   const sessionId = useSearchParametersSessionId();
 
-  const notes = useNotes(presentationSlug!);
+  const notes = useNotes(presentationId!);
 
   // Sync the slide index with the broadcast channel (speaker view)
   const {
@@ -68,20 +59,19 @@ export default function Speaker() {
     setHandlers: setHandlersBroadcastChannel,
   } = useChannelHandlers();
   const postBroadcastChannel = useBroadcastChannel({
-    channelId: presentationSlug!,
+    channelId: presentationId!,
     onIncoming: handleIncomingBroadcastChannel,
   });
   const {
     slideIndex,
     setSlideIndex,
-    prevSlideIndex,
-    nextSlideIndex,
-    slideCount,
-    setSlideCount,
     navNext,
     navPrevious,
     handlers: handlersSlideIndexBroadcastChannel,
-  } = useSlideIndex({postMessage: postBroadcastChannel});
+  } = useSlideIndex({
+    postMessage: postBroadcastChannel,
+    slideCount: presentation?.pages?.length ?? 0,
+  });
   useCombinedHandlers(
     setHandlersBroadcastChannel,
     handlersSlideIndexBroadcastChannel,
@@ -97,7 +87,7 @@ export default function Speaker() {
     paused,
     unPause,
   } = useBroadcastSupabase({
-    channelId: presentationSlug!,
+    channelId: presentationId!,
     sessionId,
     // Pause the speaker view after 1 hour
     idleTimeout: 60 * 60 * 1000,
@@ -147,15 +137,6 @@ export default function Speaker() {
     };
   }, []);
 
-  // Calculate the correct width for the pdf pages
-  // This ensures that they are rendered at the ideal resolution, rather than scaled by css
-  const previousRef = useRef<HTMLDivElement>(null);
-  const nextRef = useRef<HTMLDivElement>(null);
-  const currentRef = useRef<HTMLDivElement>(null);
-  const previousWidth = previousRef.current?.clientWidth;
-  const nextWidth = nextRef.current?.clientWidth;
-  const currentWidth = currentRef.current?.clientWidth;
-
   return (
     <div
       className="p-4 pt-0 grid grid-cols-[auto_1fr] gap-5 h-screen overflow-hidden lt-sm:(flex flex-col overflow-auto h-auto w-full)"
@@ -172,31 +153,18 @@ export default function Speaker() {
               <Timer />
             </div>
           </div>
-          <Document
-            file={presentations[presentationSlug!]}
-            className="grid grid-cols-2 gap-4"
-            {...pdfMessageProperties}
-            onLoadSuccess={(pdf) => {
-              setSlideCount(pdf.numPages);
-            }}
-          >
-            <div ref={currentRef} className="w-full col-span-2 aspect-video">
-              <Page
-                key={`page-${slideIndex}`}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <Slideshow
+                pages={presentation?.pages ?? []}
                 pageIndex={slideIndex}
-                className="w-full h-full"
-                width={currentWidth}
-                {...pageMessageProperties}
               />
             </div>
-            <div ref={previousRef} className="w-full aspect-video col-start-1">
+            <div className="w-full aspect-video col-start-1">
               {slideIndex > 0 ? (
-                <Page
-                  key={`page-${prevSlideIndex}`}
-                  pageIndex={prevSlideIndex}
-                  className="w-full h-full"
-                  width={previousWidth}
-                  {...pageMessageProperties}
+                <Slideshow
+                  pages={presentation?.pages ?? []}
+                  pageIndex={slideIndex - 1}
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center">
@@ -205,14 +173,11 @@ export default function Speaker() {
                 </div>
               )}
             </div>
-            <div ref={nextRef} className="w-full aspect-video col-start-2">
-              {slideIndex < slideCount - 1 ? (
-                <Page
-                  key={`page-${nextSlideIndex}`}
-                  pageIndex={nextSlideIndex}
-                  className="w-full h-full"
-                  width={nextWidth}
-                  {...pageMessageProperties}
+            <div className="w-full aspect-video col-start-2">
+              {slideIndex < (presentation?.pages?.length ?? 1) - 1 ? (
+                <Slideshow
+                  pages={presentation?.pages ?? []}
+                  pageIndex={slideIndex + 1}
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center">
@@ -221,7 +186,7 @@ export default function Speaker() {
                 </div>
               )}
             </div>
-          </Document>
+          </div>
           <div className="self-center flex flex-col gap-6">
             <div className="grid grid-cols-2 gap-6">
               <button
@@ -255,7 +220,7 @@ export default function Speaker() {
                 type="button"
                 className="btn"
                 onClick={() => {
-                  setSlideIndex(slideCount - 1);
+                  setSlideIndex((presentation?.pages?.length ?? 1) - 1);
                 }}
               >
                 <div className="i-tabler-circle-chevrons-right w-6 h-6" />
@@ -310,7 +275,10 @@ export default function Speaker() {
           </div>
         </div>
       </div>
-      <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
+      <ProgressBar
+        slideIndex={slideIndex}
+        slideCount={presentation?.pages?.length ?? 0}
+      />
       <Disconnected paused={paused} unPause={unPause} />
     </div>
   );

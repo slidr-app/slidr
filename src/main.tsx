@@ -39,17 +39,17 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: '/:presentationSlug',
+    path: '/:presentationId',
     element: <Presentation />,
     errorElement: <ErrorPage />,
   },
   {
-    path: '/:presentationSlug/view',
+    path: '/:presentationId/view',
     element: <Viewer />,
     errorElement: <ErrorPage />,
   },
   {
-    path: '/:presentationSlug/speaker',
+    path: '/:presentationId/speaker',
     element: <Speaker />,
     errorElement: <ErrorPage />,
   },
