@@ -21,7 +21,7 @@ import useRemoteReactions from '../reactions/use-remote-reactions';
 import Timer from '../components/Timer';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
-import usePresentation from '../components/use-presentation';
+import usePresentation from '../use-presentation';
 import Slideshow from '../components/Slideshow';
 
 const textSizes = [

@@ -21,7 +21,7 @@ import Toolbar from '../components/Toolbar';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
 import Slideshow from '../components/Slideshow';
-import usePresentation from '../components/use-presentation';
+import usePresentation from '../use-presentation';
 
 function Presentation() {
   const {presentationId} = useParams();

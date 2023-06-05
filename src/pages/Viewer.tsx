@@ -17,7 +17,7 @@ import ReactionControls from '../reactions/ReactionControls';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
 import Slideshow from '../components/Slideshow';
-import usePresentation from '../components/use-presentation';
+import usePresentation from '../use-presentation';
 
 export default function Viewer() {
   const {presentationId} = useParams();
