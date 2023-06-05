@@ -1,4 +1,4 @@
-import {useCallback, useState, useMemo, useEffect, useRef} from 'react';
+import {useCallback, useState, useMemo} from 'react';
 import {
   type HandlerEntries,
   type Handler,
@@ -14,7 +14,6 @@ export function useSlideIndex({
 }): {
   slideIndex: number;
   setSlideIndex: (index: number) => void;
-  forward: boolean;
   prevSlideIndex: number;
   nextSlideIndex: number;
   slideCount: number;
@@ -25,7 +24,6 @@ export function useSlideIndex({
 } {
   const [slideIndex, setSlideIndex] = useState(0);
   const [slideCount, setSlideCount] = useState(0);
-  const [forward, setForward] = useState(true);
 
   const previousSlideIndex = useMemo(
     () => Math.max(slideIndex - 1, 0),
@@ -37,18 +35,10 @@ export function useSlideIndex({
   );
 
   const updateSlideIndex = useCallback((index?: number) => {
-    if (index) {
+    if (index !== undefined) {
       setSlideIndex(index);
     }
   }, []);
-
-  // Use and determine direction (forward or not) in a dedicated useEffect
-  // This decouples the changing of the index and the direction flag
-  const previousIndexRef = useRef(1);
-  useEffect(() => {
-    setForward(slideIndex >= previousIndexRef.current);
-    previousIndexRef.current = slideIndex;
-  }, [slideIndex]);
 
   const postSlideIndex = useCallback(
     (index: number) => {
@@ -72,6 +62,7 @@ export function useSlideIndex({
   }, [updateSlideIndexAndPost, nextSlideIndex]);
 
   const navPrevious = useCallback(() => {
+    console.log('nav prev', previousSlideIndex);
     updateSlideIndexAndPost(previousSlideIndex);
   }, [updateSlideIndexAndPost, previousSlideIndex]);
 
@@ -97,7 +88,6 @@ export function useSlideIndex({
     handlers,
     slideIndex,
     setSlideIndex: updateSlideIndexAndPost,
-    forward,
     prevSlideIndex: previousSlideIndex,
     nextSlideIndex,
     slideCount,

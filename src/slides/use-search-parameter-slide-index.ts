@@ -33,7 +33,9 @@ export default function useSearchParametersSlideIndex(
     }
 
     if (firstRender) {
-      setSlideIndex(Number.parseInt(searchParameterSlideIndex, 10) - 1);
+      setSlideIndex(
+        Math.max(Number.parseInt(searchParameterSlideIndex, 10) - 1, 0),
+      );
       setFirstRender(false);
     }
   }, [

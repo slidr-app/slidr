@@ -20,7 +20,7 @@ export default function DefaultLayout({
   );
   return (
     <div className="flex flex-col">
-      <div className="header grid grid-cols-[1fr_2fr_1fr] mx-4 px-4">
+      <div className="header grid grid-cols-[1fr_2fr_1fr] mx-4 px-4 mb-6">
         <div className="col-start-2 text-3xl flex flex-row items-center justify-center">
           <div>{title}</div>
         </div>

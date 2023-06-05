@@ -28,8 +28,6 @@ export default function Export() {
   const [rendering, setRendering] = useState(false);
   const [presentationRef, setPresentationRef] = useState<DocumentReference>();
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    console.log('incoming', acceptedFiles);
-
     setFile(acceptedFiles[0]);
     const presentationRef = await addDoc(
       collection(firestore, 'presentations'),
@@ -61,8 +59,6 @@ export default function Export() {
   const [renderingDone, setRenderingDone] = useState(false);
   const [pageBlob, setPageBlob] = useState<Blob>();
   function pageRendered() {
-    console.log('rendering page', pageIndex);
-    // Return;
     canvasRef.current?.toBlob(async (blob) => {
       if (!blob) {
         throw new Error(`Error rendering page index ${pageIndex}`);
@@ -72,10 +68,9 @@ export default function Export() {
     }, 'image/webp');
   }
 
-  const [uploadPromises, setUploadPromises] = useState<Array<Promise<void>>>(
+  const [uploadPromises, setUploadPromises] = useState<Array<Promise<string>>>(
     [],
   );
-  const [pageUrls, setPageUrls] = useState<string[]>([]);
   useEffect(() => {
     async function uploadPage() {
       const pageStorageRef = storageRef(
@@ -87,7 +82,7 @@ export default function Export() {
 
       await uploadBytes(pageStorageRef, pageBlob!);
       const pageUrl = await getDownloadURL(pageStorageRef);
-      setPageUrls((currentUrls) => [...currentUrls, pageUrl]);
+      return pageUrl;
     }
 
     if (!rendering || !pageBlob || !presentationRef) {
@@ -119,7 +114,7 @@ export default function Export() {
 
       setUploading(true);
 
-      await Promise.all(uploadPromises);
+      const pageUrls = await Promise.all(uploadPromises);
 
       const presentationUpdates: {
         pages: string[];
@@ -140,7 +135,6 @@ export default function Export() {
     void updatePages();
   }, [
     presentationRef,
-    pageUrls,
     renderingDone,
     uploadPromises,
     title,
@@ -185,40 +179,41 @@ export default function Export() {
     setTitleDone(true);
   }, [title, uploadDone, presentationRef, titleSaved]);
 
-  // Const [debouncedTitle, setDebouncedTitle] = useState('');
   const setDebouncedTitle = useDebouncedCallback((nextTitle: string) => {
     setTitle(nextTitle);
   }, 1000);
 
   return (
-    <div className="overflow-hidden flex flex-col items-center p-4 gap-4 pb-10">
+    <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-sm mx-auto">
       {!file && (
         <div
-          className="btn rounded-xl p-8 flex flex-col items-center w-screen-sm"
+          className="btn rounded-md p-8 flex flex-col items-center justify-center w-full aspect-video gap-4 cursor-pointer"
           {...getRootProps()}
         >
           <input {...getInputProps()} />
           {isDragActive ? (
             <>
-              <div className="i-tabler-arrow-big-down-lines text-5xl animate-bounce animate-duration-500 text-teal-500" />
-              <div className="text-center">Drop the files here ...</div>
+              <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce animate-duration-500 text-teal-500" />
+              <div className="text-center">
+                Drop the pdf presentation here...
+              </div>
             </>
           ) : (
             <>
-              <div className="i-tabler-arrow-big-down-lines text-5xl animate-bounce" />
+              <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce" />
               <div className="text-center">
-                Drag &apos;n&apos; drop some files here, or click to select
-                files
+                Drag &apos;n&apos; drop a pdf presentation here, or click to
+                select a pdf presentation
               </div>
             </>
           )}
         </div>
       )}
       {file && (
-        <div className="flex flex-col w-80 aspect-video">
+        <div className="flex flex-col w-full aspect-video">
           <Document
             file={file}
-            className="w-full aspect-video relative"
+            className="w-full aspect-video relative rounded-t-md overflow-hidden"
             onLoadSuccess={(pdf) => {
               setPageCount(pdf.numPages);
             }}
@@ -247,10 +242,10 @@ export default function Export() {
           <div>Rendering slide: {pageIndex + 1}</div>
         </div>
       )}
-      <div className="btn bg-teal-900 flex flex-row gap-2 items-center w-screen-sm">
+      <div className="btn bg-gray-200 text-black flex flex-row gap-2 items-center w-full">
         <input
           placeholder="Give your presentation a name..."
-          size={50}
+          // Size={50}
           className="bg-transparent border-none focus-visible:(border-none outline-none) flex-grow"
           // Value={title}
           onChange={(event) => {
@@ -264,6 +259,7 @@ export default function Export() {
           className={clsx(
             titlePending && 'i-tabler-loader-3 animate-spin',
             titleDone && 'i-tabler-check',
+            'text-teal-900',
           )}
         />
       </div>

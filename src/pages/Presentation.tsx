@@ -1,11 +1,8 @@
-import {useState, useEffect, useMemo, useCallback, useRef} from 'react';
-import {Document, Page} from 'react-pdf';
-import * as pdfjs from 'pdfjs-dist';
+import {useState, useEffect, useMemo, useCallback} from 'react';
 import QRCode from 'react-qr-code';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
 import {useParams} from 'react-router-dom';
 import {useSwipeable} from 'react-swipeable';
+import {getDoc, doc} from 'firebase/firestore/lite';
 import {useSlideIndex} from '../slides/use-slide-index';
 import useKeys from '../use-keys';
 import useConfetti from '../confetti/use-confetti';
@@ -13,8 +10,6 @@ import useBroadcastChannel from '../broadcast/use-broadcast-channel';
 import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
 import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
 import Confetti from '../confetti/Confetti';
-import {presentations} from '../slides/presentation-urls';
-import {pageMessageProperties, pdfMessageProperties} from '../pdf/PdfMessages';
 import ProgressBar from '../components/ProgressBar';
 import {
   useChannelHandlers,
@@ -26,18 +21,19 @@ import useRemoteReactions from '../reactions/use-remote-reactions';
 import Toolbar from '../components/Toolbar';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
-import '../pdf/pdf.css';
-
-const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
+import Slideshow from '../components/Slideshow';
+import {firestore} from '../firebase';
+import {type PresentationData} from '../PresentationDoc';
 
 function Presentation() {
   const {presentationSlug} = useParams();
 
-  if (presentations[presentationSlug!] === undefined) {
-    throw new Error(`Presentation '${presentationSlug!}' does not exist`);
+  const [pageError, setPageError] = useState<Error>();
+  if (pageError) {
+    throw pageError;
   }
 
+  const [forward, setForward] = useState<boolean>(true);
   useEffect(() => {
     document.title = `Present - ${presentationSlug!}`;
   }, [presentationSlug]);
@@ -56,16 +52,36 @@ function Presentation() {
   const {
     slideIndex,
     setSlideIndex,
-    forward,
-    prevSlideIndex,
-    nextSlideIndex,
+    // PrevSlideIndex,
+    // nextSlideIndex,
     slideCount,
     setSlideCount,
-    navNext,
-    navPrevious,
+    navNext: slideNext,
+    navPrevious: slidePrevious,
     handlers: handlersSlideIndexBroadcastChannel,
   } = useSlideIndex({postMessage: postBroadcastChannel});
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
+
+  const [presentation, setPresentation] = useState<PresentationData>();
+  useEffect(() => {
+    async function loadPresentation() {
+      const presentationDoc = await getDoc(
+        doc(firestore, 'presentations', presentationSlug!),
+      );
+
+      if (!presentationDoc.exists) {
+        setPageError(
+          new Error(`Presentation '${presentationSlug!}' does not exist`),
+        );
+        return;
+      }
+
+      setPresentation(presentationDoc.data() as PresentationData);
+      setSlideCount((presentationDoc.data() as PresentationData).pages.length);
+    }
+
+    void loadPresentation();
+  }, [presentationSlug, setSlideCount]);
 
   // Broadcast the slide index with supabase
   const {
@@ -138,111 +154,55 @@ function Presentation() {
     handlersReactions,
   );
 
+  const goForward = useCallback(() => {
+    setForward(true);
+    slideNext();
+  }, [slideNext]);
+
+  const goBack = useCallback(() => {
+    setForward(false);
+    slidePrevious();
+  }, [slidePrevious]);
+
   // Swipe and key bindings
   const swipeHandlers = useSwipeable({
     onSwipedRight() {
-      navPrevious();
+      goForward();
     },
     onSwipedLeft() {
-      navNext();
+      goBack();
     },
   });
+
   const keyHandlers = useMemo(
     () =>
       new Map([
-        ['ArrowLeft', navPrevious],
-        ['ArrowRight', navNext],
-        ['Space', navNext],
+        ['ArrowLeft', goBack],
+        ['ArrowRight', goForward],
+        ['Space', goForward],
         ['KeyS', openSpeakerWindow],
         ['KeyR', resetAllReactions],
         ['KeyC', throwConfetti],
       ]),
-    [navPrevious, navNext, openSpeakerWindow, resetAllReactions, throwConfetti],
+    [
+      // NavPrevious,
+      // navNext,
+      openSpeakerWindow,
+      resetAllReactions,
+      throwConfetti,
+      goForward,
+      goBack,
+    ],
   );
   useKeys(keyHandlers);
 
-  // Optimize render of slides with the page width
-  const slideWidth = Math.min(window.innerWidth, window.innerHeight * (16 / 9));
-
-  // Show a slide under to fade the current slide on top of it
-  function slideUnder() {
-    // Nothing to render under when moving forward and at the start of the presentation
-    if (forward && slideIndex <= 0) {
-      return null;
-    }
-
-    // Nothing to render under when moving backwards and at the end of the presentation
-    if (!forward && slideIndex >= slideCount - 1) {
-      return null;
-    }
-
-    return (
-      <Page
-        key={`page-${forward ? prevSlideIndex : nextSlideIndex}`}
-        pageIndex={forward ? prevSlideIndex : nextSlideIndex}
-        className="w-full h-full important-position-absolute top-0 left-0 opacity-100"
-        width={slideWidth}
-        {...pageMessageProperties}
-      />
-    );
-  }
-
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Current slide transitions its opacity so that it fades in
-  // It should have already been rendered (opacity 0) over
-  const slideCurrent = (
-    <Page
-      key={`page-${slideIndex}`}
-      className="transition transition-opacity duration-500 ease-linear opacity-100 w-full h-full important-position-absolute top-0 left-0"
-      pageIndex={slideIndex}
-      width={slideWidth}
-      canvasRef={canvasRef}
-      {...pageMessageProperties}
-    />
-  );
-
-  // Hide a slide over to avoid seeing the loading message
-  // This preloads and renders (hidden) the next slide
-  function slideOver() {
-    // Nothing to render over when moving forward and at the end of the presentation
-    if (forward && slideIndex >= slideCount - 1) {
-      return null;
-    }
-
-    // Nothing to render over when moving backwards and at the start of the presentation
-    if (!forward && slideIndex <= 0) {
-      return null;
-    }
-
-    return (
-      <Page
-        key={`page-${forward ? nextSlideIndex : prevSlideIndex}`}
-        className="w-full h-full important-position-absolute top-0 left-0 opacity-0"
-        pageIndex={forward ? nextSlideIndex : prevSlideIndex}
-        width={slideWidth}
-        {...pageMessageProperties}
-      />
-    );
-  }
-
   return (
     <div className="pdf-container h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
-      <Document
-        file={presentations[presentationSlug!]}
-        className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))] z--1"
-        onLoadSuccess={(pdf) => {
-          setSlideCount(pdf.numPages);
-        }}
-        {...pdfMessageProperties}
-      >
-        {/* Render the previous slide (if there is one) to provide a background to fade on to */}
-        {slideUnder()}
-        {/* Render the current page with a CSS transition that fades on to the slide under */}
-        {slideCurrent}
-        {/* Prerender the next page (if there is one) to avoid seeing loading messages */}
-        {slideOver()}
-      </Document>
+      <Slideshow
+        pageIndex={slideIndex}
+        pages={presentation?.pages ?? []}
+        forward={forward}
+      />
       <Confetti fire={fire} reset={reset} />
       <Reactions reactions={reactions} removeReaction={removeReaction} />
       {/* Inspired from https://stackoverflow.com/a/44233700 */}
@@ -258,13 +218,15 @@ function Presentation() {
       <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
       <div
         className="position-absolute top-0 left-0 h-full w-full"
-        onClick={navNext}
+        onClick={() => {
+          goForward();
+        }}
         {...swipeHandlers}
       />
       <Disconnected paused={paused} unPause={unPause} />
       <Toolbar
-        onNext={navNext}
-        onPrevious={navPrevious}
+        onNext={slideNext}
+        onPrevious={slidePrevious}
         onStart={() => {
           setSlideIndex(0);
         }}

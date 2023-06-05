@@ -55,7 +55,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/upload',
-    element: <Upload />,
+    element: (
+      <DefaultLayout title="Upload Presentation">
+        <Upload />
+      </DefaultLayout>
+    ),
     errorElement: <ErrorPage />,
   },
   {
