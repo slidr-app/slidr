@@ -25,8 +25,12 @@ export function useSlideIndex({
   const nextSlideIndex = Math.min(slideIndex + 1, slideCount - 1);
 
   const updateSlideIndex = useCallback((index?: number) => {
-    if (index !== undefined) {
-      setSlideIndex(index);
+    // Heartbeat messages can include an index (if sent from the presentation view)
+    // Sometimes this gets called and there is no index (heartbeats from other views)
+    // Update the index if one is included.
+    // Use isInteger because the 0 index is a falsy value (can't just check for a truthy value)
+    if (Number.isInteger(index)) {
+      setSlideIndex(index!);
     }
   }, []);
 
