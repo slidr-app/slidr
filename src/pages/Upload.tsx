@@ -39,7 +39,9 @@ export default function Export() {
       storage,
       `presentations/${presentationRef.id}/${originalName}`,
     );
-    await uploadBytes(originalRef, acceptedFiles[0]);
+    await uploadBytes(originalRef, acceptedFiles[0], {
+      cacheControl: 'public;max-age=604800',
+    });
     const originalDownloadUrl = await getDownloadURL(originalRef);
     await updateDoc(presentationRef, {original: originalDownloadUrl});
     setRendering(true);
@@ -80,7 +82,9 @@ export default function Export() {
           .padStart(3, '0')}_${nanoid()}.webp`,
       );
 
-      await uploadBytes(pageStorageRef, pageBlob!);
+      await uploadBytes(pageStorageRef, pageBlob!, {
+        cacheControl: 'public;max-age=604800',
+      });
       const pageUrl = await getDownloadURL(pageStorageRef);
       return pageUrl;
     }

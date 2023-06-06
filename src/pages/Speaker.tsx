@@ -10,7 +10,6 @@ import useConfetti from '../confetti/use-confetti';
 import useBroadcastChannel from '../broadcast/use-broadcast-channel';
 import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
 import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
-import useNotes from '../slides/use-notes';
 import ProgressBar from '../components/ProgressBar';
 import {
   useChannelHandlers,
@@ -50,8 +49,6 @@ export default function Speaker() {
   }, [presentation]);
 
   const sessionId = useSearchParametersSessionId();
-
-  const notes = useNotes(presentationId!);
 
   // Sync the slide index with the broadcast channel (speaker view)
   const {
@@ -136,6 +133,19 @@ export default function Speaker() {
       return textSizes[nextIndex];
     };
   }, []);
+
+  let noteMarkdown = '';
+  for (let noteIndex = slideIndex; noteIndex >= 0; noteIndex--) {
+    if (presentation?.notes?.[noteIndex]?.type === 'text') {
+      console.log(slideIndex, 'copying from index', noteIndex);
+      noteMarkdown = presentation.notes[noteIndex]!.text!;
+      break;
+    } else if (presentation?.notes?.[noteIndex]?.type === 'copy') {
+      continue;
+    }
+
+    break;
+  }
 
   return (
     <div
@@ -270,7 +280,7 @@ export default function Speaker() {
           </div>
           <div className={clsx('p-2 prose max-w-full', textSize)}>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {notes.get(slideIndex) ?? ''}
+              {noteMarkdown}
             </ReactMarkdown>
           </div>
         </div>

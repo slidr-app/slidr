@@ -2,10 +2,7 @@ import {useEffect, Fragment, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {getDocs, collection} from 'firebase/firestore/lite';
 import {firestore} from '../firebase.ts';
-import {
-  type PresentationDoc,
-  type PresentationData,
-} from '../PresentationDoc.tsx';
+import {type PresentationDoc, type PresentationData} from '../presentation';
 
 export default function Home() {
   useEffect(() => {

@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {getDoc, doc} from 'firebase/firestore/lite';
-import {type PresentationData, type PresentationDoc} from './PresentationDoc';
+import {type PresentationData, type PresentationDoc} from './presentation';
 import {firestore} from './firebase';
 
 export default function usePresentation(
