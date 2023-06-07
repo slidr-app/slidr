@@ -70,7 +70,7 @@ export default function NoteEditor({
       <div className="grid grid-cols-2 gap-x-2">
         <div className="w-full h-full">
           <textarea
-            className="btn font-mono text-white bg-gray-900 w-full h-full min-h-[200px]"
+            className="input font-mono text-white bg-gray-900 w-full h-full min-h-[200px]"
             value={userMarkdown}
             onChange={(event) => {
               setUserMarkdown(event.target.value);

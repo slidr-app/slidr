@@ -110,7 +110,7 @@ export default function SignIn() {
       )} */}
       <form className="flex flex-row justify-center items-center gap-2 flex-wrap w-full">
         <input
-          className="btn bg-teal-900 text-white w-auto"
+          className="input w-auto"
           type="email"
           placeholder="email address..."
           value={email}

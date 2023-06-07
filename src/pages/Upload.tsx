@@ -246,12 +246,10 @@ export default function Export() {
           <div>Rendering slide: {pageIndex + 1}</div>
         </div>
       )}
-      <div className="btn bg-gray-200 text-black flex flex-row gap-2 items-center w-full">
+      <div className="input flex flex-row gap-2 items-center w-full focus-within:(border-focus outline-focus shadow-focus)">
         <input
           placeholder="Give your presentation a name..."
-          // Size={50}
           className="bg-transparent border-none focus-visible:(border-none outline-none) flex-grow"
-          // Value={title}
           onChange={(event) => {
             console.log('pending');
             setTitlePending(true);
@@ -263,7 +261,7 @@ export default function Export() {
           className={clsx(
             titlePending && 'i-tabler-loader-3 animate-spin',
             titleDone && 'i-tabler-check',
-            'text-teal-900',
+            'text-violet-700',
           )}
         />
       </div>

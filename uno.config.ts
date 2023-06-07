@@ -40,7 +40,12 @@ export default defineConfig({
   shortcuts: {
     'border-primary': 'rounded-md border-2 border-teal',
     'shadow-primary': 'shadow-xl shadow-teal-800',
+    'border-focus': 'rounded-md border-2 border-violet-700',
+    'shadow-focus': 'shadow-xl shadow-violet-700',
+    'outline-focus': 'outline outline-2 outline-gray-200',
     btn: 'py-2 px-4 font-semibold shadow-primary  border-primary bg-black',
+    input:
+      'p-2 shadow-primary border-primary bg-gray-200 text-black focus-visible:(border-focus outline-focus shadow-focus)',
     header:
       'text-2xl border-primary border-t-none rounded-t-none shadow-primary text-center py-2 font-semibold',
   },
