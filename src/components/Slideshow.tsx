@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import Loading from './Loading';
 
 export default function Slideshow({
   pageIndex,
@@ -9,6 +10,14 @@ export default function Slideshow({
   pages: string[];
   forward?: boolean;
 }) {
+  if (pages.length === 0) {
+    return (
+      <div className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))] z--1">
+        <Loading />
+      </div>
+    );
+  }
+
   // Use a function for readability
   function pageUnder() {
     if (forward === true && pageIndex > 0) {
