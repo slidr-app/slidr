@@ -48,6 +48,7 @@ export default defineConfig({
       'p-2 shadow-primary border-primary bg-gray-200 text-black focus-visible:(border-focus outline-focus shadow-focus)',
     header:
       'text-2xl border-primary border-t-none rounded-t-none shadow-primary text-center py-2 font-semibold',
+    'nav-active': 'border-b-2 border-teal shadow-md shadow-teal-800',
   },
   // https://github.com/unocss/unocss/discussions/2012
   theme: {

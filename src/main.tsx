@@ -24,7 +24,7 @@ const router = createBrowserRouter([
       <DefaultLayout
         title={
           <>
-            Present!
+            Browse Presentations
             <div className="i-tabler-microphone-2 ml-2" />
           </>
         }

@@ -5,7 +5,8 @@ import {
   useEffect,
   useState,
 } from 'react';
-import {Link} from 'react-router-dom';
+import {Link, NavLink} from 'react-router-dom';
+import clsx from 'clsx';
 import {auth} from '../firebase';
 
 export default function DefaultLayout({
@@ -21,6 +22,29 @@ export default function DefaultLayout({
   return (
     <div className="flex flex-col">
       <div className="header grid grid-cols-[1fr_2fr_1fr] mx-4 px-4 mb-6">
+        <div className="flex flex-row justify-start items-center relative gap-4">
+          <div className="overflow-hidden flex flex-col justify-center pb-1">
+            <NavLink
+              end
+              className={({isActive}) =>
+                clsx('hover:nav-active bg-black', isActive && 'nav-active')
+              }
+              to="/"
+            >
+              Slidr
+            </NavLink>
+          </div>
+          <div className="overflow-hidden flex flex-col justify-center pb-1">
+            <NavLink
+              className={({isActive}) =>
+                clsx('hover:nav-active bg-black', isActive && 'nav-active')
+              }
+              to="/upload"
+            >
+              upload
+            </NavLink>
+          </div>
+        </div>
         <div className="col-start-2 text-3xl flex flex-row items-center justify-center">
           <div>{title}</div>
         </div>
