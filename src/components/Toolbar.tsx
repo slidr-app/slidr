@@ -12,7 +12,9 @@ export default function Toolbar({
   onStart: () => void;
   onEnd: () => void;
 }) {
-  const [isFullscreen, setIsFullscreen] = useState(document.fullscreenEnabled);
+  const [isFullscreen, setIsFullscreen] = useState(
+    document.fullscreenElement !== null,
+  );
   useEffect(() => {
     function updateFullScreen() {
       setIsFullscreen(document.fullscreenElement !== null);
@@ -30,27 +32,54 @@ export default function Toolbar({
         <button
           className="i-tabler-arrow-big-left-filled text-teal font-size-[4rem]"
           type="button"
+          title="Previous"
           onClick={onPrevious}
         />
         <button
           className="i-tabler-arrow-big-right-filled text-teal font-size-[4rem]"
           type="button"
+          title="Next"
           onClick={onNext}
         />
         <button
           className="i-tabler-arrow-bar-to-left text-teal font-size-[4rem]"
           type="button"
+          title="Start"
           onClick={onStart}
         />
         <button
           className="i-tabler-arrow-bar-to-right text-teal font-size-[4rem]"
           type="button"
+          title="End"
           onClick={onEnd}
         />
         <button
+          className="i-tabler-speakerphone text-teal font-size-[4rem]"
+          type="button"
+          title="Open speaker view"
+          onClick={() =>
+            window.open(
+              `${window.location.origin}${window.location.pathname}/speaker${window.location.search}`,
+              undefined,
+              'popup',
+            )
+          }
+        />
+        <button
+          className="i-tabler-eyeglass text-teal font-size-[4rem]"
+          type="button"
+          title="Open audience view"
+          onClick={() =>
+            window.open(
+              `${window.location.origin}${window.location.pathname}/view${window.location.search}`,
+            )
+          }
+        />
+        {/* <button
           className="i-tabler-tools-off text-teal font-size-[4rem]"
           type="button"
-        />
+          title="Hide toolbar"
+        /> */}
         <button
           className={clsx(
             'font-size-[4rem]',
@@ -61,6 +90,7 @@ export default function Toolbar({
           )}
           disabled={!document.fullscreenEnabled}
           type="button"
+          title="Toggle fullscreen"
           onClick={() => {
             console.log('go fullscreen');
             if (!document.fullscreenElement) {
