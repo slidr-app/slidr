@@ -278,7 +278,7 @@ export default function Speaker() {
               <div className="i-tabler-zoom-out" />
             </button>
           </div>
-          <div className={clsx('p-2 prose max-w-full', textSize)}>
+          <div className={clsx('p-2 prose max-w-full font-inter', textSize)}>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {noteMarkdown}
             </ReactMarkdown>

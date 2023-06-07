@@ -6,6 +6,7 @@ export type PresentationData = {
   thumb: string;
   pages: string[];
   notes?: Note[];
+  uid: string;
 };
 export type PresentationDoc = Doc & PresentationData;
 

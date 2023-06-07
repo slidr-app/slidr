@@ -203,6 +203,7 @@ function Presentation() {
       />
       <Disconnected paused={paused} unPause={unPause} />
       <Toolbar
+        presentation={presentation}
         onNext={slideNext}
         onPrevious={slidePrevious}
         onStart={() => {

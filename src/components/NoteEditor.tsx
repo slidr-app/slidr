@@ -38,7 +38,7 @@ export default function NoteEditor({
             />
           ))}
         </div>
-        <div className="absolute top-0 left-0 bg-black bg-opacity-80 p-1 rounded-br-lg">
+        <div className="absolute top-0 left-0 bg-black bg-opacity-80 p-1 rounded-br-lg pr-2">
           {pageIndices[0] > 0 && pageIndices.length === 1 && (
             <button
               className="inline-block text-xl mr-2"
@@ -78,7 +78,7 @@ export default function NoteEditor({
             }}
           />
         </div>
-        <div className="prose max-w-full">
+        <div className="prose max-w-full font-inter">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
         </div>
       </div>

@@ -1,16 +1,20 @@
 import clsx from 'clsx';
 import {useEffect, useState} from 'react';
+import {Link} from 'react-router-dom';
+import {type PresentationDoc} from '../presentation';
 
 export default function Toolbar({
   onPrevious,
   onNext,
   onStart,
   onEnd,
+  presentation,
 }: {
   onPrevious: () => void;
   onNext: () => void;
   onStart: () => void;
   onEnd: () => void;
+  presentation?: PresentationDoc;
 }) {
   const [isFullscreen, setIsFullscreen] = useState(
     document.fullscreenElement !== null,
@@ -53,6 +57,7 @@ export default function Toolbar({
           title="End"
           onClick={onEnd}
         />
+        <div className="border-l-black border-l-1 mx-1" />
         <button
           className="i-tabler-speakerphone text-teal font-size-[4rem]"
           type="button"
@@ -75,11 +80,30 @@ export default function Toolbar({
             )
           }
         />
+        <Link
+          className="flex"
+          to={presentation ? `/${presentation.id}/notes` : '/'}
+        >
+          <button
+            className="i-tabler-pencil text-teal font-size-[4rem]"
+            type="button"
+            title="Edit presentation"
+          />
+        </Link>
+        <Link className="flex" to="/">
+          <button
+            className="i-tabler-home text-teal font-size-[4rem]"
+            type="button"
+            title="Home"
+          />
+        </Link>
         {/* <button
           className="i-tabler-tools-off text-teal font-size-[4rem]"
           type="button"
           title="Hide toolbar"
         /> */}
+        <div className="border-l-black border-l-1 mx-1" />
+
         <button
           className={clsx(
             'font-size-[4rem]',

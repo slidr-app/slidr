@@ -43,6 +43,17 @@ export default defineConfig({
         mono: ['Inconsolata'],
         sans: ['Abel', 'Abel:400,600'],
         // Sans: ['Saira', 'Abel:400,600'],
+        inter: [
+          {
+            name: 'Inter',
+            weights: ['400', '600', '700'],
+            italic: true,
+          },
+          {
+            name: 'sans-serif',
+            provider: 'none',
+          },
+        ],
       },
     }),
   ],
@@ -55,7 +66,7 @@ export default defineConfig({
     'outline-focus': 'outline outline-2 outline-gray-200',
     btn: 'py-2 px-4 font-semibold shadow-primary  border-primary bg-black',
     input:
-      'p-2 shadow-primary border-primary bg-gray-200 text-black focus-visible:(border-focus outline-focus shadow-focus)',
+      'p-2 shadow-primary border-primary bg-gray-900 text-white focus-visible:(border-focus outline-focus shadow-focus)',
     header:
       'text-2xl border-primary border-t-none rounded-t-none shadow-primary text-center py-2 font-semibold',
     'nav-active': 'border-b-2 border-teal shadow-md shadow-teal-800',

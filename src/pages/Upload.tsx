@@ -261,7 +261,7 @@ export default function Export() {
           className={clsx(
             titlePending && 'i-tabler-loader-3 animate-spin',
             titleDone && 'i-tabler-check',
-            'text-violet-700',
+            'text-teal',
           )}
         />
       </div>

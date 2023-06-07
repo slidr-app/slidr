@@ -1,7 +1,7 @@
 import {useEffect, Fragment, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {getDocs, collection} from 'firebase/firestore/lite';
-import {firestore} from '../firebase.ts';
+import {auth, firestore} from '../firebase.ts';
 import {type PresentationDoc, type PresentationData} from '../presentation';
 
 export default function Home() {
@@ -36,12 +36,27 @@ export default function Home() {
       <div className="p-4 grid grid-cols-[600px_auto] lt-md:grid-cols-1 gap-y-8 lt-md:gap-y-0 even:children:lt-md:mb-8">
         {presentations.map((presentation) => (
           <Fragment key={presentation.id}>
-            <div className="w-full aspect-video shadow-primary border-primary md:rounded-r-none lt-md:rounded-b-none overflow-hidden bg-black flex items-center justify-center">
-              <div className="w-full h-full">
+            <div className="relative w-full aspect-video shadow-primary border-primary md:rounded-r-none lt-md:rounded-b-none overflow-hidden bg-black flex items-center justify-center">
+              <div className="w-full h-full sibling:hover:opacity-100">
                 <Link to={`/${presentation.id}`} className="">
                   <img src={presentation.pages[0]} />
                 </Link>
               </div>
+              {presentation.uid === auth.currentUser?.uid && (
+                <div className="absolute right-0 bottom-0 bg-gray-900 bg-opacity-85 opacity-0 hover:(opacity-100) p-6 rounded-tl-lg transition-opacity duration-400 ease-out z-1">
+                  <Link
+                    className="flex flex-row gap-2 items-center text-teal text-lg"
+                    to={presentation ? `/${presentation.id}/notes` : '/'}
+                  >
+                    <button
+                      className="i-tabler-pencil font-size-[4rem]"
+                      type="button"
+                      title="Edit presentation"
+                    />
+                    <div>edit</div>
+                  </Link>
+                </div>
+              )}
             </div>
 
             <div className="border-2 border-primary shadow-primary md:border-l-none md:rounded-l-none lt-md:border-t-none lt-md:rounded-t-none relative p-4 flex flex-col justify-center bg-black">
