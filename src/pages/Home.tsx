@@ -54,9 +54,9 @@ export default function Home() {
                     <div className="text-3xl break-words">
                       {presentation.title ?? 'unname presentation'}
                     </div>
-                    <div className="text-base font-normal">
-                      <div className="i-tabler-presentation mr-2" />
-                      present
+                    <div className="text-base font-normal flex flex-row items-center gap-x-2 flex-wrap justify-center">
+                      <div className="i-tabler-presentation" />
+                      <div>present</div>
                     </div>
                   </button>
                 </Link>
