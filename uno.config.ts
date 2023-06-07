@@ -5,6 +5,7 @@ import presetIcons from '@unocss/preset-icons';
 import presetTypography from '@unocss/preset-typography';
 import transformerVariantGroup from '@unocss/transformer-variant-group';
 import transformerDirectives from '@unocss/transformer-directives';
+import presetWebFonts from '@unocss/preset-web-fonts';
 
 export default defineConfig({
   presets: [
@@ -33,6 +34,15 @@ export default defineConfig({
         h5: {
           'margin-top': '1rem',
         },
+      },
+    }),
+    presetWebFonts({
+      // Prefer bunny provider, but it seems to be broken with 2 theme overrides (only loads the first)
+      provider: 'google',
+      fonts: {
+        mono: ['Inconsolata'],
+        sans: ['Abel', 'Abel:400,600'],
+        // Sans: ['Saira', 'Abel:400,600'],
       },
     }),
   ],
