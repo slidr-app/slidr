@@ -13,9 +13,10 @@ import {
 } from 'firebase/firestore/lite';
 import {ref as storageRef, uploadBytes, getDownloadURL} from 'firebase/storage';
 import {nanoid} from 'nanoid';
-import {useDebouncedCallback} from 'use-debounce';
 import {auth, firestore, storage} from '../firebase';
 import '../pdf/pdf.css';
+import NotesEditor, {type NotesSaveState} from '../components/NotesEditor';
+import {type Note} from '../presentation';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -27,6 +28,10 @@ export default function Export() {
   const [uploadDone, setUploadDone] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [presentationRef, setPresentationRef] = useState<DocumentReference>();
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [title, setTitle] = useState('');
+  const [savingState, setSavingState] = useState<NotesSaveState>('saved');
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     setFile(acceptedFiles[0]);
     const presentationRef = await addDoc(
@@ -73,6 +78,7 @@ export default function Export() {
   const [uploadPromises, setUploadPromises] = useState<Array<Promise<string>>>(
     [],
   );
+  const [pages, setPages] = useState<string[]>([]);
   useEffect(() => {
     async function uploadPage() {
       const pageStorageRef = storageRef(
@@ -86,6 +92,16 @@ export default function Export() {
         cacheControl: 'public;max-age=604800',
       });
       const pageUrl = await getDownloadURL(pageStorageRef);
+      setPages((currentPages) => {
+        const nextPages = Array.from(currentPages);
+        nextPages.push(pageUrl);
+        return nextPages;
+      });
+      setNotes((currentNotes) => {
+        const nextNotes = Array.from(currentNotes);
+        nextNotes.push({pageIndices: [pageIndex], markdown: ''});
+        return nextNotes;
+      });
       return pageUrl;
     }
 
@@ -104,10 +120,6 @@ export default function Export() {
     }
   }, [rendering, pageBlob, pageIndex, presentationRef, pageCount]);
 
-  const [title, setTitle] = useState('');
-  const [titleSaved, setTitleSaved] = useState('');
-  const [titlePending, setTitlePending] = useState(false);
-  const [titleDone, setTitleDone] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -120,20 +132,18 @@ export default function Export() {
 
       const pageUrls = await Promise.all(uploadPromises);
 
-      const presentationUpdates: {
-        pages: string[];
-        rendered: Date;
-        title?: string;
-      } = {pages: pageUrls, rendered: new Date()};
-      if (titlePending && title.length > 0) {
-        presentationUpdates.title = title;
-        setTitlePending(false);
-        setTitleSaved(title);
-      }
+      setSavingState('saving');
 
-      await updateDoc(presentationRef, presentationUpdates);
+      await updateDoc(presentationRef, {
+        pages: pageUrls,
+        rendered: new Date(),
+        title,
+        notes,
+      });
       setUploadDone(true);
-      setTitleDone(true);
+      setSavingState((currentState) =>
+        currentState === 'saving' ? 'saved' : currentState,
+      );
     }
 
     void updatePages();
@@ -142,7 +152,7 @@ export default function Export() {
     renderingDone,
     uploadPromises,
     title,
-    titlePending,
+    notes,
     uploadDone,
     uploading,
   ]);
@@ -172,26 +182,33 @@ export default function Export() {
 
   const [message, icon] = getUserFeedback();
 
-  useEffect(() => {
-    if (!uploadDone || !presentationRef || titleSaved === title) {
+  async function savePreferences() {
+    // TODO: there is probably a race condition between uploading === true and uploadDone === true
+    // Could it be possible to lose some updates?
+    // The core problem is probably that the this save can happen async and the uploading save happens with an effect
+    // Consider: always updating here, ignoring uploadingDone
+    // Or do the upload synchronously 🤔
+    // if (!uploadDone || !presentationRef) {
+    // Update, let them both save, we may lose a note if the uploading save happens after this save, but that seems unlikely
+    if (!uploading || !presentationRef) {
       return;
     }
 
-    setTitlePending(false);
-    setTitleSaved(title);
-    void updateDoc(presentationRef, {title});
-    setTitleDone(true);
-  }, [title, uploadDone, presentationRef, titleSaved]);
-
-  const setDebouncedTitle = useDebouncedCallback((nextTitle: string) => {
-    setTitle(nextTitle);
-  }, 1000);
+    setSavingState('saving');
+    await updateDoc(presentationRef, {
+      notes,
+      title,
+    });
+    setSavingState((currentState) =>
+      currentState === 'saving' ? 'saved' : currentState,
+    );
+  }
 
   return (
-    <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-sm mx-auto">
+    <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">
       {!file && (
         <div
-          className="btn rounded-md p-8 flex flex-col items-center justify-center w-full aspect-video gap-4 cursor-pointer"
+          className="btn rounded-md p-8 flex flex-col items-center justify-center w-full max-w-screen-sm aspect-video gap-4 cursor-pointer mx-6"
           {...getRootProps()}
         >
           <input {...getInputProps()} />
@@ -214,7 +231,7 @@ export default function Export() {
         </div>
       )}
       {file && (
-        <div className="flex flex-col w-full aspect-video">
+        <div className="flex flex-col w-full max-w-screen-sm aspect-video">
           <Document
             file={file}
             className="w-full aspect-video relative rounded-t-md overflow-hidden"
@@ -246,25 +263,24 @@ export default function Export() {
           <div>Rendering slide: {pageIndex + 1}</div>
         </div>
       )}
-      <div className="input flex flex-row gap-2 items-center w-full focus-within:(border-focus outline-focus shadow-focus)">
-        <input
-          placeholder="Give your presentation a name..."
-          className="bg-transparent border-none focus-visible:(border-none outline-none) flex-grow"
-          onChange={(event) => {
-            console.log('pending');
-            setTitlePending(true);
-            setTitleDone(false);
-            setDebouncedTitle(event.target.value);
-          }}
-        />
-        <div
-          className={clsx(
-            titlePending && 'i-tabler-loader-3 animate-spin',
-            titleDone && 'i-tabler-check',
-            'text-teal',
-          )}
-        />
-      </div>
+      <NotesEditor
+        saveState={savingState}
+        notes={notes}
+        title={title}
+        setNotes={(updater) => {
+          setNotes(updater);
+        }}
+        setTitle={(nextTitle) => {
+          setTitle(nextTitle);
+        }}
+        pages={pages}
+        onSave={() => {
+          void savePreferences();
+        }}
+        onDirty={() => {
+          setSavingState('dirty');
+        }}
+      />
     </div>
   );
 }

@@ -29,100 +29,95 @@ export default function NotesEditor({
   }, 5000);
 
   return (
-    <div className="flex flex-col">
-      <div className="mt-14 w-full max-w-screen-md mx-auto flex flex-col text-base">
-        <div className="flex flex-row gap-2 items-center w-full">
-          <input
-            placeholder="Give your presentation a name..."
-            className="input flex-grow"
-            value={title}
-            onChange={(event) => {
-              onDirty();
-              setTitle(event.target.value);
-              debouncedSaveNotes();
-            }}
-          />
-          {/* <SaveButton /> */}
-        </div>
-        {notes.map((note, noteIndex) => (
-          <NoteEditor
-            key={note.pageIndices.toString()}
-            pageIndices={note.pageIndices}
-            markdown={note.markdown}
-            handleFoldUp={() => {
-              onDirty();
-              setNotes((currentNotes) => {
-                // Add the current index to the previous note
-                const previousNote: Note = {
-                  ...currentNotes[noteIndex - 1],
-                  pageIndices: [
-                    ...currentNotes[noteIndex - 1].pageIndices,
-                    ...note.pageIndices,
-                  ],
-                };
+    <div className="mt-14 w-full max-w-screen-md mx-auto flex flex-col text-base">
+      <input
+        placeholder="Give your presentation a name..."
+        className="input w-full max-w-screen-sm self-center"
+        value={title}
+        onChange={(event) => {
+          onDirty();
+          setTitle(event.target.value);
+          debouncedSaveNotes();
+        }}
+      />
+      {notes.map((note, noteIndex) => (
+        <NoteEditor
+          key={note.pageIndices.toString()}
+          pageIndices={note.pageIndices}
+          markdown={note.markdown}
+          handleFoldUp={() => {
+            onDirty();
+            setNotes((currentNotes) => {
+              // Add the current index to the previous note
+              const previousNote: Note = {
+                ...currentNotes[noteIndex - 1],
+                pageIndices: [
+                  ...currentNotes[noteIndex - 1].pageIndices,
+                  ...note.pageIndices,
+                ],
+              };
 
-                const nextNotes = [
-                  // Copy up to the previous note
-                  ...currentNotes.slice(0, Math.max(noteIndex - 1, 0)),
-                  // Add the previous note
-                  previousNote,
-                  // Skip the current note and copy everything else
-                  ...currentNotes.slice(noteIndex + 1),
-                ];
+              const nextNotes = [
+                // Copy up to the previous note
+                ...currentNotes.slice(0, Math.max(noteIndex - 1, 0)),
+                // Add the previous note
+                previousNote,
+                // Skip the current note and copy everything else
+                ...currentNotes.slice(noteIndex + 1),
+              ];
 
-                return nextNotes;
-              });
-              debouncedSaveNotes();
-            }}
-            handleFoldDown={() => {
-              onDirty();
-              setNotes((currentNotes) => {
-                const lastIndexInNote =
-                  currentNotes[noteIndex].pageIndices.at(-1)!;
+              return nextNotes;
+            });
+            debouncedSaveNotes();
+          }}
+          handleFoldDown={() => {
+            onDirty();
+            setNotes((currentNotes) => {
+              const lastIndexInNote =
+                currentNotes[noteIndex].pageIndices.at(-1)!;
 
-                // Remove the last index from the current note
-                const currentNote: Note = {
-                  ...currentNotes[noteIndex],
-                  pageIndices: currentNotes[noteIndex].pageIndices.slice(0, -1),
-                };
+              // Remove the last index from the current note
+              const currentNote: Note = {
+                ...currentNotes[noteIndex],
+                pageIndices: currentNotes[noteIndex].pageIndices.slice(0, -1),
+              };
 
-                const nextNote: Note = {
-                  pageIndices: [lastIndexInNote],
-                  markdown: '',
-                };
+              const nextNote: Note = {
+                pageIndices: [lastIndexInNote],
+                markdown: '',
+              };
 
-                const nextNotes = [
-                  // Copy up to the current note
-                  ...currentNotes.slice(0, noteIndex),
-                  // Add the current note
-                  currentNote,
-                  // Insert the next note
-                  nextNote,
-                  // Copy the rest
-                  ...currentNotes.slice(noteIndex + 1),
-                ];
-                console.log('next notes', nextNotes);
-                return nextNotes;
-              });
+              const nextNotes = [
+                // Copy up to the current note
+                ...currentNotes.slice(0, noteIndex),
+                // Add the current note
+                currentNote,
+                // Insert the next note
+                nextNote,
+                // Copy the rest
+                ...currentNotes.slice(noteIndex + 1),
+              ];
+              console.log('next notes', nextNotes);
+              return nextNotes;
+            });
 
-              debouncedSaveNotes();
-            }}
-            pages={pages}
-            onMarkdownChange={(markdown) => {
-              onDirty();
-              setNotes((currentNotes) => {
-                const nextNotes = Array.from(currentNotes);
-                nextNotes[noteIndex] = {...currentNotes[noteIndex], markdown};
-                return nextNotes;
-              });
-              debouncedSaveNotes();
-            }}
-            onMarkdownDirty={() => {
-              onDirty();
-            }}
-          />
-        ))}
-      </div>
+            debouncedSaveNotes();
+          }}
+          pages={pages}
+          onMarkdownChange={(markdown) => {
+            onDirty();
+            setNotes((currentNotes) => {
+              const nextNotes = Array.from(currentNotes);
+              nextNotes[noteIndex] = {...currentNotes[noteIndex], markdown};
+              return nextNotes;
+            });
+            debouncedSaveNotes();
+          }}
+          onMarkdownDirty={() => {
+            onDirty();
+          }}
+        />
+      ))}
       <div
         className={clsx(
           'btn fixed bottom-10 right-10 flex flex-row items-center shadow-md text-base transition-opacity ease-in-out bg-black',
