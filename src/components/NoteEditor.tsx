@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import {useState} from 'react';
 import {ReactMarkdown} from 'react-markdown/lib/react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -31,11 +32,16 @@ export default function NoteEditor({
   return (
     <>
       <div className="relative not-first:mt-8">
-        <div className="flex flex-row flex-wrap">
-          {pageIndices.map((pageIndex) => (
+        <div className="grid grid-cols-[repeat(auto-fill,_12rem)]">
+          {pageIndices.map((pageIndex, indicesIndex) => (
             <img
               key={pageIndex}
-              className="h-24 aspect-video"
+              className={clsx(
+                'aspect-video',
+                indicesIndex === 0
+                  ? 'grid-col-span-2 grid-row-span-2 w-24rem'
+                  : 'w-12rem',
+              )}
               src={pages[pageIndex]}
             />
           ))}
