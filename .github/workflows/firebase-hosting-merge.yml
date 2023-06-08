@@ -51,4 +51,4 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SUPA_PRESENTATION }}'
           channelId: live
           projectId: supa-presentation
-          targe: '${{ github.ref_name == "firebase" && "slidr-io" || "supa-presentation" }}''
+          targe: '${{ github.ref_name == "firebase" && "slidr-io" || "supa-presentation" }}'
