@@ -134,19 +134,6 @@ export default function Speaker() {
     };
   }, []);
 
-  let noteMarkdown = '';
-  for (let noteIndex = slideIndex; noteIndex >= 0; noteIndex--) {
-    if (presentation?.notes?.[noteIndex]?.type === 'text') {
-      console.log(slideIndex, 'copying from index', noteIndex);
-      noteMarkdown = presentation.notes[noteIndex]!.text!;
-      break;
-    } else if (presentation?.notes?.[noteIndex]?.type === 'copy') {
-      continue;
-    }
-
-    break;
-  }
-
   return (
     <div
       className="p-4 pt-0 grid grid-cols-[auto_1fr] gap-5 h-screen overflow-hidden lt-sm:(flex flex-col overflow-auto h-auto w-full)"

@@ -15,7 +15,9 @@ import {ref as storageRef, uploadBytes, getDownloadURL} from 'firebase/storage';
 import {nanoid} from 'nanoid';
 import {auth, firestore, storage} from '../firebase';
 import '../pdf/pdf.css';
-import PresentationPreferencesEditor, {type NotesSaveState} from '../components/PresentationPreferencesEditor';
+import PresentationPreferencesEditor, {
+  type NotesSaveState,
+} from '../components/PresentationPreferencesEditor';
 import {type Note} from '../presentation';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
