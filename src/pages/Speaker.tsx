@@ -280,7 +280,9 @@ export default function Speaker() {
           </div>
           <div className={clsx('p-2 prose max-w-full font-inter', textSize)}>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {noteMarkdown}
+              {presentation?.notes?.find((note) =>
+                note.pageIndices.includes(slideIndex),
+              )?.markdown ?? ''}
             </ReactMarkdown>
           </div>
         </div>

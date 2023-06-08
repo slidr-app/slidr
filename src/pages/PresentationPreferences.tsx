@@ -36,22 +36,9 @@ export default function PresentationPreferences() {
 
   useEffect(() => {
     // Use notes from the DB
-    if (presentation?.notes) {
+    if (presentation) {
       setNotes(presentation.notes);
-    }
-    // Initialize new notes if there are none
-    else if (presentation) {
-      setNotes(
-        Array.from({length: presentation?.pages?.length ?? 0}).map(
-          (_, noteIndex) => ({pageIndices: [noteIndex], markdown: ''}),
-        ),
-      );
-    }
-
-    if (presentation?.title) {
       setTitle(presentation.title);
-    } else if (presentation) {
-      setTitle('');
     }
   }, [presentation]);
 

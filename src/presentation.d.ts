@@ -5,7 +5,7 @@ export type PresentationData = {
   title: string;
   thumb: string;
   pages: string[];
-  notes?: Note[];
+  notes: Note[];
   uid: string;
 };
 export type PresentationDoc = Doc & PresentationData;
