@@ -5,9 +5,11 @@ import usePresentation from '../use-presentation';
 import {type Note} from '../presentation';
 import {firestore} from '../firebase';
 import DefaultLayout from '../layouts/DefaultLayout';
-import NotesEditor, {type NotesSaveState} from '../components/NotesEditor';
+import PresentationPreferencesEditor, {
+  type NotesSaveState,
+} from '../components/PresentationPreferencesEditor';
 
-export default function Notes() {
+export default function PresentationPreferences() {
   const {presentationId} = useParams();
   const presentation = usePresentation(presentationId);
 
@@ -55,7 +57,7 @@ export default function Notes() {
 
   return (
     <DefaultLayout title="Presentation Settings">
-      <NotesEditor
+      <PresentationPreferencesEditor
         saveState={savingState}
         notes={notes}
         title={title}

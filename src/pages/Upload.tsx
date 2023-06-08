@@ -15,7 +15,7 @@ import {ref as storageRef, uploadBytes, getDownloadURL} from 'firebase/storage';
 import {nanoid} from 'nanoid';
 import {auth, firestore, storage} from '../firebase';
 import '../pdf/pdf.css';
-import NotesEditor, {type NotesSaveState} from '../components/NotesEditor';
+import PresentationPreferencesEditor, {type NotesSaveState} from '../components/PresentationPreferencesEditor';
 import {type Note} from '../presentation';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
@@ -263,7 +263,7 @@ export default function Export() {
           <div>Rendering slide: {pageIndex + 1}</div>
         </div>
       )}
-      <NotesEditor
+      <PresentationPreferencesEditor
         saveState={savingState}
         notes={notes}
         title={title}

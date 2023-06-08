@@ -15,7 +15,9 @@ const Home = lazy(async () => import('./pages/Home.tsx'));
 const DefaultLayout = lazy(async () => import('./layouts/DefaultLayout.tsx'));
 const SignIn = lazy(async () => import('./pages/SignIn.tsx'));
 const Upload = lazy(async () => import('./pages/Upload.tsx'));
-const Notes = lazy(async () => import('./pages/Notes.tsx'));
+const PresentationPreferences = lazy(
+  async () => import('./pages/PresentationPreferences.tsx'),
+);
 
 const router = createBrowserRouter([
   {
@@ -56,7 +58,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/:presentationId/notes',
-    element: <Notes />,
+    element: <PresentationPreferences />,
     errorElement: <ErrorPage />,
   },
   {

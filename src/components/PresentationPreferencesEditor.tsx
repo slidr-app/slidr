@@ -5,7 +5,7 @@ import NoteEditor from './NoteEditor';
 
 export type NotesSaveState = 'dirty' | 'saved' | 'saving';
 
-export default function NotesEditor({
+export default function PresentationPreferencesEditor({
   saveState,
   onSave,
   notes,
