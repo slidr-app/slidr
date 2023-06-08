@@ -7,6 +7,7 @@ export default function NoteEditor({
   pageIndices,
   markdown,
   onMarkdownChange,
+  onMarkdownDirty,
   handleFoldUp,
   handleFoldDown,
   pages,
@@ -14,6 +15,7 @@ export default function NoteEditor({
   pageIndices: number[];
   markdown: string;
   onMarkdownChange: (markdown: string) => void;
+  onMarkdownDirty: () => void;
   handleFoldUp: () => void;
   handleFoldDown: () => void;
   pages: string[];
@@ -32,7 +34,7 @@ export default function NoteEditor({
         <div className="flex flex-row flex-wrap">
           {pageIndices.map((pageIndex) => (
             <img
-              key={pages[pageIndex]}
+              key={pageIndex}
               className="h-24 aspect-video"
               src={pages[pageIndex]}
             />
@@ -75,6 +77,7 @@ export default function NoteEditor({
             onChange={(event) => {
               setUserMarkdown(event.target.value);
               debouncedMarkdownChange(event.target.value);
+              onMarkdownDirty();
             }}
           />
         </div>

@@ -11,6 +11,6 @@ export type PresentationData = {
 export type PresentationDoc = Doc & PresentationData;
 
 export type Note = {
-  text?: string;
-  type?: 'text' | 'copy';
+  pageIndices: number[];
+  markdown: string;
 };

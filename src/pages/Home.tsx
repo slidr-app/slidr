@@ -33,7 +33,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center max-w-screen-sm mx-auto">
-      <div className="p-4 grid grid-cols-[600px_auto] lt-md:grid-cols-1 gap-y-8 lt-md:gap-y-0 even:children:lt-md:mb-8">
+      <div className="p-4 grid grid-cols-[600px_auto] lt-md:grid-cols-1 gap-y-8 lt-md:gap-y-0 even:children:lt-md:mb-8 mb-6">
         {presentations.map((presentation) => (
           <Fragment key={presentation.id}>
             <div className="relative w-full aspect-video shadow-primary border-primary md:rounded-r-none lt-md:rounded-b-none overflow-hidden bg-black flex items-center justify-center">
