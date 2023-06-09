@@ -4,19 +4,21 @@ import {getDocs, collection, orderBy, query} from 'firebase/firestore/lite';
 import {auth, firestore} from '../firebase.ts';
 import {type PresentationDoc, type PresentationData} from '../presentation';
 import DefaultLayout from '../layouts/DefaultLayout.tsx';
+import Loading from '../components/Loading.tsx';
 
 export default function Home() {
   useEffect(() => {
     document.title = `Present - Home`;
   }, []);
 
-  const [presentations, setPresentations] = useState<PresentationDoc[]>([]);
+  const [presentations, setPresentations] = useState<PresentationDoc[]>();
 
   useEffect(() => {
     async function getPresentations() {
       const querySnapshot = await getDocs(
         query(collection(firestore, 'presentations'), orderBy('rendered')),
       );
+
       setPresentations(
         querySnapshot.docs.map((doc) => {
           const presentation: PresentationDoc = {
@@ -40,8 +42,8 @@ export default function Home() {
         </>
       }
     >
-      <div className="grid grid-cols-2 lt-sm:grid-cols-1 max-w-screen-lg mx-auto gap-8 px-4 justify-center">
-        {presentations.map((presentation) => (
+      <div className="grid grid-cols-2 lt-sm:grid-cols-1 max-w-screen-lg w-full mx-auto gap-8 px-4 justify-center">
+        {presentations?.map((presentation) => (
           <div
             key={presentation.id}
             className="relative flex flex-col shadow-primary border-primary overflow-hidden sm:odd:last:(col-span-2 w-50% mx-auto)"
@@ -53,7 +55,10 @@ export default function Home() {
                     {presentation.title}
                   </div>
                 )}
-                <img src={presentation.pages[0]} />
+                <img
+                  className="w-full aspect-video"
+                  src={presentation.pages[0]}
+                />
               </Link>
             </div>
             <div className="flex flex-row pt-2 items-center gap-4 px-4">
@@ -110,7 +115,11 @@ export default function Home() {
               )}
             </div>
           </div>
-        ))}
+        )) ?? (
+          <div className="absolute top-50% left-50%">
+            <Loading />
+          </div>
+        )}
       </div>
     </DefaultLayout>
   );
