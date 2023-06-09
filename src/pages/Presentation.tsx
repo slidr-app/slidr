@@ -28,9 +28,7 @@ function Presentation() {
   const presentation = usePresentation(presentationId);
 
   useEffect(() => {
-    document.title = `Present - ${
-      presentation?.title ?? 'Unnamed Presentation'
-    }`;
+    document.title = `Slidr - ${presentation?.title ?? 'Unnamed Presentation'}`;
   }, [presentation]);
 
   const [forward, setForward] = useState<boolean>(true);

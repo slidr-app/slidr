@@ -25,6 +25,10 @@ const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 export default function Export() {
+  useEffect(() => {
+    document.title = `Slidr - Upload`;
+  }, []);
+
   const [file, setFile] = useState<File>();
   const [pageIndex, setPageIndex] = useState(0);
   const [pageCount, setPageCount] = useState(0);

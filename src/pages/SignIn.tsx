@@ -12,6 +12,10 @@ import {auth} from '../firebase';
 import Loading from '../components/Loading';
 
 export default function SignIn() {
+  useEffect(() => {
+    document.title = `Slidr - Sign In`;
+  }, []);
+
   const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this
     // URL must be in the authorized domains list in the Firebase Console.

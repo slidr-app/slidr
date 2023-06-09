@@ -43,7 +43,7 @@ export default function Speaker() {
   const presentation = usePresentation(presentationId);
 
   useEffect(() => {
-    document.title = `Present - ${
+    document.title = `Slidr - ${
       presentation?.title ?? 'Unnamed Presentation'
     } - Speaker`;
   }, [presentation]);

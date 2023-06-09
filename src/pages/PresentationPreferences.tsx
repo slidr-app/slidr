@@ -14,9 +14,9 @@ export default function PresentationPreferences() {
   const presentation = usePresentation(presentationId);
 
   useEffect(() => {
-    document.title = `Present - ${
+    document.title = `Slidr - ${
       presentation?.title ?? 'Unnamed Presentation'
-    }`;
+    } - Preferences`;
   }, [presentation]);
 
   const [notes, setNotes] = useState<Note[]>([]);

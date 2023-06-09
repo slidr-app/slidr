@@ -8,7 +8,7 @@ import Loading from '../components/Loading.tsx';
 
 export default function Home() {
   useEffect(() => {
-    document.title = `Present - Home`;
+    document.title = `Slidr - Home`;
   }, []);
 
   const [presentations, setPresentations] = useState<PresentationDoc[]>();

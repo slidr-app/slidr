@@ -24,7 +24,7 @@ export default function Viewer() {
   const presentation = usePresentation(presentationId);
 
   useEffect(() => {
-    document.title = `Present - ${
+    document.title = `Slidr - ${
       presentation?.title ?? 'Unnamed Presentation'
     } - Audience`;
   }, [presentation]);
