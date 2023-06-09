@@ -1,27 +1,56 @@
 {
-  "hosting": {
-    "public": "dist",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ],
-    "headers": [
-      {
-        "source": "**/assets/*",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "max-age=604800, immutable"
-          }
-        ]
-      }
-    ]
-  }
+  "hosting": [
+    {
+      "target": "present",
+      "public": "dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**/assets/*",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "max-age=604800, immutable"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target": "slidr",
+      "public": "dist",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**/assets/*",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "max-age=604800, immutable"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

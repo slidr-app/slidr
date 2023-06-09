@@ -25,7 +25,6 @@ dist-ssr
 
 .firebase
 .env
-.firebaserc
 
 src/presentations/thumbs
 TODO.md

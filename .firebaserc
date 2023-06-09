@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "supa-presentation"
+  },
+  "targets": {
+    "supa-presentation": {
+      "hosting": {
+        "slidr": [
+          "slidr-io"
+        ],
+        "present": [
+          "supa-presentation"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
