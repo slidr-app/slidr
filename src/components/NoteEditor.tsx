@@ -32,15 +32,15 @@ export default function NoteEditor({
   return (
     <>
       <div className="relative not-first:mt-8">
-        <div className="grid grid-cols-[repeat(auto-fill,_12rem)]">
+        <div className="grid grid-cols-[repeat(auto-fill,_12rem)] lt-sm:grid-cols-2">
           {pageIndices.map((pageIndex, indicesIndex) => (
             <img
               key={pageIndex}
               className={clsx(
                 'aspect-video',
                 indicesIndex === 0
-                  ? 'grid-col-span-2 grid-row-span-2 w-24rem'
-                  : 'w-12rem',
+                  ? 'grid-col-span-2 grid-row-span-2 w-24rem lt-sm:w-full'
+                  : 'w-12rem lt-sm:w-full',
               )}
               src={pages[pageIndex]}
             />
@@ -74,11 +74,10 @@ export default function NoteEditor({
             : `pages ${pageIndices[0] + 1} - ${pageIndices.at(-1)! + 1}`}
         </div>
       </div>
-      {/* <img src={page} className="w-full aspect-video" /> */}
-      <div className="grid grid-cols-2 gap-x-2">
-        <div className="w-full h-full">
+      <div className="grid grid-cols-2 gap-x-2 lt-sm:grid-cols-1">
+        <div className="w-full">
           <textarea
-            className="input font-mono text-white bg-gray-900 w-full h-full min-h-[200px] mt-[2px]"
+            className="input font-mono text-white bg-gray-900 w-full mt-[2px] min-h-[200px] col-span-2"
             value={userMarkdown}
             onChange={(event) => {
               setUserMarkdown(event.target.value);

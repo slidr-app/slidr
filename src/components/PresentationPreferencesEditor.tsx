@@ -29,7 +29,7 @@ export default function PresentationPreferencesEditor({
   }, 5000);
 
   return (
-    <div className="mt-14 w-full max-w-screen-md mx-auto flex flex-col text-base">
+    <div className="w-full max-w-screen-md mx-auto flex flex-col text-base px-2">
       <input
         placeholder="Give your presentation a name..."
         className="input w-full max-w-screen-sm self-center"
