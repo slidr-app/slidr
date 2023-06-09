@@ -21,8 +21,8 @@ export default function DefaultLayout({
   );
   return (
     <div className="flex flex-col">
-      <div className="header grid grid-cols-[1fr_2fr_1fr] mx-4 px-4 mb-6">
-        <div className="flex flex-row justify-start items-center relative gap-4">
+      <div className="header flex flex-row mx-4 px-4 mb-6 lt-sm:(grid grid-cols-2 gap-y-2 px-2)">
+        <div className="row-start-1 col-start-1 flex flex-row justify-start items-center relative gap-4">
           <div className="overflow-hidden flex flex-col justify-center pb-1">
             <NavLink
               end
@@ -45,10 +45,12 @@ export default function DefaultLayout({
             </NavLink>
           </div>
         </div>
-        <div className="col-start-2 text-3xl flex flex-row items-center justify-center">
+        <div className="row-start-1 flex flex-grow flex-shrink" />
+        <div className="row-start-2 col-span-full text-3xl flex flex-row items-center justify-center">
           <div>{title}</div>
         </div>
-        <div className="col-start-3 flex flex-col items-end">
+        <div className="row-start-1 flex flex-grow flex-shrink" />
+        <div className="row-start-1 col-start-2 flex flex-col items-end">
           {user ? (
             <button
               className="btn shadow-none text-base"
