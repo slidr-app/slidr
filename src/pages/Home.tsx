@@ -31,11 +31,11 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="grid grid-cols-2 lt-sm:grid-cols-1 max-w-screen-lg mx-auto gap-8 px-4">
+    <div className="grid grid-cols-2 lt-sm:grid-cols-1 max-w-screen-lg mx-auto gap-8 px-4 justify-center">
       {presentations.map((presentation) => (
         <div
           key={presentation.id}
-          className="relative flex flex-col shadow-primary border-primary overflow-hidden"
+          className="relative flex flex-col shadow-primary border-primary overflow-hidden sm:odd:last:(col-span-2 w-50% mx-auto)"
         >
           <div className="relative w-full h-full siblings:hover:opacity-100 border-b-2 border-teal">
             <Link to={`/${presentation.id}`} className="">
