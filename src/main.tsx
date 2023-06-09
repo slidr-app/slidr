@@ -12,7 +12,6 @@ const Viewer = lazy(async () => import('./pages/Viewer.tsx'));
 const Speaker = lazy(async () => import('./pages/Speaker.tsx'));
 const Presentation = lazy(async () => import('./pages/Presentation.tsx'));
 const Home = lazy(async () => import('./pages/Home.tsx'));
-const DefaultLayout = lazy(async () => import('./layouts/DefaultLayout.tsx'));
 const SignIn = lazy(async () => import('./pages/SignIn.tsx'));
 const Upload = lazy(async () => import('./pages/Upload.tsx'));
 const PresentationPreferences = lazy(
@@ -22,18 +21,7 @@ const PresentationPreferences = lazy(
 const router = createBrowserRouter([
   {
     path: '/',
-    element: (
-      <DefaultLayout
-        title={
-          <>
-            Browse Presentations
-            <div className="i-tabler-microphone-2 ml-2" />
-          </>
-        }
-      >
-        <Home />
-      </DefaultLayout>
-    ),
+    element: <Home />,
     errorElement: <ErrorPage />,
   },
   {
@@ -63,11 +51,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/upload',
-    element: (
-      <DefaultLayout title="Upload Presentation">
-        <Upload />
-      </DefaultLayout>
-    ),
+    element: <Upload />,
     errorElement: <ErrorPage />,
   },
   {

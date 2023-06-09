@@ -19,6 +19,7 @@ import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
 import {type Note} from '../presentation';
+import DefaultLayout from '../layouts/DefaultLayout';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -207,82 +208,84 @@ export default function Export() {
   }
 
   return (
-    <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">
-      {!file && (
-        <div
-          className="btn rounded-md p-8 flex flex-col items-center justify-center w-full max-w-screen-sm aspect-video gap-4 cursor-pointer mx-6"
-          {...getRootProps()}
-        >
-          <input {...getInputProps()} />
-          {isDragActive ? (
-            <>
-              <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce animate-duration-500 text-teal-500" />
-              <div className="text-center">
-                Drop the pdf presentation here...
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce" />
-              <div className="text-center">
-                Drag &apos;n&apos; drop a pdf presentation here, or click to
-                select a pdf presentation
-              </div>
-            </>
-          )}
-        </div>
-      )}
-      {file && (
-        <div className="flex flex-col w-full max-w-screen-sm aspect-video">
-          <Document
-            file={file}
-            className="w-full aspect-video relative rounded-t-md overflow-hidden"
-            onLoadSuccess={(pdf) => {
-              setPageCount(pdf.numPages);
-            }}
-          >
-            <Page
-              pageIndex={pageIndex}
-              className="w-full h-full"
-              canvasRef={canvasRef}
-              width={1920}
-              // We want the exported images to be 1920, irrespective of the pixel ratio
-              // Fix the ratio to 1
-              devicePixelRatio={1}
-              onRenderSuccess={() => {
-                pageRendered();
-              }}
-            />
-            <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
-              <div className={clsx('w-10 h-10', icon)} />
-              <div>{message}</div>
-            </div>
-          </Document>
+    <DefaultLayout title="Upload Presentation">
+      <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">
+        {!file && (
           <div
-            className="h-[6px] bg-teal"
-            style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
-          />
-          <div>Rendering slide: {pageIndex + 1}</div>
-        </div>
-      )}
-      <PresentationPreferencesEditor
-        saveState={savingState}
-        notes={notes}
-        title={title}
-        setNotes={(updater) => {
-          setNotes(updater);
-        }}
-        setTitle={(nextTitle) => {
-          setTitle(nextTitle);
-        }}
-        pages={pages}
-        onSave={() => {
-          void savePreferences();
-        }}
-        onDirty={() => {
-          setSavingState('dirty');
-        }}
-      />
-    </div>
+            className="btn rounded-md p-8 flex flex-col items-center justify-center w-full max-w-screen-sm aspect-video gap-4 cursor-pointer mx-6"
+            {...getRootProps()}
+          >
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <>
+                <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce animate-duration-500 text-teal-500" />
+                <div className="text-center">
+                  Drop the pdf presentation here...
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce" />
+                <div className="text-center">
+                  Drag &apos;n&apos; drop a pdf presentation here, or click to
+                  select a pdf presentation
+                </div>
+              </>
+            )}
+          </div>
+        )}
+        {file && (
+          <div className="flex flex-col w-full max-w-screen-sm aspect-video">
+            <Document
+              file={file}
+              className="w-full aspect-video relative rounded-t-md overflow-hidden"
+              onLoadSuccess={(pdf) => {
+                setPageCount(pdf.numPages);
+              }}
+            >
+              <Page
+                pageIndex={pageIndex}
+                className="w-full h-full"
+                canvasRef={canvasRef}
+                width={1920}
+                // We want the exported images to be 1920, irrespective of the pixel ratio
+                // Fix the ratio to 1
+                devicePixelRatio={1}
+                onRenderSuccess={() => {
+                  pageRendered();
+                }}
+              />
+              <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
+                <div className={clsx('w-10 h-10', icon)} />
+                <div>{message}</div>
+              </div>
+            </Document>
+            <div
+              className="h-[6px] bg-teal"
+              style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
+            />
+            <div>Rendering slide: {pageIndex + 1}</div>
+          </div>
+        )}
+        <PresentationPreferencesEditor
+          saveState={savingState}
+          notes={notes}
+          title={title}
+          setNotes={(updater) => {
+            setNotes(updater);
+          }}
+          setTitle={(nextTitle) => {
+            setTitle(nextTitle);
+          }}
+          pages={pages}
+          onSave={() => {
+            void savePreferences();
+          }}
+          onDirty={() => {
+            setSavingState('dirty');
+          }}
+        />
+      </div>
+    </DefaultLayout>
   );
 }
