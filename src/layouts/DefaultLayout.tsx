@@ -19,6 +19,8 @@ export default function DefaultLayout({
       setUser(nextUser ?? undefined);
     }),
   );
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
   return (
     <div className="flex flex-col">
       <div className="header flex flex-row mx-4 px-4 mb-6 lt-sm:(grid grid-cols-2 gap-y-2 px-2)">
@@ -52,13 +54,48 @@ export default function DefaultLayout({
         <div className="row-start-1 flex flex-grow flex-shrink" />
         <div className="row-start-1 col-start-2 flex flex-col items-end">
           {user ? (
-            <button
-              className="btn shadow-none text-base"
-              type="button"
-              onClick={async () => signOut(auth)}
-            >
-              Sign Out
-            </button>
+            <div>
+              <button
+                className={clsx(
+                  'btn py-1 shadow-md',
+                  showUserMenu && 'bg-teal rounded-b-none',
+                )}
+                type="button"
+                onClick={() => {
+                  setShowUserMenu((show) => !show);
+                }}
+              >
+                <div
+                  className={clsx(
+                    'i-tabler-user-circle',
+                    showUserMenu ? 'text-black' : 'text-teal',
+                  )}
+                />
+              </button>
+              <div
+                className={clsx(
+                  'absolute flex-col right-0 p-4 bg-gray-900 bg-opacity-85 border-primary shadow-primary z-1 mr-4',
+                  showUserMenu ? 'flex' : 'display-none',
+                )}
+              >
+                <button
+                  className="text-base hover:children:(nav-active mb-0) overflow-hidden pb-2"
+                  type="button"
+                  onClick={async () => signOut(auth)}
+                >
+                  <div className="mb-2px">Sign Out</div>
+                </button>
+                <Link to="/user">
+                  <button
+                    className="text-base hover:children:(nav-active mb-0) overflow-hidden pb-2"
+                    type="button"
+                    onClick={async () => signOut(auth)}
+                  >
+                    <div className="mb-2px">Preferences</div>
+                  </button>
+                </Link>
+              </div>
+            </div>
           ) : (
             <Link to="/signin">
               <button className="btn shadow-none text-base" type="button">

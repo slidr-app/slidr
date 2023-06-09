@@ -38,7 +38,7 @@ export default function Home() {
       title={
         <>
           Browse Presentations
-          <div className="i-tabler-microphone-2 ml-2" />
+          <div className="text-teal i-tabler-microphone-2 ml-2" />
         </>
       }
     >
