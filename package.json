@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && pnpm run thumbs && vite build",
+    "build": "tsc && vite build",
     "lint": "xo",
     "preview": "vite preview",
-    "thumbs": "rimraf src/presentations/thumbs && mkdir src/presentations/thumbs && node ./bin/generate-title-pdf.js",
     "prepare": "husky install",
     "prepush": "pnpm run lint && pnpm run build"
   },

@@ -25,15 +25,9 @@ _Mobile friendly audience view... go ahead, throw some confetti on the main scre
 
 ## Quickstart
 
-Place 16x9 pdf presentations in `src/presentations`.
-The filenames will be translated to routes in the applications.
-Use short filenames without spaces so that they are url friendly.
-
-For example `src/presentations/mypres.pdf`, will add the following routes:
-
-- `/mypres` presentation view (navigate with arrow keys, `S` key to open speaker view)
-- `/mypres/speaker` speaker view
-- `/mypres/view` interactive audience view (can throw confetti on to the presentation)
+1. Create an account at `/signin`
+1. Upload a 16x9 pdf presentation to `/upload`
+1. Enjoy
 
 ### Install
 
