@@ -7,6 +7,7 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import './index.css';
 import ErrorPage from './pages/ErrorPage.tsx';
 import Loading from './components/Loading.tsx';
+import {UserProvider} from './components/UserProvider.tsx';
 
 const Viewer = lazy(async () => import('./pages/Viewer.tsx'));
 const Speaker = lazy(async () => import('./pages/Speaker.tsx'));
@@ -17,6 +18,7 @@ const Upload = lazy(async () => import('./pages/Upload.tsx'));
 const PresentationPreferences = lazy(
   async () => import('./pages/PresentationPreferences.tsx'),
 );
+const UserPreferences = lazy(async () => import('./pages/UserPreferences.tsx'));
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,16 @@ const router = createBrowserRouter([
   {
     path: '/signin',
     element: <SignIn />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/upload',
+    element: <Upload />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/user',
+    element: <UserPreferences />,
     errorElement: <ErrorPage />,
   },
   {
@@ -50,11 +62,6 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: '/upload',
-    element: <Upload />,
-    errorElement: <ErrorPage />,
-  },
-  {
     path: '*',
     element: <ErrorPage />,
   },
@@ -62,14 +69,16 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(
   <React.StrictMode>
-    <Suspense
-      fallback={
-        <div className="h-screen w-screen">
-          <Loading />
-        </div>
-      }
-    >
-      <RouterProvider router={router} />
-    </Suspense>
+    <UserProvider>
+      <Suspense
+        fallback={
+          <div className="h-screen w-screen">
+            <Loading />
+          </div>
+        }
+      >
+        <RouterProvider router={router} />
+      </Suspense>
+    </UserProvider>
   </React.StrictMode>,
 );
