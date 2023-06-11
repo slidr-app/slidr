@@ -101,18 +101,22 @@ export default function SignIn() {
           <Link to="/">home</Link>.
         </div>
       )}
-      {/* {user && (
-        <button
-          className="btn"
-          type="button"
-          onClick={() => {
-            void signOut(auth);
-          }}
-        >
-          Sign Out
-        </button>
-      )} */}
-      <form className="flex flex-row justify-center items-center gap-2 flex-wrap w-full">
+      <form
+        className="flex flex-row justify-center items-center gap-2 flex-wrap w-full"
+        onSubmit={async (event) => {
+          event.preventDefault();
+
+          if (isLink) {
+            void signInAndRemoveEmail(email);
+            return;
+          }
+
+          setEmailSending(true);
+          await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+          window.localStorage.setItem('emailForSignIn', email);
+          setEmailSent(true);
+        }}
+      >
         <input
           className="input w-auto"
           type="email"
@@ -125,26 +129,14 @@ export default function SignIn() {
           }}
         />
         {isLink ? (
-          <button
-            className="btn"
-            type="button"
-            onClick={() => {
-              void signInAndRemoveEmail(email);
-            }}
-          >
+          <button className="btn" type="submit">
             Verify & Sign In
           </button>
         ) : (
           <button
             className="btn flex flex-row items-center gap-2"
-            type="button"
+            type="submit"
             disabled={emailSent}
-            onClick={async () => {
-              setEmailSending(true);
-              await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-              window.localStorage.setItem('emailForSignIn', email);
-              setEmailSent(true);
-            }}
           >
             <div
               className={clsx(

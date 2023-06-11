@@ -59,7 +59,7 @@ export default function Home() {
                       </div>
                     )}
                     {presentation.username.length > 0 && (
-                      <div className="px-2 py-1 rounded-br-md bg-gray-900 bg-opacity-85 text-base">
+                      <div className="px-2 pb-1 rounded-br-md bg-gray-900 bg-opacity-85 text-base">
                         by {presentation.username}
                       </div>
                     )}

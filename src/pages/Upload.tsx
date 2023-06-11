@@ -63,32 +63,35 @@ export default function Export() {
   const [title, setTitle] = useState('');
   const [savingState, setSavingState] = useState<NotesSaveState>('saved');
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    setFile(acceptedFiles[0]);
-    const presentationRef = await addDoc(
-      collection(firestore, 'presentations'),
-      {
-        created: new Date(),
-        uid: auth.currentUser?.uid,
-        username: userData?.username ?? '',
-        pages: [],
-        notes: [],
-        title: '',
-      },
-    );
-    setPresentationRef(presentationRef);
-    const originalName = `${nanoid()}.pdf`;
-    const originalRef = storageRef(
-      storage,
-      `presentations/${presentationRef.id}/${originalName}`,
-    );
-    await uploadBytes(originalRef, acceptedFiles[0], {
-      cacheControl: 'public;max-age=604800',
-    });
-    const originalDownloadUrl = await getDownloadURL(originalRef);
-    await updateDoc(presentationRef, {original: originalDownloadUrl});
-    setRendering(true);
-  }, []);
+  const onDrop = useCallback(
+    async (acceptedFiles: File[]) => {
+      setFile(acceptedFiles[0]);
+      const presentationRef = await addDoc(
+        collection(firestore, 'presentations'),
+        {
+          created: new Date(),
+          uid: auth.currentUser?.uid,
+          username: userData?.username ?? '',
+          pages: [],
+          notes: [],
+          title: '',
+        },
+      );
+      setPresentationRef(presentationRef);
+      const originalName = `${nanoid()}.pdf`;
+      const originalRef = storageRef(
+        storage,
+        `presentations/${presentationRef.id}/${originalName}`,
+      );
+      await uploadBytes(originalRef, acceptedFiles[0], {
+        cacheControl: 'public;max-age=604800',
+      });
+      const originalDownloadUrl = await getDownloadURL(originalRef);
+      await updateDoc(presentationRef, {original: originalDownloadUrl});
+      setRendering(true);
+    },
+    [userData?.username],
+  );
 
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
     onDrop,

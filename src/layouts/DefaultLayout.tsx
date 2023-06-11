@@ -45,16 +45,18 @@ export default function DefaultLayout({
               Slidr
             </NavLink>
           </div>
-          <div className="overflow-hidden flex flex-col justify-center pb-1">
-            <NavLink
-              className={({isActive}) =>
-                clsx('hover:nav-active bg-black', isActive && 'nav-active')
-              }
-              to="/upload"
-            >
-              upload
-            </NavLink>
-          </div>
+          {user && (
+            <div className="overflow-hidden flex flex-col justify-center pb-1">
+              <NavLink
+                className={({isActive}) =>
+                  clsx('hover:nav-active bg-black', isActive && 'nav-active')
+                }
+                to="/upload"
+              >
+                upload
+              </NavLink>
+            </div>
+          )}
         </div>
         <div className="row-start-1 flex flex-grow flex-shrink" />
         <div className="row-start-2 col-span-full text-3xl flex flex-row items-center justify-center">
