@@ -2,13 +2,9 @@ import {useContext, useEffect, useState} from 'react';
 import {doc, getDoc, setDoc} from 'firebase/firestore/lite';
 import {useDebouncedCallback} from 'use-debounce';
 import DefaultLayout from '../layouts/DefaultLayout';
-import {UserContext} from '../components/UserProvider';
+import {UserContext, type UserDoc} from '../components/UserProvider';
 import {firestore} from '../firebase';
 import SaveIndicator from '../components/SaveIndicator';
-
-type UserDoc = {
-  username?: string;
-};
 
 export default function UserPreferences() {
   const {user} = useContext(UserContext);

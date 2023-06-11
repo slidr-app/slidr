@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
+import {useCallback, useContext, useEffect, useRef, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
@@ -10,6 +10,8 @@ import {
   addDoc,
   collection,
   updateDoc,
+  getDoc,
+  doc,
 } from 'firebase/firestore/lite';
 import {ref as storageRef, uploadBytes, getDownloadURL} from 'firebase/storage';
 import {nanoid} from 'nanoid';
@@ -20,6 +22,7 @@ import PresentationPreferencesEditor, {
 } from '../components/PresentationPreferencesEditor';
 import {type Note} from '../presentation';
 import DefaultLayout from '../layouts/DefaultLayout';
+import {UserContext, type UserDoc} from '../components/UserProvider';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -28,6 +31,27 @@ export default function Export() {
   useEffect(() => {
     document.title = `Slidr - Upload`;
   }, []);
+
+  const {user} = useContext(UserContext);
+  const [userData, setUserData] = useState<UserDoc>();
+
+  useEffect(() => {
+    async function getUserDoc() {
+      if (!user) {
+        setUserData(undefined);
+        return;
+      }
+
+      const userSnapshot = await getDoc(doc(firestore, 'users', user.uid));
+      if (!userSnapshot.exists()) {
+        setUserData({});
+      }
+
+      setUserData(userSnapshot.data() as UserDoc);
+    }
+
+    void getUserDoc();
+  }, [user]);
 
   const [file, setFile] = useState<File>();
   const [pageIndex, setPageIndex] = useState(0);
@@ -43,7 +67,14 @@ export default function Export() {
     setFile(acceptedFiles[0]);
     const presentationRef = await addDoc(
       collection(firestore, 'presentations'),
-      {created: new Date(), uid: auth.currentUser?.uid},
+      {
+        created: new Date(),
+        uid: auth.currentUser?.uid,
+        username: userData?.username ?? '',
+        pages: [],
+        notes: [],
+        title: '',
+      },
     );
     setPresentationRef(presentationRef);
     const originalName = `${nanoid()}.pdf`;
@@ -213,83 +244,86 @@ export default function Export() {
 
   return (
     <DefaultLayout title="Upload Presentation">
-      <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">
-        {!file && (
-          <div
-            className="btn rounded-md p-8 flex flex-col items-center justify-center w-full max-w-screen-sm aspect-video gap-4 cursor-pointer mx-6"
-            {...getRootProps()}
-          >
-            <input {...getInputProps()} />
-            {isDragActive ? (
-              <>
-                <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce animate-duration-500 text-teal-500" />
-                <div className="text-center">
-                  Drop the pdf presentation here...
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce" />
-                <div className="text-center">
-                  Drag &apos;n&apos; drop a pdf presentation here, or click to
-                  select a pdf presentation
-                </div>
-              </>
-            )}
-          </div>
-        )}
-        {file && (
-          <div className="flex flex-col w-full max-w-screen-sm aspect-video">
-            <Document
-              file={file}
-              className="w-full aspect-video relative rounded-t-md overflow-hidden"
-              onLoadSuccess={(pdf) => {
-                setPageCount(pdf.numPages);
-              }}
-            >
-              <Page
-                pageIndex={pageIndex}
-                className="w-full h-full"
-                canvasRef={canvasRef}
-                width={1920}
-                // We want the exported images to be 1920, irrespective of the pixel ratio
-                // Fix the ratio to 1
-                devicePixelRatio={1}
-                onRenderSuccess={() => {
-                  pageRendered();
-                }}
-              />
-              <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
-                <div className={clsx('w-10 h-10', icon)} />
-                <div>{message}</div>
-              </div>
-            </Document>
+      {/* TODO: loading spinner */}
+      {userData && (
+        <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">
+          {!file && (
             <div
-              className="h-[6px] bg-teal"
-              style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
-            />
-            <div>Rendering slide: {pageIndex + 1}</div>
-          </div>
-        )}
-        <PresentationPreferencesEditor
-          saveState={savingState}
-          notes={notes}
-          title={title}
-          setNotes={(updater) => {
-            setNotes(updater);
-          }}
-          setTitle={(nextTitle) => {
-            setTitle(nextTitle);
-          }}
-          pages={pages}
-          onSave={() => {
-            void savePreferences();
-          }}
-          onDirty={() => {
-            setSavingState('dirty');
-          }}
-        />
-      </div>
+              className="btn rounded-md p-8 flex flex-col items-center justify-center w-full max-w-screen-sm aspect-video gap-4 cursor-pointer mx-6"
+              {...getRootProps()}
+            >
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <>
+                  <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce animate-duration-500 text-teal-500" />
+                  <div className="text-center">
+                    Drop the pdf presentation here...
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce" />
+                  <div className="text-center">
+                    Drag &apos;n&apos; drop a pdf presentation here, or click to
+                    select a pdf presentation
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+          {file && (
+            <div className="relative flex flex-col w-full max-w-screen-sm">
+              <Document
+                file={file}
+                className="w-full aspect-video relative rounded-t-md"
+                onLoadSuccess={(pdf) => {
+                  setPageCount(pdf.numPages);
+                }}
+              >
+                <Page
+                  pageIndex={pageIndex}
+                  className="w-full aspect-video"
+                  canvasRef={canvasRef}
+                  width={1920}
+                  // We want the exported images to be 1920, irrespective of the pixel ratio
+                  // Fix the ratio to 1
+                  devicePixelRatio={1}
+                  onRenderSuccess={() => {
+                    pageRendered();
+                  }}
+                />
+                <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
+                  <div className={clsx('w-10 h-10', icon)} />
+                  <div>{message}</div>
+                </div>
+              </Document>
+              <div
+                className="h-[6px] bg-teal"
+                style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
+              />
+              <div>Rendering slide: {pageIndex + 1}</div>
+            </div>
+          )}
+          <PresentationPreferencesEditor
+            saveState={savingState}
+            notes={notes}
+            title={title}
+            setNotes={(updater) => {
+              setNotes(updater);
+            }}
+            setTitle={(nextTitle) => {
+              setTitle(nextTitle);
+            }}
+            pages={pages}
+            onSave={() => {
+              void savePreferences();
+            }}
+            onDirty={() => {
+              setSavingState('dirty');
+            }}
+          />
+        </div>
+      )}
     </DefaultLayout>
   );
 }

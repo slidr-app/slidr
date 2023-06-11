@@ -5,6 +5,10 @@ export type User = {
   uid: string;
 };
 
+export type UserDoc = {
+  username?: string;
+};
+
 export const UserContext = createContext<{
   user: User | undefined;
   setUser: (nextUser: User | undefined) => void;
