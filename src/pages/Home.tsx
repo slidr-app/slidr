@@ -50,9 +50,19 @@ export default function Home() {
           >
             <div className="relative w-full h-full siblings:hover:opacity-100 border-b-2 border-teal">
               <Link to={`/${presentation.id}`} className="">
-                {presentation.title.length > 0 && (
-                  <div className="absolute top-0 left-0 p-2 rounded-br-md bg-gray-900 bg-opacity-85">
-                    {presentation.title}
+                {(presentation.title.length > 0 ||
+                  presentation.username.length > 0) && (
+                  <div className="absolute top-0 left-0 flex flex-col items-start bg-transparent">
+                    {presentation.title.length > 0 && (
+                      <div className="p-2 rounded-br-md bg-gray-900 bg-opacity-85">
+                        {presentation.title}
+                      </div>
+                    )}
+                    {presentation.username.length > 0 && (
+                      <div className="px-2 py-1 rounded-br-md bg-gray-900 bg-opacity-85 text-base">
+                        by {presentation.username}
+                      </div>
+                    )}
                   </div>
                 )}
                 <img

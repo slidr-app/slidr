@@ -7,6 +7,7 @@ export type PresentationData = {
   pages: string[];
   notes: Note[];
   uid: string;
+  username: string;
 };
 export type PresentationDoc = Doc & PresentationData;
 
