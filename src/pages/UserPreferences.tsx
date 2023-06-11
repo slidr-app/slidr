@@ -1,5 +1,14 @@
 import {useContext, useEffect, useState} from 'react';
-import {doc, getDoc, setDoc} from 'firebase/firestore/lite';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from 'firebase/firestore/lite';
 import {useDebouncedCallback} from 'use-debounce';
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext, type UserDoc} from '../components/UserProvider';
@@ -37,6 +46,19 @@ export default function UserPreferences() {
   const save = useDebouncedCallback(async () => {
     setSaveState('saving');
     await setDoc(doc(firestore, `users/${user!.uid}`), userData, {merge: true});
+    const userPersentationsSnapshot = await getDocs(
+      query(
+        collection(firestore, 'presentations'),
+        where('uid', '==', user!.uid),
+      ),
+    );
+    await Promise.all(
+      userPersentationsSnapshot.docs.map(async (presentation) =>
+        updateDoc(doc(firestore, 'presentations', presentation.id), {
+          username: userData.username,
+        }),
+      ),
+    );
     setSaveState((currentState) =>
       currentState === 'saving' ? 'saved' : currentState,
     );
