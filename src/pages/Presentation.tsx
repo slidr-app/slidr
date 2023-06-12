@@ -179,7 +179,7 @@ function Presentation() {
       <Confetti fire={fire} reset={reset} />
       <Reactions reactions={reactions} removeReaction={removeReaction} />
       {/* Inspired from https://stackoverflow.com/a/44233700 */}
-      <div className="position-fixed top-1rem w-10rem h-[calc(100%_-_10rem_-_2rem)] right-4 animate-longbounce 2xl:w-12rem 2xl:h-[calc(100%_-_12rem_-_2rem)] lt-sm:w-8rem lt-sm:h-[calc(100%_-_8rem_-_2rem)] z-2">
+      <div className="pointer-events-none position-fixed top-1rem w-10rem h-[calc(100%_-_10rem_-_2rem)] right-4 animate-longbounce 2xl:w-12rem 2xl:h-[calc(100%_-_12rem_-_2rem)] lt-sm:w-8rem lt-sm:h-[calc(100%_-_8rem_-_2rem)] z-2">
         <div className=" bg-white p-2 w-10rem h-10rem 2xl:w-12rem 2xl:h-12rem lt-sm:w-8rem lt-sm:h-8rem">
           <QRCode
             value={`${window.location.origin}${window.location.pathname}/view${window.location.search}`}
