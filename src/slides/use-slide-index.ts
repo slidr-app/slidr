@@ -21,8 +21,9 @@ export function useSlideIndex({
   handlers: HandlerEntries;
 } {
   const [slideIndex, setSlideIndex] = useState(0);
-  const previousSlideIndex = Math.max(slideIndex - 1, 0);
-  const nextSlideIndex = Math.min(slideIndex + 1, slideCount - 1);
+  const previousSlideIndex = slideCount > 0 ? Math.max(slideIndex - 1, 0) : 0;
+  const nextSlideIndex =
+    slideCount > 0 ? Math.min(slideIndex + 1, slideCount - 1) : 0;
 
   const updateSlideIndex = useCallback((index?: number) => {
     // Heartbeat messages can include an index (if sent from the presentation view)
