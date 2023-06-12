@@ -108,6 +108,36 @@ export default function Export() {
   const [renderingDone, setRenderingDone] = useState(false);
   const [pageBlob, setPageBlob] = useState<Blob>();
   function pageRendered() {
+    // Watermark rendered image
+    const ctx = canvasRef.current?.getContext('2d');
+    if (ctx) {
+      const rootStyles = window.getComputedStyle(
+        document.querySelector('#root')!,
+      );
+
+      const fontFamily = rootStyles.getPropertyValue('font-family');
+      // Const fontSize = rootStyles.getPropertyValue('font-size');
+      const fontStyle = `bold 16px ${fontFamily}`;
+
+      ctx.font = fontStyle;
+      ctx.fillStyle = 'rgba(255,255,255,0.75)';
+      ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+
+      const textMetrics = ctx.measureText('slidr.app');
+      const x =
+        canvasRef.current!.width -
+        20 -
+        textMetrics.actualBoundingBoxLeft -
+        textMetrics.actualBoundingBoxRight;
+      const y =
+        canvasRef.current!.height -
+        0 -
+        textMetrics.fontBoundingBoxAscent -
+        textMetrics.fontBoundingBoxDescent;
+      ctx.fillText('slidr.app', x, y);
+      ctx.strokeText('slidr.app', x, y);
+    }
+
     canvasRef.current?.toBlob(async (blob) => {
       if (!blob) {
         throw new Error(`Error rendering page index ${pageIndex}`);
