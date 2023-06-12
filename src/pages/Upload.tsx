@@ -23,6 +23,7 @@ import PresentationPreferencesEditor, {
 import {type Note} from '../presentation';
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext, type UserDoc} from '../components/UserProvider';
+import Loading from '../components/Loading';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
@@ -248,7 +249,7 @@ export default function Export() {
   return (
     <DefaultLayout title="Upload Presentation">
       {/* TODO: loading spinner */}
-      {userData && (
+      {userData ? (
         <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">
           {!file && (
             <div
@@ -299,11 +300,11 @@ export default function Export() {
                   <div className={clsx('w-10 h-10', icon)} />
                   <div>{message}</div>
                 </div>
+                <div
+                  className="absolute bottom-0 h-[6px] bg-teal"
+                  style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
+                />
               </Document>
-              <div
-                className="h-[6px] bg-teal"
-                style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
-              />
               <div>Rendering slide: {pageIndex + 1}</div>
             </div>
           )}
@@ -325,6 +326,10 @@ export default function Export() {
               setSavingState('dirty');
             }}
           />
+        </div>
+      ) : (
+        <div className="absolute top-0 flex flex-col items-center justify-center w-screen h-screen overflow-hidden">
+          <Loading />
         </div>
       )}
     </DefaultLayout>
