@@ -68,7 +68,7 @@ export default function DefaultLayout({
             <div>
               <button
                 className={clsx(
-                  'btn py-1 shadow-md',
+                  'btn py-1 shadow-md flex flex-col items-center',
                   showUserMenu && 'bg-teal rounded-b-none',
                 )}
                 type="button"
@@ -82,6 +82,7 @@ export default function DefaultLayout({
                     showUserMenu ? 'text-black' : 'text-teal',
                   )}
                 />
+                <div className="leading-none text-sm">account</div>
               </button>
               <div
                 className={clsx(

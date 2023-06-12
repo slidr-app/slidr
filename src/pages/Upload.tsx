@@ -46,6 +46,7 @@ export default function Export() {
       const userSnapshot = await getDoc(doc(firestore, 'users', user.uid));
       if (!userSnapshot.exists()) {
         setUserData({});
+        return;
       }
 
       setUserData(userSnapshot.data() as UserDoc);
@@ -283,26 +284,28 @@ export default function Export() {
         <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">
           {!file && (
             <div
-              className="btn rounded-md p-8 flex flex-col items-center justify-center w-full max-w-screen-sm aspect-video gap-4 cursor-pointer mx-6"
+              className="btn rounded-md p-8 flex w-full max-w-screen-sm aspect-video gap-4 cursor-pointer mx-6"
               {...getRootProps()}
             >
-              <input {...getInputProps()} />
-              {isDragActive ? (
-                <>
-                  <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce animate-duration-500 text-teal-500" />
-                  <div className="text-center">
-                    Drop the pdf presentation here...
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce" />
-                  <div className="text-center">
-                    Drag &apos;n&apos; drop a pdf presentation here, or click to
-                    select a pdf presentation
-                  </div>
-                </>
-              )}
+              <label className="flex flex-col items-center justify-center w-full">
+                {isDragActive ? (
+                  <>
+                    <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce animate-duration-500 text-teal-500" />
+                    <div className="text-center">
+                      Drop the pdf presentation here...
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce" />
+                    <div className="text-center">
+                      Drag &apos;n&apos; drop a pdf presentation here, or click
+                      to select a pdf presentation
+                    </div>
+                  </>
+                )}
+                <input {...getInputProps()} />
+              </label>
             </div>
           )}
           {file && (

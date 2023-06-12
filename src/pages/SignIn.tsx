@@ -117,8 +117,11 @@ export default function SignIn() {
           setEmailSent(true);
         }}
       >
+        <label className="flex flex-row gap-2 items-center">
+          Email:
         <input
-          className="input w-auto"
+            className="input w-auto invalid:(border-red-700 shadow-red-700) invalid-focus:(border-red-700 shadow-red-700)"
+            id="email"
           type="email"
           placeholder="email address..."
           value={email}
@@ -128,6 +131,7 @@ export default function SignIn() {
             setEmail(event.target.value);
           }}
         />
+        </label>
         {isLink ? (
           <button className="btn" type="submit">
             Verify & Sign In
