@@ -128,7 +128,6 @@ export default function Export() {
       ctx.strokeStyle = 'rgba(0,0,0,0.45)';
 
       const textMetrics = ctx.measureText('slidr.app');
-      console.log('text metrics', textMetrics);
       const x =
         canvasRef.current!.width -
         20 -
