@@ -41,7 +41,25 @@ export default defineConfig({
       provider: 'google',
       fonts: {
         mono: ['Inconsolata'],
-        sans: ['Abel', 'Abel:400,600'],
+        sans: [
+          // {
+          //   name: 'Jura',
+          //   weights: ['400', '600'],
+          // },
+          // {
+          //   name: 'Saira Condensed',
+          //   weights: ['400', '600'],
+          // },
+          {
+            name: 'Saira',
+            weights: ['400', '600'],
+          },
+          // I like Abel, but it is only 400 weight and the bold is ugly on safari.
+          // {
+          //   name: 'Abel',
+          //   weights: ['400', '600'],
+          // },
+        ],
         // Sans: ['Saira', 'Abel:400,600'],
         inter: [
           {
