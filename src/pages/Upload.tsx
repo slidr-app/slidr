@@ -118,13 +118,17 @@ export default function Export() {
 
       const fontFamily = rootStyles.getPropertyValue('font-family');
       // Const fontSize = rootStyles.getPropertyValue('font-size');
-      const fontStyle = `bold 16px ${fontFamily}`;
+
+      // The weight should match an already loaded font so that all watermarks have the same dimensions.
+      // Otherwise, the first page may not have the correctly scaled font.
+      const fontStyle = `500 16px ${fontFamily}`;
 
       ctx.font = fontStyle;
       ctx.fillStyle = 'rgba(255,255,255,0.75)';
-      ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+      ctx.strokeStyle = 'rgba(0,0,0,0.45)';
 
       const textMetrics = ctx.measureText('slidr.app');
+      console.log('text metrics', textMetrics);
       const x =
         canvasRef.current!.width -
         20 -
