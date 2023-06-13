@@ -52,7 +52,7 @@ export default defineConfig({
           // },
           {
             name: 'Saira',
-            weights: ['400', '600'],
+            weights: ['400', '500'],
           },
           // I like Abel, but it is only 400 weight and the bold is ugly on safari.
           // {
@@ -82,12 +82,13 @@ export default defineConfig({
     'border-focus': 'rounded-md border-2 border-violet-700',
     'shadow-focus': 'shadow-xl shadow-violet-700',
     'outline-focus': 'outline outline-2 outline-gray-200',
-    btn: 'py-2 px-4 font-semibold shadow-primary  border-primary bg-black',
+    btn: 'py-2 px-4 font-medium shadow-primary  border-primary bg-black',
     input:
       'p-2 shadow-primary border-primary bg-gray-900 text-white focus-visible:(border-focus outline-focus shadow-focus)',
     header:
-      'text-2xl border-primary border-t-none rounded-t-none shadow-primary text-center py-2 font-semibold',
+      'text-2xl border-primary border-t-none rounded-t-none shadow-primary text-center py-2 font-medium',
     'nav-active': 'border-b-2 border-teal shadow-md shadow-teal-800',
+    'nav-inactive': 'border-b-2 border-black shadow-none',
   },
   // https://github.com/unocss/unocss/discussions/2012
   theme: {

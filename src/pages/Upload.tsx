@@ -287,7 +287,7 @@ export default function Export() {
               className="btn rounded-md p-8 flex w-full max-w-screen-sm aspect-video gap-4 cursor-pointer mx-6"
               {...getRootProps()}
             >
-              <label className="flex flex-col items-center justify-center w-full">
+              <label className="flex flex-col items-center justify-center w-full cursor-pointer">
                 {isDragActive ? (
                   <>
                     <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce animate-duration-500 text-teal-500" />

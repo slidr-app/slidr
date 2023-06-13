@@ -32,15 +32,13 @@ export default function NoteEditor({
   return (
     <>
       <div className="relative not-first:mt-8">
-        <div className="grid grid-cols-[repeat(auto-fill,_12rem)] lt-sm:grid-cols-2">
+        <div className="grid grid-cols-4 lt-sm:grid-cols-2">
           {pageIndices.map((pageIndex, indicesIndex) => (
             <img
-              key={pageIndex}
+              key={pages[pageIndex]}
               className={clsx(
-                'aspect-video',
-                indicesIndex === 0
-                  ? 'grid-col-span-2 grid-row-span-2 w-24rem lt-sm:w-full'
-                  : 'w-12rem lt-sm:w-full',
+                'aspect-video w-full',
+                indicesIndex === 0 && 'grid-col-span-2 grid-row-span-2',
               )}
               src={pages[pageIndex]}
             />

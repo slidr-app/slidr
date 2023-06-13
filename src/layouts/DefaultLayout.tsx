@@ -33,29 +33,41 @@ export default function DefaultLayout({
   return (
     <div className="flex flex-col min-h-screen">
       <div className="header flex flex-row mx-4 px-4 mb-6 lt-sm:(grid grid-cols-2 gap-y-2 px-2)">
-        <div className="row-start-1 col-start-1 flex flex-row justify-start items-center relative gap-4">
-          <div className="overflow-hidden flex flex-col justify-center pb-1">
+        <div className="row-start-1 col-start-1 flex flex-row justify-start items-center relative gap-4 pt-2 mb--2">
+          <NavLink
+            to="/"
+            className={({isActive}) =>
+              clsx('flex', isActive && 'all-[div]:nav-active')
+            }
+          >
+            <button
+              className="hover:children:(nav-active) overflow-hidden pb-2"
+              type="button"
+              title="Speaker view"
+            >
+              <div className="flex flex-col items-center nav-inactive">
+                Slidr
+              </div>
+            </button>
+          </NavLink>
+          {user && (
             <NavLink
               end
+              to="/upload"
               className={({isActive}) =>
-                clsx('hover:nav-active bg-black', isActive && 'nav-active')
+                clsx('flex', isActive && 'all-[div]:nav-active')
               }
-              to="/"
             >
-              Slidr
-            </NavLink>
-          </div>
-          {user && (
-            <div className="overflow-hidden flex flex-col justify-center pb-1">
-              <NavLink
-                className={({isActive}) =>
-                  clsx('hover:nav-active bg-black', isActive && 'nav-active')
-                }
-                to="/upload"
+              <button
+                className="hover:children:(nav-active) overflow-hidden pb-2"
+                type="button"
+                title="Speaker view"
               >
-                upload
-              </NavLink>
-            </div>
+                <div className="flex flex-col items-center nav-inactive">
+                  Upload
+                </div>
+              </button>
+            </NavLink>
           )}
         </div>
         <div className="row-start-1 flex flex-grow flex-shrink" />
@@ -86,7 +98,7 @@ export default function DefaultLayout({
               </button>
               <div
                 className={clsx(
-                  'absolute flex-col right-0 p-4 bg-gray-900 bg-opacity-85 border-primary shadow-primary z-1 mr-4',
+                  'absolute flex-col right-0 p-4 pb-2 bg-gray-900 bg-opacity-85 border-primary shadow-primary z-1 mr-4',
                   showUserMenu ? 'flex' : 'display-none',
                 )}
               >

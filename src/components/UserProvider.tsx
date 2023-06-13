@@ -1,4 +1,10 @@
-import {useState, type PropsWithChildren, useMemo, createContext} from 'react';
+import {
+  useState,
+  type PropsWithChildren,
+  useMemo,
+  createContext,
+  useCallback,
+} from 'react';
 
 export type User = {
   email?: string;
@@ -16,7 +22,24 @@ export const UserContext = createContext<{
 
 export function UserProvider({children}: PropsWithChildren) {
   const [user, setUser] = useState<User>();
-  const userContext = useMemo(() => ({user, setUser}), [user]);
+
+  const updateUser = useCallback(
+    (newUser: User | undefined) => {
+      // Don't update if nothing has changed to avoid rerenders
+      if (user?.email === newUser?.email && user?.uid === newUser?.uid) {
+        console.log('user update skip');
+        return;
+      }
+
+      console.log('updating user');
+      setUser(newUser);
+    },
+    [user],
+  );
+  const userContext = useMemo(
+    () => ({user, setUser: updateUser}),
+    [user, updateUser],
+  );
   return (
     <UserContext.Provider value={userContext}>{children}</UserContext.Provider>
   );

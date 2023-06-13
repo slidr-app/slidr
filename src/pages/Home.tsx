@@ -42,7 +42,7 @@ export default function Home() {
         </>
       }
     >
-      <div className="grid grid-cols-2 lt-sm:grid-cols-1 max-w-screen-lg w-full mx-auto gap-8 px-4 justify-center">
+      <div className="grid grid-cols-2 lt-sm:grid-cols-1 max-w-screen-lg w-full mx-auto gap-8 px-4 justify-center pb-6">
         {presentations?.map((presentation) => (
           <div
             key={presentation.id}
