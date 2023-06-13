@@ -165,7 +165,7 @@ export default function Export() {
       );
 
       await uploadBytes(pageStorageRef, pageBlob!, {
-        cacheControl: 'public;max-age=604800',
+        cacheControl: 'public, max-age=604800',
       });
       const pageUrl = await getDownloadURL(pageStorageRef);
       return pageUrl;
