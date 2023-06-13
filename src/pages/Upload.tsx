@@ -168,16 +168,6 @@ export default function Export() {
         cacheControl: 'public;max-age=604800',
       });
       const pageUrl = await getDownloadURL(pageStorageRef);
-      setPages((currentPages) => {
-        const nextPages = Array.from(currentPages);
-        nextPages.push(pageUrl);
-        return nextPages;
-      });
-      setNotes((currentNotes) => {
-        const nextNotes = Array.from(currentNotes);
-        nextNotes.push({pageIndices: [pageIndex], markdown: ''});
-        return nextNotes;
-      });
       return pageUrl;
     }
 
@@ -206,16 +196,22 @@ export default function Export() {
 
       setUploading(true);
 
-      const pageUrls = await Promise.all(uploadPromises);
+      const nextPages = await Promise.all(uploadPromises);
+      const nextNotes = nextPages.map((_, pageIndex) => ({
+        pageIndices: [pageIndex],
+        markdown: '',
+      }));
 
       setSavingState('saving');
 
       await updateDoc(presentationRef, {
-        pages: pageUrls,
+        pages: nextPages,
         rendered: new Date(),
         title,
         notes,
       });
+      setPages(nextPages);
+      setNotes(nextNotes);
       setUploadDone(true);
       setSavingState((currentState) =>
         currentState === 'saving' ? 'saved' : currentState,
