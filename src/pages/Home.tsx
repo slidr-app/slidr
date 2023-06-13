@@ -16,7 +16,10 @@ export default function Home() {
   useEffect(() => {
     async function getPresentations() {
       const querySnapshot = await getDocs(
-        query(collection(firestore, 'presentations'), orderBy('rendered')),
+        query(
+          collection(firestore, 'presentations'),
+          orderBy('rendered', 'desc'),
+        ),
       );
 
       setPresentations(
