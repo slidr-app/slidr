@@ -119,18 +119,18 @@ export default function SignIn() {
       >
         <label className="flex flex-row gap-2 items-center">
           Email:
-        <input
+          <input
             className="input w-auto invalid:(border-red-700 shadow-red-700) invalid-focus:(border-red-700 shadow-red-700)"
             id="email"
-          type="email"
-          placeholder="email address..."
-          value={email}
-          disabled={emailSent}
-          size={30}
-          onChange={(event) => {
-            setEmail(event.target.value);
-          }}
-        />
+            type="email"
+            placeholder="email address..."
+            value={email}
+            disabled={emailSent}
+            size={30}
+            onChange={(event) => {
+              setEmail(event.target.value);
+            }}
+          />
         </label>
         {isLink ? (
           <button className="btn" type="submit">
