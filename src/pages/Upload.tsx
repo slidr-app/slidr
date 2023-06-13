@@ -318,7 +318,7 @@ export default function Export() {
               >
                 <Page
                   pageIndex={pageIndex}
-                  className="w-full aspect-video"
+                  className="w-full aspect-video children:pointer-events-none"
                   canvasRef={canvasRef}
                   width={1920}
                   // We want the exported images to be 1920, irrespective of the pixel ratio
