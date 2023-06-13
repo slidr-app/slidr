@@ -27,11 +27,9 @@ export function UserProvider({children}: PropsWithChildren) {
     (newUser: User | undefined) => {
       // Don't update if nothing has changed to avoid rerenders
       if (user?.email === newUser?.email && user?.uid === newUser?.uid) {
-        console.log('user update skip');
         return;
       }
 
-      console.log('updating user');
       setUser(newUser);
     },
     [user],
