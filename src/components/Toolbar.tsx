@@ -16,6 +16,30 @@ export default function Toolbar({
   onEnd: () => void;
   presentation?: PresentationDoc;
 }) {
+  // Force the toolbar to be shown for a short time
+  const [forceToolbar, setForceToolbar] = useState(false);
+  useEffect(() => {
+    setForceToolbar(true);
+
+    let cancel = false;
+    let handle: NodeJS.Timeout | undefined = setTimeout(() => {
+      if (cancel) {
+        return;
+      }
+
+      setForceToolbar(false);
+      handle = undefined;
+    }, 2000);
+
+    return () => {
+      cancel = true;
+      if (handle) {
+        clearTimeout(handle);
+        handle = undefined;
+      }
+    };
+  }, []);
+
   const [isFullscreen, setIsFullscreen] = useState(
     document.fullscreenElement !== null,
   );
@@ -31,7 +55,12 @@ export default function Toolbar({
   }, []);
 
   return (
-    <div className="fixed bottom-0 left-0 p-8 pb-3 pl-3 opacity-0 hover:opacity-100 transition-opacity duration-400 ease-out z-1">
+    <div
+      className={clsx(
+        'fixed bottom-0 left-0 p-8 pb-3 pl-3 opacity-0 hover:opacity-100 transition-opacity duration-400 ease-out z-1',
+        forceToolbar && 'opacity-100',
+      )}
+    >
       <div
         className="flex flex-row bg-gray-800 rounded-md px-3 py-2 gap-3 shadow-teal-800 shadow-xl"
         onClick={(event) => {

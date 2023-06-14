@@ -194,17 +194,19 @@ function Presentation() {
         {...swipeHandlers}
       />
       <Disconnected paused={paused} unPause={unPause} />
-      <Toolbar
-        presentation={presentation}
-        onNext={goForward}
-        onPrevious={goBack}
-        onStart={() => {
-          setSlideIndex(0);
-        }}
-        onEnd={() => {
-          setSlideIndex((presentation?.pages?.length ?? 1) - 1);
-        }}
-      />
+      {presentation && (
+        <Toolbar
+          presentation={presentation}
+          onNext={goForward}
+          onPrevious={goBack}
+          onStart={() => {
+            setSlideIndex(0);
+          }}
+          onEnd={() => {
+            setSlideIndex((presentation?.pages?.length ?? 1) - 1);
+          }}
+        />
+      )}
     </div>
   );
 }
