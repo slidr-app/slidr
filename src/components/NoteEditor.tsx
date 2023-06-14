@@ -26,7 +26,7 @@ export default function NoteEditor({
     (nextMarkdown: string) => {
       onMarkdownChange(nextMarkdown);
     },
-    1000,
+    500,
   );
 
   return (

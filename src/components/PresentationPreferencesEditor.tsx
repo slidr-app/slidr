@@ -26,10 +26,10 @@ export default function PresentationPreferencesEditor({
 }) {
   const debouncedSaveNotes = useDebouncedCallback(() => {
     onSave();
-  }, 5000);
+  }, 3000);
 
   return (
-    <div className="w-full max-w-screen-md mx-auto flex flex-col text-base px-2">
+    <div className="w-full max-w-screen-md mx-auto flex flex-col text-base">
       <input
         placeholder="Give your presentation a name..."
         className="input w-full max-w-screen-sm self-center"

@@ -8,7 +8,6 @@ import DefaultLayout from '../layouts/DefaultLayout';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
-import SaveIndicator from '../components/SaveIndicator';
 
 export default function PresentationPreferences() {
   const {presentationId} = useParams();
