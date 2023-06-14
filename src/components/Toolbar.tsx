@@ -32,7 +32,13 @@ export default function Toolbar({
 
   return (
     <div className="fixed bottom-0 left-0 p-8 pb-3 pl-3 opacity-0 hover:opacity-100 transition-opacity duration-400 ease-out z-1">
-      <div className="flex flex-row bg-gray-800 rounded-md px-3 py-2 gap-3 shadow-teal-800 shadow-xl">
+      <div
+        className="flex flex-row bg-gray-800 rounded-md px-3 py-2 gap-3 shadow-teal-800 shadow-xl"
+        onClick={(event) => {
+          // Prevents navigating forward when toolbar is over the click to advance area
+          event.stopPropagation();
+        }}
+      >
         <button
           className="i-tabler-arrow-big-left-filled text-teal font-size-[4rem]"
           type="button"

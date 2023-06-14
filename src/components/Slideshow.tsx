@@ -5,10 +5,12 @@ export default function Slideshow({
   pageIndex,
   pages,
   forward,
+  onClick,
 }: {
   pageIndex: number;
   pages: string[];
   forward?: boolean;
+  onClick?: () => void;
 }) {
   if (pages.length === 0) {
     return (
@@ -55,6 +57,9 @@ export default function Slideshow({
         fetchpriority="high"
         src={pages[pageIndex]}
         alt={`Slide page ${pageIndex + 1}`}
+        onClick={() => {
+          onClick?.();
+        }}
       />
 
       {/* Preload all of the other images at a low priority (if browser supported) */}

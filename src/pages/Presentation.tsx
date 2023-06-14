@@ -157,20 +157,17 @@ function Presentation() {
         ['KeyR', resetAllReactions],
         ['KeyC', throwConfetti],
       ]),
-    [
-      // NavPrevious,
-      // navNext,
-      openSpeakerWindow,
-      resetAllReactions,
-      throwConfetti,
-      goForward,
-      goBack,
-    ],
+    [openSpeakerWindow, resetAllReactions, throwConfetti, goForward, goBack],
   );
   useKeys(keyHandlers);
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
+    <div
+      className="h-screen flex flex-col items-center justify-center overflow-hidden position-relative select-none"
+      onClick={() => {
+        goForward();
+      }}
+    >
       <Slideshow
         pageIndex={slideIndex}
         pages={presentation?.pages ?? []}
@@ -194,9 +191,6 @@ function Presentation() {
       />
       <div
         className="position-absolute top-0 left-0 h-full w-full pointer-events-none"
-        onClick={() => {
-          goForward();
-        }}
         {...swipeHandlers}
       />
       <Disconnected paused={paused} unPause={unPause} />
