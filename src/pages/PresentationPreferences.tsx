@@ -8,6 +8,7 @@ import DefaultLayout from '../layouts/DefaultLayout';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
+import SaveIndicator from '../components/SaveIndicator';
 
 export default function PresentationPreferences() {
   const {presentationId} = useParams();
@@ -44,20 +45,22 @@ export default function PresentationPreferences() {
 
   return (
     <DefaultLayout title="Presentation Settings">
-      <PresentationPreferencesEditor
-        saveState={savingState}
-        notes={notes}
-        title={title}
-        setTitle={setTitle}
-        setNotes={setNotes}
-        pages={presentation?.pages ?? []}
-        onSave={() => {
-          void saveNotes();
-        }}
-        onDirty={() => {
-          setSavingState('dirty');
-        }}
-      />
+      <div className="px-4">
+        <PresentationPreferencesEditor
+          saveState={savingState}
+          notes={notes}
+          title={title}
+          setTitle={setTitle}
+          setNotes={setNotes}
+          pages={presentation?.pages ?? []}
+          onSave={() => {
+            void saveNotes();
+          }}
+          onDirty={() => {
+            setSavingState('dirty');
+          }}
+        />
+      </div>
     </DefaultLayout>
   );
 }

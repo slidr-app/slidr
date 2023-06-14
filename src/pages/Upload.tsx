@@ -277,7 +277,7 @@ export default function Export() {
   }
 
   return (
-    <DefaultLayout title="Upload Presentation">
+    <DefaultLayout title="New Presentation">
       {/* TODO: loading spinner */}
       {userData ? (
         <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">

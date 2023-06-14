@@ -40,7 +40,7 @@ export default function Home() {
     <DefaultLayout
       title={
         <>
-          Browse Presentations
+          Presentations
           <div className="text-teal i-tabler-microphone-2 ml-2" />
         </>
       }
@@ -74,7 +74,7 @@ export default function Home() {
                 />
               </Link>
             </div>
-            <div className="flex flex-row pt-2 items-center gap-4 px-4">
+            <div className="flex flex-row pt-2 items-center gap-4 px-4 lt-sm:(gap-2 px-2)">
               <Link to={`/${presentation.id}`} className="flex">
                 <button
                   className="hover:children:(nav-active) overflow-hidden pb-2"
@@ -111,7 +111,7 @@ export default function Home() {
                   </div>
                 </button>
               </Link>
-              <div className="flex-grow" />
+              <div className="flex-grow flex-shrink" />
               {presentation.uid === auth.currentUser?.uid && (
                 <Link className="flex" to={`/${presentation.id}/notes`}>
                   <button
