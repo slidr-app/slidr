@@ -32,7 +32,7 @@ export default function Slideshow({
   const pageUnderIndex = pageUnder();
 
   return (
-    <div className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))] z--1">
+    <div className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))]">
       {pageUnderIndex !== undefined && (
         <img
           key={pageUnderIndex}
