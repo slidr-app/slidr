@@ -140,10 +140,10 @@ function Presentation() {
   // Swipe and key bindings
   const swipeHandlers = useSwipeable({
     onSwipedRight() {
-      goForward();
+      goBack();
     },
     onSwipedLeft() {
-      goBack();
+      goForward();
     },
   });
 
@@ -170,7 +170,7 @@ function Presentation() {
   useKeys(keyHandlers);
 
   return (
-    <div className="pdf-container h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
+    <div className="h-screen flex flex-col items-center justify-center overflow-hidden position-relative">
       <Slideshow
         pageIndex={slideIndex}
         pages={presentation?.pages ?? []}
@@ -193,7 +193,7 @@ function Presentation() {
         slideCount={presentation?.pages?.length ?? 0}
       />
       <div
-        className="position-absolute top-0 left-0 h-full w-full"
+        className="position-absolute top-0 left-0 h-full w-full pointer-events-none"
         onClick={() => {
           goForward();
         }}
@@ -202,8 +202,8 @@ function Presentation() {
       <Disconnected paused={paused} unPause={unPause} />
       <Toolbar
         presentation={presentation}
-        onNext={slideNext}
-        onPrevious={slidePrevious}
+        onNext={goForward}
+        onPrevious={goBack}
         onStart={() => {
           setSlideIndex(0);
         }}
