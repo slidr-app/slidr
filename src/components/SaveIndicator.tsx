@@ -14,7 +14,7 @@ export default function SaveIndicator({
         saveState === 'saving' && 'opacity-100 duration-1000',
       )}
     >
-      <div className="btn py-1 shadow-md flex flex-col items-center bg-gray-900 bg-opacity-85">
+      <div className="btn py-1 px-6 shadow-md flex flex-col items-center bg-gray-900 bg-opacity-85">
         <div
           className={clsx(
             'text-teal',

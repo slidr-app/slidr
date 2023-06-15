@@ -1,9 +1,11 @@
 import {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {doc, updateDoc} from 'firebase/firestore/lite';
+import {deleteDoc, doc, updateDoc} from 'firebase/firestore/lite';
+import {ref, deleteObject, listAll} from 'firebase/storage';
+import clsx from 'clsx';
 import usePresentation from '../use-presentation';
 import {type Note} from '../presentation';
-import {firestore} from '../firebase';
+import {firestore, storage} from '../firebase';
 import DefaultLayout from '../layouts/DefaultLayout';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
@@ -42,23 +44,83 @@ export default function PresentationPreferences() {
     }
   }, [presentation]);
 
+  const [deleteState, setDeleteState] = useState<
+    'saved' | 'confirm' | 'deleting' | 'deleted'
+  >('saved');
+
+  async function onDeleteClicked() {
+    if (deleteState === 'saved') {
+      setDeleteState('confirm');
+      return;
+    }
+
+    if (deleteState === 'confirm') {
+      const presentationPath = `presentations/${presentation!.id}`;
+
+      setDeleteState('deleting');
+
+      // Delete all storage objects stored under the presentation id
+      const results = await listAll(ref(storage, presentationPath));
+      await Promise.all(results.items.map(async (item) => deleteObject(item)));
+
+      // Delete the doc from the database
+      await deleteDoc(doc(firestore, presentationPath));
+
+      setDeleteState('deleted');
+    }
+  }
+
   return (
     <DefaultLayout title="Presentation Settings">
-      <div className="px-4">
-        <PresentationPreferencesEditor
-          saveState={savingState}
-          notes={notes}
-          title={title}
-          setTitle={setTitle}
-          setNotes={setNotes}
-          pages={presentation?.pages ?? []}
-          onSave={() => {
-            void saveNotes();
-          }}
-          onDirty={() => {
-            setSavingState('dirty');
-          }}
-        />
+      <div className="px-4 flex flex-col items-center pb-6">
+        {deleteState !== 'deleted' && (
+          <PresentationPreferencesEditor
+            saveState={savingState}
+            notes={notes}
+            title={title}
+            setTitle={setTitle}
+            setNotes={setNotes}
+            pages={presentation?.pages ?? []}
+            onSave={() => {
+              void saveNotes();
+            }}
+            onDirty={() => {
+              setSavingState('dirty');
+            }}
+          />
+        )}
+        {presentation && (
+          <>
+            <div className="text 2xl mt-8 mb-4">Danger Zone</div>
+            <button
+              type="button"
+              className={clsx(
+                'btn border-red-700 shadow-red-900 flex flex-row items-center gap-2',
+              )}
+              onClick={() => {
+                void onDeleteClicked();
+              }}
+            >
+              <div>
+                {deleteState === 'saved'
+                  ? 'Delete presentation'
+                  : deleteState === 'confirm'
+                  ? 'Click to confirm deletion'
+                  : deleteState === 'deleting'
+                  ? 'Deleting...'
+                  : 'Deleted'}
+              </div>
+              <div
+                className={clsx(
+                  ['saved', 'confirm'].includes(deleteState) &&
+                    'i-tabler-trash',
+                  deleteState === 'deleting' && 'i-tabler-trash animate-spin',
+                  deleteState === 'deleted' && 'i-tabler-check',
+                )}
+              />
+            </button>
+          </>
+        )}
       </div>
     </DefaultLayout>
   );

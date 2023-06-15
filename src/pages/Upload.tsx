@@ -208,7 +208,7 @@ export default function Export() {
         pages: nextPages,
         rendered: new Date(),
         title,
-        notes,
+        notes: nextNotes,
       });
       setPages(nextPages);
       setNotes(nextNotes);
