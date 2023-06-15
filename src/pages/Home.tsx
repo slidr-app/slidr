@@ -70,7 +70,7 @@ export default function Home() {
                 )}
                 <img
                   className="w-full aspect-video"
-                  src={presentation.pages[0]}
+                  src={presentation.pages[presentation.thumbIndex ?? 0]}
                 />
               </Link>
             </div>
