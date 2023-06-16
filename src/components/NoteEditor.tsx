@@ -49,6 +49,7 @@ export default function NoteEditor({
             <button
               className="inline-block text-xl mr-2"
               type="button"
+              title="Copy previous"
               onClick={() => {
                 handleFoldUp();
               }}
@@ -60,6 +61,7 @@ export default function NoteEditor({
             <button
               className="inline-block text-xl mr-2"
               type="button"
+              title="Un-copy"
               onClick={() => {
                 handleFoldDown();
               }}

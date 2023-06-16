@@ -42,22 +42,22 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: '/:presentationId',
+    path: '/p/:presentationId',
     element: <Presentation />,
     errorElement: <ErrorPage />,
   },
   {
-    path: '/:presentationId/view',
+    path: '/i/:presentationId',
     element: <Viewer />,
     errorElement: <ErrorPage />,
   },
   {
-    path: '/:presentationId/speaker',
+    path: '/s/:presentationId',
     element: <Speaker />,
     errorElement: <ErrorPage />,
   },
   {
-    path: '/:presentationId/notes',
+    path: '/e/:presentationId',
     element: <PresentationPreferences />,
     errorElement: <ErrorPage />,
   },

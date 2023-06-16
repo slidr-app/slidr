@@ -52,7 +52,7 @@ export default function Home() {
             className="relative flex flex-col shadow-primary border-primary overflow-hidden sm:odd:last:(col-span-2 w-50% mx-auto)"
           >
             <div className="relative w-full h-full siblings:hover:opacity-100 border-b-2 border-teal">
-              <Link to={`/${presentation.id}`} className="">
+              <Link to={`/p/${presentation.id}`} className="">
                 {(presentation.title.length > 0 ||
                   presentation.username.length > 0) && (
                   <div className="absolute top-0 left-0 flex flex-col items-start bg-transparent">
@@ -75,7 +75,7 @@ export default function Home() {
               </Link>
             </div>
             <div className="flex flex-row pt-2 items-center gap-4 px-4 lt-sm:(gap-2 px-2)">
-              <Link to={`/${presentation.id}`} className="flex">
+              <Link to={`/p/${presentation.id}`} className="flex">
                 <button
                   className="hover:children:(nav-active) overflow-hidden pb-2"
                   type="button"
@@ -87,7 +87,7 @@ export default function Home() {
                   </div>
                 </button>
               </Link>
-              <Link to={`/${presentation.id}/speaker`} className="flex">
+              <Link to={`/s/${presentation.id}`} className="flex">
                 <button
                   className="hover:children:(nav-active) overflow-hidden pb-2"
                   type="button"
@@ -99,7 +99,7 @@ export default function Home() {
                   </div>
                 </button>
               </Link>
-              <Link to={`/${presentation.id}/view`} className="flex">
+              <Link to={`/i/${presentation.id}`} className="flex">
                 <button
                   className="hover:children:(nav-active) overflow-hidden pb-2"
                   type="button"
@@ -113,7 +113,7 @@ export default function Home() {
               </Link>
               <div className="flex-grow flex-shrink" />
               {presentation.uid === auth.currentUser?.uid && (
-                <Link className="flex" to={`/${presentation.id}/notes`}>
+                <Link className="flex" to={`/e/${presentation.id}`}>
                   <button
                     className="hover:children:(nav-active) overflow-hidden pb-2"
                     type="button"

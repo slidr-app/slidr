@@ -84,6 +84,7 @@ export default function DefaultLayout({
                   showUserMenu && 'bg-teal rounded-b-none',
                 )}
                 type="button"
+                title="User menu"
                 onClick={() => {
                   setShowUserMenu((show) => !show);
                 }}

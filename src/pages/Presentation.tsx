@@ -83,11 +83,13 @@ function Presentation() {
   const openSpeakerWindow = useCallback(
     () =>
       window.open(
-        `${window.location.origin}${window.location.pathname}/speaker${window.location.search}`,
+        `${window.location.origin}/s/${presentation?.id ?? ''}${
+          window.location.search
+        }`,
         undefined,
         'popup',
       ),
-    [],
+    [presentation?.id],
   );
 
   const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
@@ -179,7 +181,9 @@ function Presentation() {
       <div className="pointer-events-none position-fixed top-1rem w-10rem h-[calc(100%_-_10rem_-_2rem)] right-4 animate-longbounce 2xl:w-12rem 2xl:h-[calc(100%_-_12rem_-_2rem)] lt-sm:w-8rem lt-sm:h-[calc(100%_-_8rem_-_2rem)] z-2">
         <div className=" bg-white p-2 w-10rem h-10rem 2xl:w-12rem 2xl:h-12rem lt-sm:w-8rem lt-sm:h-8rem">
           <QRCode
-            value={`${window.location.origin}${window.location.pathname}/view${window.location.search}`}
+            value={`${window.location.origin}/i/${presentation?.id ?? ''}${
+              window.location.search
+            }`}
             className="w-full h-full"
             style={{width: '100%', height: 'auto', maxWidth: '100%'}}
           />

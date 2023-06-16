@@ -189,6 +189,7 @@ export default function Speaker() {
               <button
                 type="button"
                 className="btn"
+                title="Previous slide"
                 onClick={() => {
                   navPrevious();
                 }}
@@ -198,6 +199,7 @@ export default function Speaker() {
               <button
                 type="button"
                 className="btn"
+                title="Next slide"
                 onClick={() => {
                   navNext();
                 }}
@@ -207,6 +209,7 @@ export default function Speaker() {
               <button
                 type="button"
                 className="btn"
+                title="Go to start"
                 onClick={() => {
                   setSlideIndex(0);
                 }}
@@ -216,6 +219,7 @@ export default function Speaker() {
               <button
                 type="button"
                 className="btn"
+                title="Go to end"
                 onClick={() => {
                   setSlideIndex((presentation?.pages?.length ?? 1) - 1);
                 }}
@@ -230,6 +234,7 @@ export default function Speaker() {
             <button
               type="button"
               className="btn"
+              title="Confetti"
               onClick={() => {
                 postConfettiResetBroadcastChannel();
               }}

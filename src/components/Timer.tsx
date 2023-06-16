@@ -44,6 +44,7 @@ export default function Timer() {
         <button
           className="flex"
           type="button"
+          title="Reset timer"
           onClick={() => {
             reset();
           }}

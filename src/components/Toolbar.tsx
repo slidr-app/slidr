@@ -93,31 +93,51 @@ export default function Toolbar({
           onClick={onEnd}
         />
         <div className="border-l-black border-l-1 mx-1" />
-        <button
-          className="i-tabler-speakerphone text-teal font-size-[4rem]"
-          type="button"
-          title="Open speaker view"
-          onClick={() =>
+        <a
+          className="flex"
+          href={`${window.location.origin}/s/${presentation?.id ?? ''}${
+            window.location.search
+          }`}
+          onClick={(event) => {
+            event.preventDefault();
             window.open(
-              `${window.location.origin}${window.location.pathname}/speaker${window.location.search}`,
+              `${window.location.origin}/s/${presentation?.id ?? ''}${
+                window.location.search
+              }`,
               undefined,
               'popup',
-            )
-          }
-        />
-        <button
-          className="i-tabler-eyeglass text-teal font-size-[4rem]"
-          type="button"
-          title="Open audience view"
-          onClick={() =>
+            );
+          }}
+        >
+          <button
+            className="i-tabler-speakerphone text-teal font-size-[4rem]"
+            type="button"
+            title="Open speaker view"
+          />
+        </a>
+        <a
+          className="flex"
+          href={`${window.location.origin}/i/${presentation?.id ?? ''}${
+            window.location.search
+          }`}
+          onClick={(event) => {
+            event.preventDefault();
             window.open(
-              `${window.location.origin}${window.location.pathname}/view${window.location.search}`,
-            )
-          }
-        />
+              `${window.location.origin}/i/${presentation?.id ?? ''}${
+                window.location.search
+              }`,
+            );
+          }}
+        >
+          <button
+            className="i-tabler-eyeglass text-teal font-size-[4rem]"
+            type="button"
+            title="Open audience view"
+          />
+        </a>
         <Link
           className="flex"
-          to={presentation ? `/${presentation.id}/notes` : '/'}
+          to={presentation ? `/e/${presentation.id}` : '/'}
         >
           <button
             className="i-tabler-pencil text-teal font-size-[4rem]"
