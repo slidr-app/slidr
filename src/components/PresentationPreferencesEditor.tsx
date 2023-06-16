@@ -1,5 +1,5 @@
 import {useDebouncedCallback} from 'use-debounce';
-import {type Note} from '../presentation';
+import {type Note} from '../../functions/src/presentation';
 import NoteEditor from './NoteEditor';
 import SaveIndicator from './SaveIndicator';
 

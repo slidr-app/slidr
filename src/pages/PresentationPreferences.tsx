@@ -4,7 +4,7 @@ import {deleteDoc, doc, updateDoc} from 'firebase/firestore/lite';
 import {ref, deleteObject, listAll} from 'firebase/storage';
 import clsx from 'clsx';
 import usePresentation from '../use-presentation';
-import {type Note} from '../presentation';
+import {type Note} from '../../functions/src/presentation';
 import {firestore, storage} from '../firebase';
 import DefaultLayout from '../layouts/DefaultLayout';
 import PresentationPreferencesEditor, {

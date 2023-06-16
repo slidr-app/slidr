@@ -20,7 +20,7 @@ import '../pdf/pdf.css';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
-import {type Note} from '../presentation';
+import {type Note} from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext, type UserDoc} from '../components/UserProvider';
 import Loading from '../components/Loading';

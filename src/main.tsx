@@ -3,7 +3,7 @@ import React, {lazy, Suspense} from 'react';
 import ReactDOM from 'react-dom/client';
 import '@unocss/reset/tailwind.css';
 import 'virtual:uno.css';
-import {createBrowserRouter, RouterProvider} from 'react-router-dom';
+import {createBrowserRouter, redirect, RouterProvider} from 'react-router-dom';
 import './index.css';
 import ErrorPage from './pages/ErrorPage.tsx';
 import Loading from './components/Loading.tsx';
@@ -47,8 +47,30 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
+    path: '/r/p/:presentationId',
+    loader({request}) {
+      const redirectTo = new URL(request.url);
+      return redirect(
+        `${redirectTo.pathname.replace('/r/', '/')}${redirectTo.search}`,
+      );
+    },
+    // Element: <Presentation />,
+    errorElement: <ErrorPage />,
+  },
+  {
     path: '/i/:presentationId',
     element: <Viewer />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/r/i/:presentationId',
+    loader({request}) {
+      const redirectTo = new URL(request.url);
+      return redirect(
+        `${redirectTo.pathname.replace('/r/', '/')}${redirectTo.search}`,
+      );
+    },
+    // Element: <Presentation />,
     errorElement: <ErrorPage />,
   },
   {

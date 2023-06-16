@@ -36,6 +36,16 @@
       ],
       "rewrites": [
         {
+          "source": "/p/**",
+          "function": "renderForBot",
+          "region": "europe-west1"
+        },
+        {
+          "source": "/i/**",
+          "function": "renderForBot",
+          "region": "europe-west1"
+        },
+        {
           "source": "**",
           "destination": "/index.html"
         }
@@ -59,5 +69,20 @@
   },
   "storage": {
     "rules": "storage.rules"
-  }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ],
+      "predeploy": [
+        "pnpm --dir \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ]
 }

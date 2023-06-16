@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {type PresentationDoc} from '../presentation';
+import {type PresentationDoc} from '../../functions/src/presentation';
 
 export default function Toolbar({
   onPrevious,

@@ -2,7 +2,10 @@ import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {getDocs, collection, orderBy, query} from 'firebase/firestore/lite';
 import {auth, firestore} from '../firebase.ts';
-import {type PresentationDoc, type PresentationData} from '../presentation';
+import {
+  type PresentationDoc,
+  type PresentationData,
+} from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout.tsx';
 import Loading from '../components/Loading.tsx';
 
