@@ -41,7 +41,7 @@ jobs:
         run: pnpm run lint
 
       - name: Build
-        run: pnpm run build
+        run: pnpm run build:all
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_KEY }}
@@ -51,4 +51,4 @@ jobs:
 
       - name: Deploy
         # This requires a lot of pesky permissions in GCP, inspired from: https://davelms.medium.com/deploy-firebase-functions-using-github-actions-7dbafbd4df77 
-        run: GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json pnpm exec firebase deploy --only hosting:slidr,storage,firestore,functions:renderForBot
+        run: GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json pnpm run deploy

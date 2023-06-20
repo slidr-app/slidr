@@ -77,9 +77,6 @@
         ".git",
         "firebase-debug.log",
         "firebase-debug.*.log"
-      ],
-      "predeploy": [
-        "pnpm --dir \"$RESOURCE_DIR\" run build"
       ]
     }
   ]
