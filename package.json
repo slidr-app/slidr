@@ -9,7 +9,7 @@
     "lint": "xo",
     "preview": "vite preview",
     "prepare": "husky install",
-    "prepush": "pnpm run lint && pnpm run build && pnpm --dir functions build",
+    "prepush": "pnpm run lint && pnpm run build:all",
     "build:functions": "pnpm --dir functions build",
     "build:all": "pnpm run build && pnpm run build:functions",
     "deploy": "pnpm exec firebase deploy --only hosting:slidr,storage,firestore,functions:renderForBot"
