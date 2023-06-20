@@ -7,6 +7,7 @@ on:
     branches:
       - main
       - firebase
+      - firebase-render-bots
 
 # Cancel any previous CI runs for this branch or PR
 concurrency:
@@ -45,11 +46,8 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_KEY }}
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SUPA_PRESENTATION }}'
-          channelId: live
-          projectId: supa-presentation
-          target: "${{ github.ref_name == 'firebase' && 'slidr' || 'present' }}"
+      - name: Create SA key
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SUPA_PRESENTATION }}' > $HOME/gcloud.json
 
+      - name: Deploy
+        run: GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json pnpm exec firebase deploy --only hosting:slidr,storage,firestore,functions:renderForBot
