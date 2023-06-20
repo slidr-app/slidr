@@ -50,4 +50,5 @@ jobs:
         run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SUPA_PRESENTATION }}' > $HOME/gcloud.json
 
       - name: Deploy
+        # This requires a lot of pesky permissions in GCP, inspired from: https://davelms.medium.com/deploy-firebase-functions-using-github-actions-7dbafbd4df77 
         run: GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json pnpm exec firebase deploy --only hosting:slidr,storage,firestore,functions:renderForBot
