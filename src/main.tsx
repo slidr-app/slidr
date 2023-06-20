@@ -48,13 +48,13 @@ const router = createBrowserRouter([
   },
   {
     path: '/r/p/:presentationId',
+    // Note: redirects could also happen with a component and useNavigate... not sure which is better
     loader({request}) {
       const redirectTo = new URL(request.url);
       return redirect(
         `${redirectTo.pathname.replace('/r/', '/')}${redirectTo.search}`,
       );
     },
-    // Element: <Presentation />,
     errorElement: <ErrorPage />,
   },
   {
@@ -64,13 +64,13 @@ const router = createBrowserRouter([
   },
   {
     path: '/r/i/:presentationId',
+    // Note: redirects could also happen with a component and useNavigate... not sure which is better
     loader({request}) {
       const redirectTo = new URL(request.url);
       return redirect(
         `${redirectTo.pathname.replace('/r/', '/')}${redirectTo.search}`,
       );
     },
-    // Element: <Presentation />,
     errorElement: <ErrorPage />,
   },
   {

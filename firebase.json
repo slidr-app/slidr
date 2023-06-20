@@ -37,13 +37,11 @@
       "rewrites": [
         {
           "source": "/p/**",
-          "function": "renderForBot",
-          "region": "europe-west1"
+          "function": "renderForBot"
         },
         {
           "source": "/i/**",
-          "function": "renderForBot",
-          "region": "europe-west1"
+          "function": "renderForBot"
         },
         {
           "source": "**",
