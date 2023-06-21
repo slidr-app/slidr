@@ -25,6 +25,9 @@ const db = getFirestore();
 //   response.send('Hello from Firebase!');
 // });
 
+// LinkedIn says descriptions should be at least 100 chars.
+const description = `slidr.app is an always free interactive presentation framework. Why shouldn't presentations be fun for both the speaker and the audience?`;
+
 // Seems this must be in us-central1 to serve dynamic content with firebase hosting
 // See the warning here: https://firebase.google.com/docs/functions/locations#http_and_client-callable_functions
 export const renderForBot = onRequest(async (request, response) => {
@@ -95,7 +98,7 @@ export const renderForBot = onRequest(async (request, response) => {
   }">
   <meta name="twitter:card" content="summary_large_image">
   <!--  Non-Essential, But Recommended -->
-  <meta property="og:description" content="Interactive presentations, for free.">
+  <meta property="og:description" content="${description}">
   <meta property="og:site_name" content="Slidr.app">
   <meta name="twitter:image:alt" content="${presentationData.title}">
   </head>

@@ -9,13 +9,13 @@ function ReactionButton({
 }) {
   return (
     <button
-      className="btn relative"
+      className="btn relative flex items-center justify-center"
       type="button"
       onClick={() => {
         handleReaction(icon);
       }}
     >
-      <div className={clsx('w-8 h-8', icon)} />
+      <div className={clsx('w-8 h-8 min-w-8 min-h-8', icon)} />
     </button>
   );
 }
