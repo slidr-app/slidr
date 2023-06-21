@@ -16,7 +16,7 @@ import {
 import {ref as storageRef, uploadBytes, getDownloadURL} from 'firebase/storage';
 import {nanoid} from 'nanoid';
 import {auth, firestore, storage} from '../firebase';
-import '../pdf/pdf.css';
+import '../components/pdf/pdf.css';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';

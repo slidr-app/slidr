@@ -2,26 +2,26 @@ import {useState, useEffect, useMemo, useCallback} from 'react';
 import QRCode from 'react-qr-code';
 import {useParams} from 'react-router-dom';
 import {useSwipeable} from 'react-swipeable';
-import {useSlideIndex} from '../slides/use-slide-index';
+import {useSlideIndex} from '../components/slides/use-slide-index';
 import useKeys from '../use-keys';
-import useConfetti from '../confetti/use-confetti';
-import useBroadcastChannel from '../broadcast/use-broadcast-channel';
-import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
-import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
-import Confetti from '../confetti/Confetti';
+import useConfetti from '../components/confetti/use-confetti';
+import useBroadcastChannel from '../components/broadcast/use-broadcast-channel';
+import useSearchParametersSlideIndex from '../components/slides/use-search-parameter-slide-index';
+import useBroadcastSupabase from '../components/broadcast/use-broadcast-supabase';
+import Confetti from '../components/confetti/Confetti';
 import ProgressBar from '../components/ProgressBar';
 import {
   useChannelHandlers,
   useCombinedHandlers,
-} from '../broadcast/use-channel-handlers';
-import Reactions from '../reactions/Reactions';
-import useReactions from '../reactions/use-reactions';
-import useRemoteReactions from '../reactions/use-remote-reactions';
+} from '../components/broadcast/use-channel-handlers';
+import Reactions from '../components/reactions/Reactions';
+import useReactions from '../components/reactions/use-reactions';
+import useRemoteReactions from '../components/reactions/use-remote-reactions';
 import Toolbar from '../components/Toolbar';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
 import Slideshow from '../components/Slideshow';
-import usePresentation from '../use-presentation';
+import usePresentation from '../components/slides/use-presentation';
 
 function Presentation() {
   const {presentationId} = useParams();

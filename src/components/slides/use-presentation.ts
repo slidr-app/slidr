@@ -3,8 +3,8 @@ import {getDoc, doc} from 'firebase/firestore/lite';
 import {
   type PresentationData,
   type PresentationDoc,
-} from '../functions/src/presentation';
-import {firestore} from './firebase';
+} from '../../../functions/src/presentation';
+import {firestore} from '../../firebase';
 
 export default function usePresentation(
   presentationId?: string,

@@ -1,23 +1,23 @@
 import {useState, useEffect} from 'react';
 import {Link, useParams} from 'react-router-dom';
-import useConfetti from '../confetti/use-confetti';
-import {useSlideIndex} from '../slides/use-slide-index';
-import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
-import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
-import Confetti from '../confetti/Confetti';
+import useConfetti from '../components/confetti/use-confetti';
+import {useSlideIndex} from '../components/slides/use-slide-index';
+import useBroadcastSupabase from '../components/broadcast/use-broadcast-supabase';
+import useSearchParametersSlideIndex from '../components/slides/use-search-parameter-slide-index';
+import Confetti from '../components/confetti/Confetti';
 import ProgressBar from '../components/ProgressBar';
 import {
   useChannelHandlers,
   useCombinedHandlers,
-} from '../broadcast/use-channel-handlers';
-import useRemoteReactions from '../reactions/use-remote-reactions';
-import useReactions from '../reactions/use-reactions';
-import Reactions from '../reactions/Reactions';
-import ReactionControls from '../reactions/ReactionControls';
+} from '../components/broadcast/use-channel-handlers';
+import useRemoteReactions from '../components/reactions/use-remote-reactions';
+import useReactions from '../components/reactions/use-reactions';
+import Reactions from '../components/reactions/Reactions';
+import ReactionControls from '../components/reactions/ReactionControls';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
 import Slideshow from '../components/Slideshow';
-import usePresentation from '../use-presentation';
+import usePresentation from '../components/slides/use-presentation';
 
 export default function Viewer() {
   const {presentationId} = useParams();

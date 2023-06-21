@@ -4,23 +4,23 @@ import {useMemo, useState, useCallback, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 import clsx from 'clsx';
 import {useSwipeable} from 'react-swipeable';
-import {useSlideIndex} from '../slides/use-slide-index';
+import {useSlideIndex} from '../components/slides/use-slide-index';
 import useKeys from '../use-keys';
-import useConfetti from '../confetti/use-confetti';
-import useBroadcastChannel from '../broadcast/use-broadcast-channel';
-import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
-import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
+import useConfetti from '../components/confetti/use-confetti';
+import useBroadcastChannel from '../components/broadcast/use-broadcast-channel';
+import useSearchParametersSlideIndex from '../components/slides/use-search-parameter-slide-index';
+import useBroadcastSupabase from '../components/broadcast/use-broadcast-supabase';
 import ProgressBar from '../components/ProgressBar';
 import {
   useChannelHandlers,
   useCombinedHandlers,
-} from '../broadcast/use-channel-handlers';
-import ReactionControls from '../reactions/ReactionControls';
-import useRemoteReactions from '../reactions/use-remote-reactions';
+} from '../components/broadcast/use-channel-handlers';
+import ReactionControls from '../components/reactions/ReactionControls';
+import useRemoteReactions from '../components/reactions/use-remote-reactions';
 import Timer from '../components/Timer';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
-import usePresentation from '../use-presentation';
+import usePresentation from '../components/slides/use-presentation';
 import Slideshow from '../components/Slideshow';
 
 const textSizes = [

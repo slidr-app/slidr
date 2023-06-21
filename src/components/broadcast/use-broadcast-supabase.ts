@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {type REALTIME_SUBSCRIBE_STATES} from '@supabase/supabase-js';
 import {useDebouncedCallback} from 'use-debounce';
-import supabase from '../supabase';
+import supabase from '../../supabase';
 import {type Payload, type Handler} from './use-channel-handlers';
 
 export default function useBroadcastSupabase({
