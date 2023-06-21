@@ -19,7 +19,7 @@ import Disconnected from '../components/Disconnected';
 import Slideshow from '../components/Slideshow';
 import usePresentation from '../components/slides/use-presentation';
 
-export default function Viewer() {
+export default function Audience() {
   const {presentationId} = useParams();
   const presentation = usePresentation(presentationId);
 

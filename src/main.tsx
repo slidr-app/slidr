@@ -9,7 +9,7 @@ import ErrorPage from './pages/ErrorPage.tsx';
 import Loading from './components/Loading.tsx';
 import {UserProvider} from './components/UserProvider.tsx';
 
-const Viewer = lazy(async () => import('./pages/Viewer.tsx'));
+const Audience = lazy(async () => import('./pages/Audience.tsx'));
 const Speaker = lazy(async () => import('./pages/Speaker.tsx'));
 const Presentation = lazy(async () => import('./pages/Presentation.tsx'));
 const Home = lazy(async () => import('./pages/Home.tsx'));
@@ -59,7 +59,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/i/:presentationId',
-    element: <Viewer />,
+    element: <Audience />,
     errorElement: <ErrorPage />,
   },
   {
