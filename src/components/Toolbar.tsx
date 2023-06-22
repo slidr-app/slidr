@@ -62,7 +62,7 @@ export default function Toolbar({
       )}
     >
       <div
-        className="grid grid-cols-9 gap-0.5 portrait:(grid-cols-1 grid-rows-9) first:children:(rounded-l-md overflow-hidden) last:children:(rounded-r-md overflow-hidden)"
+        className="grid grid-cols-9 gap-0.5 portrait:(grid-cols-1 grid-rows-9) first:children:landscape:(rounded-l-md overflow-hidden) first:children:portrait:(rounded-t-md overflow-hidden) last:children:landscape:(rounded-r-md overflow-hidden) last:children:portrait:(rounded-b-md overflow-hidden)"
         onClick={(event) => {
           // Prevents navigating forward when toolbar is over the click to advance area
           event.stopPropagation();
