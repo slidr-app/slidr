@@ -40,7 +40,7 @@ const textSizes = [
 
 export default function Speaker() {
   const {presentationId} = useParams();
-  const presentation = usePresentation(presentationId);
+  const presentation = usePresentation();
 
   useEffect(() => {
     document.title = `Slidr - ${

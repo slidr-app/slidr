@@ -21,7 +21,7 @@ import usePresentation from '../components/slides/use-presentation';
 
 export default function Audience() {
   const {presentationId} = useParams();
-  const presentation = usePresentation(presentationId);
+  const presentation = usePresentation();
 
   useEffect(() => {
     document.title = `Slidr - ${
@@ -54,8 +54,6 @@ export default function Audience() {
     setSlideIndex,
     handlers: slideIndexHandlers,
   } = useSlideIndex({
-    postMessage: postBroadcastMessage,
-    ignorePost: true,
     slideCount: presentation?.pages?.length ?? 0,
   });
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);

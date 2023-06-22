@@ -14,7 +14,7 @@ export default function Slideshow({
 }) {
   if (pages.length === 0) {
     return (
-      <div className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))] z--1">
+      <div className="w-full aspect-video position-relative z--1">
         <Loading />
       </div>
     );
@@ -34,7 +34,7 @@ export default function Slideshow({
   const pageUnderIndex = pageUnder();
 
   return (
-    <div className="w-full aspect-video position-relative max-w-[calc(100vh_*_(16/9))]">
+    <div className="w-full aspect-video position-relative">
       {pageUnderIndex !== undefined && (
         <img
           key={pageUnderIndex}

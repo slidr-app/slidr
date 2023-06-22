@@ -6,12 +6,10 @@ import {
 } from '../broadcast/use-channel-handlers';
 
 export function useSlideIndex({
-  ignorePost,
   postMessage,
   slideCount,
 }: {
-  ignorePost?: boolean;
-  postMessage: Handler;
+  postMessage?: Handler;
   slideCount: number;
 }): {
   slideIndex: number;
@@ -19,11 +17,14 @@ export function useSlideIndex({
   navNext: () => void;
   navPrevious: () => void;
   handlers: HandlerEntries;
+  forward: boolean;
 } {
   const [slideIndex, setSlideIndex] = useState(0);
   const previousSlideIndex = slideCount > 0 ? Math.max(slideIndex - 1, 0) : 0;
   const nextSlideIndex =
     slideCount > 0 ? Math.min(slideIndex + 1, slideCount - 1) : 0;
+
+  const [forward, setForward] = useState<boolean>(true);
 
   const updateSlideIndex = useCallback((index?: number) => {
     // Heartbeat messages can include an index (if sent from the presentation view)
@@ -35,28 +36,21 @@ export function useSlideIndex({
     }
   }, []);
 
-  const postSlideIndex = useCallback(
-    (index: number) => {
-      postMessage({id: 'slide index', index});
-    },
-    [postMessage],
-  );
-
   const updateSlideIndexAndPost = useCallback(
     (index: number) => {
       updateSlideIndex(index);
-      if (!ignorePost) {
-        postSlideIndex(index);
-      }
+      postMessage?.({id: 'slide index', index});
     },
-    [updateSlideIndex, postSlideIndex, ignorePost],
+    [updateSlideIndex, postMessage],
   );
 
   const navNext = useCallback(() => {
+    setForward(true);
     updateSlideIndexAndPost(nextSlideIndex);
   }, [updateSlideIndexAndPost, nextSlideIndex]);
 
   const navPrevious = useCallback(() => {
+    setForward(false);
     updateSlideIndexAndPost(previousSlideIndex);
   }, [updateSlideIndexAndPost, previousSlideIndex]);
 
@@ -84,5 +78,6 @@ export function useSlideIndex({
     setSlideIndex: updateSlideIndexAndPost,
     navNext,
     navPrevious,
+    forward,
   };
 }

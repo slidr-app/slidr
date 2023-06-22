@@ -25,13 +25,13 @@ import usePresentation from '../components/slides/use-presentation';
 
 function Presentation() {
   const {presentationId} = useParams();
-  const presentation = usePresentation(presentationId);
+  const presentation = usePresentation();
 
   useEffect(() => {
     document.title = `Slidr - ${presentation?.title ?? 'Unnamed Presentation'}`;
   }, [presentation]);
 
-  const [forward, setForward] = useState<boolean>(true);
+  // Const [forward, setForward] = useState<boolean>(true);
   const sessionId = useSearchParametersSessionId(true);
 
   // Sync the slide index with the broadcast channel (speaker view)
@@ -46,9 +46,10 @@ function Presentation() {
   const {
     slideIndex,
     setSlideIndex,
-    navNext: slideNext,
-    navPrevious: slidePrevious,
+    navNext,
+    navPrevious,
     handlers: handlersSlideIndexBroadcastChannel,
+    forward,
   } = useSlideIndex({
     postMessage: postBroadcastChannel,
     slideCount: presentation?.pages?.length ?? 0,
@@ -129,37 +130,27 @@ function Presentation() {
     handlersReactions,
   );
 
-  const goForward = useCallback(() => {
-    setForward(true);
-    slideNext();
-  }, [slideNext]);
-
-  const goBack = useCallback(() => {
-    setForward(false);
-    slidePrevious();
-  }, [slidePrevious]);
-
   // Swipe and key bindings
   const swipeHandlers = useSwipeable({
     onSwipedRight() {
-      goBack();
+      navPrevious();
     },
     onSwipedLeft() {
-      goForward();
+      navNext();
     },
   });
 
   const keyHandlers = useMemo(
     () =>
       new Map([
-        ['ArrowLeft', goBack],
-        ['ArrowRight', goForward],
-        ['Space', goForward],
+        ['ArrowLeft', navPrevious],
+        ['ArrowRight', navNext],
+        ['Space', navNext],
         ['KeyS', openSpeakerWindow],
         ['KeyR', resetAllReactions],
         ['KeyC', throwConfetti],
       ]),
-    [openSpeakerWindow, resetAllReactions, throwConfetti, goForward, goBack],
+    [openSpeakerWindow, resetAllReactions, throwConfetti, navNext, navPrevious],
   );
   useKeys(keyHandlers);
 
@@ -167,14 +158,16 @@ function Presentation() {
     <div
       className="h-screen flex flex-col items-center justify-center overflow-hidden position-relative select-none"
       onClick={() => {
-        goForward();
+        navNext();
       }}
     >
-      <Slideshow
-        pageIndex={slideIndex}
-        pages={presentation?.pages ?? []}
-        forward={forward}
-      />
+      <div className="w-full max-w-[calc(100vh_*_(16/9))] aspect-video">
+        <Slideshow
+          pageIndex={slideIndex}
+          pages={presentation?.pages ?? []}
+          forward={forward}
+        />
+      </div>
       <Confetti fire={fire} reset={reset} />
       <Reactions reactions={reactions} removeReaction={removeReaction} />
       {/* Inspired from https://stackoverflow.com/a/44233700 */}
@@ -201,8 +194,8 @@ function Presentation() {
       {presentation && (
         <Toolbar
           presentation={presentation}
-          onNext={goForward}
-          onPrevious={goBack}
+          onNext={navNext}
+          onPrevious={navPrevious}
           onStart={() => {
             setSlideIndex(0);
           }}

@@ -13,7 +13,7 @@ import PresentationPreferencesEditor, {
 
 export default function PresentationPreferences() {
   const {presentationId} = useParams();
-  const presentation = usePresentation(presentationId);
+  const presentation = usePresentation();
 
   useEffect(() => {
     document.title = `Slidr - ${

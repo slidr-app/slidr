@@ -3,16 +3,19 @@ import clsx from 'clsx';
 export default function ProgressBar({
   slideIndex,
   slideCount,
+  absolute,
 }: {
   slideIndex: number;
   slideCount: number;
+  absolute?: boolean;
 }) {
   const progressPercentage = (slideIndex * 100) / (slideCount - 1);
 
   return (
     <div
       className={clsx(
-        'fixed bottom-0 left-0 h-1 transition-all duration-500 ease-out z-1',
+        absolute ? 'absolute' : 'fixed',
+        'bottom-0 left-0 h-1 transition-all duration-500 ease-out z-1',
         progressPercentage > 90
           ? 'bg-red'
           : progressPercentage > 75

@@ -19,6 +19,7 @@ const PresentationPreferences = lazy(
   async () => import('./pages/PresentationPreferences.tsx'),
 );
 const UserPreferences = lazy(async () => import('./pages/UserPreferences.tsx'));
+const Viewer = lazy(async () => import('./pages/Viewer.tsx'));
 
 const router = createBrowserRouter([
   {
@@ -76,6 +77,11 @@ const router = createBrowserRouter([
   {
     path: '/s/:presentationId',
     element: <Speaker />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/v/:presentationId',
+    element: <Viewer />,
     errorElement: <ErrorPage />,
   },
   {
