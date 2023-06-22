@@ -7,6 +7,7 @@ import useSearchParametersSlideIndex from '../components/slides/use-search-param
 import {useSlideIndex} from '../components/slides/use-slide-index';
 import {auth} from '../firebase';
 import ProgressBar from '../components/ProgressBar';
+import Shares from '../components/Shares';
 
 export default function Viewer() {
   const presentation = usePresentation();
@@ -144,6 +145,9 @@ export default function Viewer() {
                 by {presentation.username ?? 'Anonymous User'}
               </div>
             )}
+          </div>
+          <div className="flex self-start">
+            <Shares presentation={presentation} slideIndex={slideIndex} />
           </div>
         </div>
       </div>

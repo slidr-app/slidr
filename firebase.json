@@ -44,6 +44,10 @@
           "function": "renderForBot"
         },
         {
+          "source": "/v/**",
+          "function": "renderForBot"
+        },
+        {
           "source": "**",
           "destination": "/index.html"
         }

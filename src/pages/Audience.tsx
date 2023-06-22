@@ -18,6 +18,7 @@ import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
 import Slideshow from '../components/Slideshow';
 import usePresentation from '../components/slides/use-presentation';
+import Shares from '../components/Shares';
 
 export default function Audience() {
   const {presentationId} = useParams();
@@ -80,33 +81,6 @@ export default function Audience() {
     handlersReactions,
   );
 
-  const shareUrl = `https://slidr.app/p/${presentation?.id ?? ''}?slide=${
-    slideIndex + 1
-  }`;
-
-  const tweetText = `${presentation?.title ?? 'preentation'}${
-    presentation?.username === undefined ? '' : ' by ' + presentation.username
-  } ${shareUrl}`;
-
-  const [copied, setCopied] = useState(false);
-  useEffect(() => {
-    if (!copied) {
-      return;
-    }
-
-    let handle: NodeJS.Timeout | undefined;
-    handle = setTimeout(() => {
-      handle = undefined;
-      setCopied(false);
-    }, 2000);
-
-    return () => {
-      if (handle !== undefined) {
-        clearTimeout(handle);
-      }
-    };
-  }, [copied]);
-
   return (
     <div className="flex flex-col gap-8 p-4 position-relative overflow-x-hidden overflow-y-auto min-h-screen items-center">
       <div className="max-w-2xl mx-auto w-full">
@@ -125,60 +99,7 @@ export default function Audience() {
           postReaction(icon);
         }}
       />
-      <div className="flex flex-row justify-center gap-4 relative flex-wrap">
-        <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-            tweetText,
-          )}`}
-          target="_blank"
-          rel="noreferrer"
-          className="flex flex-col items-center"
-        >
-          <button
-            type="button"
-            className="btn rounded-full w-[4rem] h-[4rem] flex items-center justify-center"
-            title="Tweet this slide"
-          >
-            <div className="i-tabler-brand-twitter w-[2rem] h-[2rem]" />
-          </button>
-          <div className="text-sm">tweet</div>
-        </a>
-        <a
-          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-            shareUrl,
-          )}`}
-          target="_blank"
-          className="flex flex-col items-center"
-          rel="noreferrer"
-        >
-          <button
-            type="button"
-            className="btn rounded-full w-[4rem] h-[4rem] flex items-center justify-center"
-            title="Post slide to LinkedIn"
-          >
-            <div className="i-tabler-brand-linkedin w-[2rem] h-[2rem]" />
-          </button>
-          <div className="text-sm">share</div>
-        </a>
-        <a
-          href={`https://twitter.com/intent/tweet?text=${tweetText}`}
-          className="flex flex-col items-center"
-          onClick={(event) => {
-            event.preventDefault();
-            void window.navigator.clipboard.writeText(shareUrl);
-            setCopied(true);
-          }}
-        >
-          <button
-            type="button"
-            className="btn rounded-full w-[4rem] h-[4rem] flex items-center justify-center"
-            title="Copy link to slide"
-          >
-            <div className="i-tabler-link w-[2rem] h-[2rem]" />
-          </button>
-          <div className="text-sm">{copied ? 'copied!' : 'copy'}</div>
-        </a>
-      </div>
+      <Shares presentation={presentation} slideIndex={slideIndex} />
       <div className="flex flex-col items-center relative gap-1 prose">
         <Link to="/" className="not-prose">
           slidr.app

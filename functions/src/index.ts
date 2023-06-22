@@ -65,6 +65,13 @@ export const renderForBot = onRequest(async (request, response) => {
     presentationData.pages[0] ??
     '';
 
+  // The og:orl tag will always point to the Viewer page
+  const shareUrl = `https://slidr.app/v/${presentationId}${
+    request.query.slide === undefined
+      ? ''
+      : '?slide=' + String(request.query.slide)
+  }`;
+
   response
     .setHeader('cache-control', 'public, max-age=3600, immutable')
     .setHeader('vary', 'User-Agent')
@@ -87,15 +94,7 @@ export const renderForBot = onRequest(async (request, response) => {
   }">
   <meta property="og:type" content="website" />
   <meta property="og:image" content="${pageUrl}">
-  <meta property="og:url" content="https://slidr.app/${
-    // Keep the prefix (p or f) for now.
-    // TODO: maybe one day there will be a browser (non presentation) view
-    request.url.split('/')[1]
-  }/${presentationId}${
-    request.query.slide === undefined
-      ? ''
-      : '?slide=' + String(request.query.slide)
-  }">
+  <meta property="og:url" content="${shareUrl}">
   <meta name="twitter:card" content="summary_large_image">
   <!--  Non-Essential, But Recommended -->
   <meta property="og:description" content="${description}">
