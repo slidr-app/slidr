@@ -55,10 +55,16 @@ export default function Home() {
             className="relative flex flex-col shadow-primary border-primary overflow-hidden sm:odd:last:(col-span-2 w-50% mx-auto)"
           >
             <div className="relative w-full h-full siblings:hover:opacity-100 border-b-2 border-teal">
-              <Link to={`/p/${presentation.id}`} className="">
+              <Link to={`/v/${presentation.id}`} className="">
+                <div className="absolute w-full h-full bg-black opacity-0 hover:(opacity-60) flex items-center justify-center">
+                  <div className="flex flex-col items-center ">
+                    <div className="i-tabler-eye w-6rem h-6rem" />
+                    <div>view</div>
+                  </div>
+                </div>
                 {(presentation.title.length > 0 ||
                   presentation.username.length > 0) && (
-                  <div className="absolute top-0 left-0 flex flex-col items-start bg-transparent">
+                  <div className="absolute top-0 left-0 flex flex-col items-start bg-transparent pointer-events-none">
                     {presentation.title.length > 0 && (
                       <div className="p-2 rounded-br-md bg-gray-900 bg-opacity-85">
                         {presentation.title}
@@ -78,39 +84,27 @@ export default function Home() {
               </Link>
             </div>
             <div className="flex flex-row pt-2 items-center gap-4 px-4 lt-sm:(gap-2 px-2)">
+              <Link to={`/v/${presentation.id}`} className="flex">
+                <button
+                  className="hover:children:(nav-active) overflow-hidden pb-2"
+                  type="button"
+                  title="View presentation"
+                >
+                  <div className="flex flex-col items-center border-b-2 border-black">
+                    <div className="i-tabler-eye" />
+                    <div className="text-base font-normal px-2">view</div>
+                  </div>
+                </button>
+              </Link>
               <Link to={`/p/${presentation.id}`} className="flex">
                 <button
                   className="hover:children:(nav-active) overflow-hidden pb-2"
                   type="button"
-                  title="Speaker view"
+                  title="Start presentation"
                 >
                   <div className="flex flex-col items-center border-b-2 border-black">
                     <div className="i-tabler-presentation" />
                     <div className="text-base font-normal px-2">present</div>
-                  </div>
-                </button>
-              </Link>
-              <Link to={`/s/${presentation.id}`} className="flex">
-                <button
-                  className="hover:children:(nav-active) overflow-hidden pb-2"
-                  type="button"
-                  title="Speaker view"
-                >
-                  <div className="flex flex-col items-center border-b-2 border-black">
-                    <div className="i-tabler-speakerphone" />
-                    <div className="text-base font-normal px-2">speaker</div>
-                  </div>
-                </button>
-              </Link>
-              <Link to={`/i/${presentation.id}`} className="flex">
-                <button
-                  className="hover:children:(nav-active) overflow-hidden pb-2"
-                  type="button"
-                  title="Audience view"
-                >
-                  <div className="flex flex-col items-center border-b-2 border-black">
-                    <div className="i-tabler-eyeglass" />
-                    <div className="text-base font-normal px-2">audience</div>
                   </div>
                 </button>
               </Link>
