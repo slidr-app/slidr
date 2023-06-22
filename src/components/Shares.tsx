@@ -73,7 +73,7 @@ export default function Shares({
         <div className="text-sm">share</div>
       </a>
       <a
-        href={`https://twitter.com/intent/tweet?text=${tweetText}`}
+        href={shareUrl}
         className="flex flex-col items-center"
         onClick={(event) => {
           event.preventDefault();
