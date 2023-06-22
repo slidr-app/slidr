@@ -1,7 +1,6 @@
 // Import the functions you need from the SDKs you need
 import {initializeApp} from 'firebase/app';
 import {getAuth} from 'firebase/auth';
-import {getStorage} from 'firebase/storage';
 import {getFirestore} from 'firebase/firestore/lite';
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -20,5 +19,7 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const storage = getStorage(app);
 export const firestore = getFirestore(app);
+
+// We don't export storage because it is only used in a few pages (upload and editor).
+// That helps reduce the bundle size for the majority of the pages.

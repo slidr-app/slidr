@@ -13,9 +13,14 @@ import {
   getDoc,
   doc,
 } from 'firebase/firestore/lite';
-import {ref as storageRef, uploadBytes, getDownloadURL} from 'firebase/storage';
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+  getStorage,
+} from 'firebase/storage';
 import {nanoid} from 'nanoid';
-import {auth, firestore, storage} from '../firebase';
+import {auth, firestore, app} from '../firebase';
 import '../components/pdf/pdf.css';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
@@ -27,6 +32,8 @@ import Loading from '../components/Loading';
 
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
+
+const storage = getStorage(app);
 
 export default function Export() {
   useEffect(() => {

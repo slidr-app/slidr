@@ -1,15 +1,17 @@
 import {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import {deleteDoc, doc, updateDoc} from 'firebase/firestore/lite';
-import {ref, deleteObject, listAll} from 'firebase/storage';
+import {ref, deleteObject, listAll, getStorage} from 'firebase/storage';
 import clsx from 'clsx';
 import usePresentation from '../components/slides/use-presentation';
 import {type Note} from '../../functions/src/presentation';
-import {firestore, storage} from '../firebase';
+import {app, firestore} from '../firebase';
 import DefaultLayout from '../layouts/DefaultLayout';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
+
+const storage = getStorage(app);
 
 export default function PresentationPreferences() {
   const {presentationId} = useParams();
