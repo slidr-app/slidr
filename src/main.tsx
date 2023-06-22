@@ -85,6 +85,17 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
+    path: '/r/v/:presentationId',
+    // Note: redirects could also happen with a component and useNavigate... not sure which is better
+    loader({request}) {
+      const redirectTo = new URL(request.url);
+      return redirect(
+        `${redirectTo.pathname.replace('/r/', '/')}${redirectTo.search}`,
+      );
+    },
+    errorElement: <ErrorPage />,
+  },
+  {
     path: '/e/:presentationId',
     element: <PresentationPreferences />,
     errorElement: <ErrorPage />,
