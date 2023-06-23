@@ -48,88 +48,96 @@ export default function Home() {
         </>
       }
     >
-      <div className="grid grid-cols-2 lt-sm:grid-cols-1 max-w-screen-lg w-full mx-auto gap-8 px-4 justify-center pb-6">
-        {presentations?.map((presentation) => (
-          <div
-            key={presentation.id}
-            className="relative flex flex-col shadow-primary border-primary overflow-hidden sm:odd:last:(col-span-2 w-50% mx-auto)"
-          >
-            <div className="relative w-full h-full siblings:hover:opacity-100 border-b-2 border-teal">
-              <Link to={`/v/${presentation.id}`} className="">
-                <div className="absolute w-full h-full bg-black opacity-0 hover:(opacity-60) flex items-center justify-center">
-                  <div className="flex flex-col items-center ">
-                    <div className="i-tabler-eye w-6rem h-6rem" />
-                    <div>view</div>
+      <div className="flex flex-col items-center gap-6">
+        <div className="flex flex-col gap-1 items-center">
+          <div className="text-2xl">Slidr.app: making presentations fun!</div>
+          <div className="text-sm">
+            Slidr is currently in beta, come back often to see what&apos;s new.
+          </div>
+        </div>
+        <div className="grid grid-cols-2 lt-sm:grid-cols-1 max-w-screen-lg w-full mx-auto gap-8 px-4 justify-center pb-6">
+          {presentations?.map((presentation) => (
+            <div
+              key={presentation.id}
+              className="relative flex flex-col shadow-primary border-primary overflow-hidden sm:odd:last:(col-span-2 w-50% mx-auto)"
+            >
+              <div className="relative w-full h-full siblings:hover:opacity-100 border-b-2 border-teal">
+                <Link to={`/v/${presentation.id}`} className="">
+                  <div className="absolute w-full h-full bg-black opacity-0 hover:(opacity-60) flex items-center justify-center">
+                    <div className="flex flex-col items-center ">
+                      <div className="i-tabler-eye w-6rem h-6rem" />
+                      <div>view</div>
+                    </div>
                   </div>
-                </div>
-                {(presentation.title.length > 0 ||
-                  presentation.username.length > 0) && (
-                  <div className="absolute top-0 left-0 flex flex-col items-start bg-transparent pointer-events-none">
-                    {presentation.title.length > 0 && (
-                      <div className="p-2 rounded-br-md bg-gray-900 bg-opacity-85">
-                        {presentation.title}
-                      </div>
-                    )}
-                    {presentation.username.length > 0 && (
-                      <div className="px-2 pb-1 rounded-br-md bg-gray-900 bg-opacity-85 text-base">
-                        by {presentation.username}
-                      </div>
-                    )}
-                  </div>
-                )}
-                <img
-                  className="w-full aspect-video"
-                  src={presentation.pages[presentation.thumbIndex ?? 0]}
-                />
-              </Link>
-            </div>
-            <div className="flex flex-row pt-2 items-center gap-4 px-4 lt-sm:(gap-2 px-2)">
-              <Link to={`/v/${presentation.id}`} className="flex">
-                <button
-                  className="hover:children:(nav-active) overflow-hidden pb-2"
-                  type="button"
-                  title="View presentation"
-                >
-                  <div className="flex flex-col items-center border-b-2 border-black">
-                    <div className="i-tabler-eye" />
-                    <div className="text-base font-normal px-2">view</div>
-                  </div>
-                </button>
-              </Link>
-              <Link to={`/p/${presentation.id}`} className="flex">
-                <button
-                  className="hover:children:(nav-active) overflow-hidden pb-2"
-                  type="button"
-                  title="Start presentation"
-                >
-                  <div className="flex flex-col items-center border-b-2 border-black">
-                    <div className="i-tabler-presentation" />
-                    <div className="text-base font-normal px-2">present</div>
-                  </div>
-                </button>
-              </Link>
-              <div className="flex-grow flex-shrink" />
-              {presentation.uid === auth.currentUser?.uid && (
-                <Link className="flex" to={`/e/${presentation.id}`}>
+                  {(presentation.title.length > 0 ||
+                    presentation.username.length > 0) && (
+                    <div className="absolute top-0 left-0 flex flex-col items-start bg-transparent pointer-events-none">
+                      {presentation.title.length > 0 && (
+                        <div className="p-2 rounded-br-md bg-gray-900 bg-opacity-85">
+                          {presentation.title}
+                        </div>
+                      )}
+                      {presentation.username.length > 0 && (
+                        <div className="px-2 pb-1 rounded-br-md bg-gray-900 bg-opacity-85 text-base">
+                          by {presentation.username}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <img
+                    className="w-full aspect-video"
+                    src={presentation.pages[presentation.thumbIndex ?? 0]}
+                  />
+                </Link>
+              </div>
+              <div className="flex flex-row pt-2 items-center gap-4 px-4 lt-sm:(gap-2 px-2)">
+                <Link to={`/v/${presentation.id}`} className="flex">
                   <button
                     className="hover:children:(nav-active) overflow-hidden pb-2"
                     type="button"
-                    title="Edit presentation"
+                    title="View presentation"
                   >
                     <div className="flex flex-col items-center border-b-2 border-black">
-                      <div className="i-tabler-pencil" />
-                      <div className="text-base font-normal px-2">edit</div>
+                      <div className="i-tabler-eye" />
+                      <div className="text-base font-normal px-2">view</div>
                     </div>
                   </button>
                 </Link>
-              )}
+                <Link to={`/p/${presentation.id}`} className="flex">
+                  <button
+                    className="hover:children:(nav-active) overflow-hidden pb-2"
+                    type="button"
+                    title="Start presentation"
+                  >
+                    <div className="flex flex-col items-center border-b-2 border-black">
+                      <div className="i-tabler-presentation" />
+                      <div className="text-base font-normal px-2">present</div>
+                    </div>
+                  </button>
+                </Link>
+                <div className="flex-grow flex-shrink" />
+                {presentation.uid === auth.currentUser?.uid && (
+                  <Link className="flex" to={`/e/${presentation.id}`}>
+                    <button
+                      className="hover:children:(nav-active) overflow-hidden pb-2"
+                      type="button"
+                      title="Edit presentation"
+                    >
+                      <div className="flex flex-col items-center border-b-2 border-black">
+                        <div className="i-tabler-pencil" />
+                        <div className="text-base font-normal px-2">edit</div>
+                      </div>
+                    </button>
+                  </Link>
+                )}
+              </div>
             </div>
-          </div>
-        )) ?? (
-          <div className="absolute top-50% left-50%">
-            <Loading />
-          </div>
-        )}
+          )) ?? (
+            <div className="absolute top-50% left-50%">
+              <Loading />
+            </div>
+          )}
+        </div>
       </div>
     </DefaultLayout>
   );

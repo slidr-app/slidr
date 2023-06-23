@@ -128,6 +128,18 @@ export default function DefaultLayout({
         </div>
       </div>
       {children}
+      <div className="my-6 text-sm flex flex-col items-center">
+        <div>&copy; 2023 Slidr.app</div>
+        <div className="prose">
+          <a
+            href="https://github.com/codyzu/present/issues/new/choose"
+            className="vertical-mid"
+          >
+            Something not right? Have an idea? Let us know on github.{' '}
+            <div className="inline-block w-1.25rem h-1.25rem i-line-md-github-loop" />
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
