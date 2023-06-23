@@ -43,7 +43,7 @@ export default function Viewer() {
                 forward={forward}
               />
             </div>
-            <div className="flex flex-row w-full items-start shadow-lg gap-0.5 bg-black items-stretch relative pt-1">
+            <div className="flex flex-row flex-wrap w-full justify-between shadow-lg gap-0.5 bg-black items-stretch relative pt-1">
               <div className="h-1 content-empty w-full absolute top-0 left-0">
                 <ProgressBar
                   absolute
@@ -51,7 +51,7 @@ export default function Viewer() {
                   slideIndex={slideIndex}
                 />
               </div>
-              <div className="grid grid-cols-4 gap-0.5">
+              <div className="grid grid-cols-4 gap-0.5 flex-grow">
                 <NavButtons
                   onPrevious={navPrevious}
                   onNext={navNext}
@@ -63,10 +63,9 @@ export default function Viewer() {
                   }}
                 />
               </div>
-              <div className="flex-grow bg-gray-800" />
               <div
                 className={clsx(
-                  'grid gap-0.5',
+                  'grid gap-0.5 flex-grow',
                   isOwner ? 'grid-cols-3' : 'grid-cols-2',
                 )}
               >
