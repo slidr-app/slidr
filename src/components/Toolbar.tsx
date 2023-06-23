@@ -1,7 +1,9 @@
 import clsx from 'clsx';
 import {useEffect, useState} from 'react';
 import {type PresentationDoc} from '../../functions/src/presentation';
+import {auth} from '../firebase';
 import Button from './toolbar/Button';
+import NavButtons from './toolbar/NavButtons';
 
 export default function Toolbar({
   onPrevious,
@@ -54,6 +56,8 @@ export default function Toolbar({
     };
   }, []);
 
+  const isOwner = presentation?.uid === auth.currentUser?.uid;
+
   return (
     <div
       className={clsx(
@@ -62,35 +66,23 @@ export default function Toolbar({
       )}
     >
       <div
-        className="grid grid-cols-9 gap-0.5 portrait:(grid-cols-1 grid-rows-9) first:children:landscape:(rounded-l-md overflow-hidden) first:children:portrait:(rounded-t-md overflow-hidden) last:children:landscape:(rounded-r-md overflow-hidden) last:children:portrait:(rounded-b-md overflow-hidden)"
+        className={clsx(
+          'grid gap-0.5 first:children:landscape:(rounded-l-md overflow-hidden) first:children:portrait:(rounded-t-md overflow-hidden) last:children:landscape:(rounded-r-md overflow-hidden) last:children:portrait:(rounded-b-md overflow-hidden) children:(shadow-lg shadow-teal-800)',
+          isOwner ? 'grid-cols-9' : 'grid-cols-8',
+          isOwner
+            ? 'portrait:(grid-cols-1 grid-rows-9)'
+            : 'portrait:(grid-cols-1 grid-rows-8)',
+        )}
         onClick={(event) => {
           // Prevents navigating forward when toolbar is over the click to advance area
           event.stopPropagation();
         }}
       >
-        <Button
-          icon="i-tabler-arrow-big-left-filled"
-          label="previous"
-          title="Previous slide"
-          onClick={onPrevious}
-        />
-        <Button
-          icon="i-tabler-arrow-big-right-filled"
-          label="next"
-          title="Next slide"
-          onClick={onNext}
-        />
-        <Button
-          icon="i-tabler-arrow-bar-to-left"
-          label="start"
-          title="Go to start"
-          onClick={onStart}
-        />
-        <Button
-          icon="i-tabler-arrow-bar-to-right"
-          label="end"
-          title="Go to end"
-          onClick={onEnd}
+        <NavButtons
+          onPrevious={onPrevious}
+          onNext={onNext}
+          onStart={onStart}
+          onEnd={onEnd}
         />
         <Button
           anchor
@@ -128,12 +120,14 @@ export default function Toolbar({
           title="View presentation in browser"
           to={`/v/${presentation?.id ?? ''}`}
         />
-        <Button
-          icon="i-tabler-pencil"
-          label="edit"
-          title="Edit presentation"
-          to={presentation ? `/e/${presentation.id}` : '/'}
-        />
+        {isOwner && (
+          <Button
+            icon="i-tabler-pencil"
+            label="edit"
+            title="Edit presentation"
+            to={presentation ? `/e/${presentation.id}` : '/'}
+          />
+        )}
         {/* <button
                 className="i-tabler-tools-off text-teal font-size-[4rem]"
                 type="button"

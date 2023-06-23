@@ -46,7 +46,7 @@ export default function Button({
   } = {};
 
   const outterClasses = clsx(
-    'px-2 py-1 flex flex-col justify-center items-center bg-gray-800 shadow-lg shadow-teal-800',
+    'px-2 py-1 flex flex-col justify-center items-center bg-gray-800',
     disabled
       ? 'text-gray-300'
       : 'text-teal hover:(bg-gray-700) active:(text-white)',

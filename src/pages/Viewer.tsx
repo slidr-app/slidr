@@ -1,5 +1,5 @@
-import {Link} from 'react-router-dom';
 import {useEffect} from 'react';
+import clsx from 'clsx';
 import DefaultLayout from '../layouts/DefaultLayout';
 import usePresentation from '../components/slides/use-presentation';
 import Slideshow from '../components/Slideshow';
@@ -8,6 +8,8 @@ import {useSlideIndex} from '../components/slides/use-slide-index';
 import {auth} from '../firebase';
 import ProgressBar from '../components/ProgressBar';
 import Shares from '../components/Shares';
+import NavButtons from '../components/toolbar/NavButtons';
+import Button from '../components/toolbar/Button';
 
 export default function Viewer() {
   const presentation = usePresentation();
@@ -27,17 +29,19 @@ export default function Viewer() {
   );
   presentFromStartSearchParameters.set('slide', '1');
 
+  const isOwner = presentation?.uid === auth.currentUser?.uid;
+
   return (
     <DefaultLayout title={presentation?.title ?? ''}>
       <div className="flex flex-col items-center pb-6">
-        <div className="flex flex-col gap-4 items-stretch w-full max-w-screen-lg">
-          <div className="flex flex-col w-full">
+        <div className="flex flex-col gap-4 items-stretch w-full max-w-screen-lg lt-lg:px-4">
+          <div className="flex flex-col w-full rounded-lg overflow-hidden border-primary">
             <Slideshow
               pageIndex={slideIndex}
               pages={presentation?.pages ?? []}
               forward={forward}
             />
-            <div className="flex flex-row w-full items-start bg-gray-800 shadow-lg gap-4 items-stretch relative">
+            <div className="flex flex-row w-full items-start shadow-lg gap-0.5 bg-black items-stretch relative pt-1">
               <div className="h-1 content-empty w-full absolute top-0 left-0">
                 <ProgressBar
                   absolute
@@ -45,81 +49,47 @@ export default function Viewer() {
                   slideIndex={slideIndex}
                 />
               </div>
-              <div className="grid grid-cols-4 children:(border-black border-x-1 px-2 py-1 flex flex-col justify-center items-center mx--0.5px bg-gray-800 text-teal) hover:children:(bg-gray-700) active:children:(text-white)">
-                <button
-                  className=""
-                  type="button"
-                  title="Previous"
-                  onClick={navPrevious}
-                >
-                  <div className="i-tabler-arrow-big-left-filled" />
-                  <div className="text-xs text-white">previous</div>
-                </button>
-                <button
-                  className=""
-                  type="button"
-                  title="Next"
-                  onClick={navNext}
-                >
-                  <div className="i-tabler-arrow-big-right-filled" />
-                  <div className="text-xs text-white">next</div>
-                </button>
-                <button
-                  className=""
-                  type="button"
-                  title="Start"
-                  onClick={() => {
+              <div className="grid grid-cols-4 gap-0.5">
+                <NavButtons
+                  onPrevious={navPrevious}
+                  onNext={navNext}
+                  onStart={() => {
                     setSlideIndex(0);
                   }}
-                >
-                  <div className="i-tabler-arrow-bar-to-left" />
-                  <div className="text-xs text-white">start</div>
-                </button>
-                <button
-                  className=""
-                  type="button"
-                  title="End"
-                  onClick={() => {
+                  onEnd={() => {
                     setSlideIndex((presentation?.pages?.length ?? 1) - 1);
                   }}
-                >
-                  <div className="i-tabler-arrow-bar-to-right" />
-                  <div className="text-xs text-white">end</div>
-                </button>
+                />
               </div>
-              {/* <div className="border-l-black border-l-1 mx-1" /> */}
-              <div className="flex-grow" />
-              <div className="grid grid-flow-col auto-cols-fr all-[a_button]:(flex flex-col items-center justify-center) children:(border-black border-x-1 px-2 py-1 flex flex-col items-center justify-center mx--0.5px bg-gray-800 text-teal) hover:children:(bg-gray-700)">
-                {presentation?.uid === auth.currentUser?.uid && (
-                  <Link
-                    className=""
-                    to={presentation ? `/e/${presentation.id}` : '/'}
-                  >
-                    <button
-                      className=""
-                      type="button"
-                      title="Edit presentation"
-                    >
-                      <div className="i-tabler-pencil" />
-                      <div className="text-xs text-white">edit</div>
-                    </button>
-                  </Link>
+              <div className="flex-grow bg-gray-800" />
+              <div
+                className={clsx(
+                  'grid gap-0.5',
+                  isOwner ? 'grid-cols-3' : 'grid-cols-2',
                 )}
-                <Link
-                  className=""
+              >
+                {isOwner && (
+                  <Button
+                    icon="i-tabler-pencil"
+                    label="edit"
+                    title="Edit presentation"
+                    to={presentation ? `/e/${presentation.id}` : '/'}
+                  />
+                )}
+                <Button
+                  icon="i-tabler-presentation"
+                  label="present"
+                  title="Present from current slide"
                   to={
                     presentation
                       ? `/p/${presentation.id}${document.location.search}`
                       : '/'
                   }
-                >
-                  <button className="" type="button" title="Present">
-                    <div className="i-tabler-presentation" />
-                    <div className="text-xs text-white">present</div>
-                  </button>
-                </Link>
-                <Link
-                  className=""
+                />
+                <Button
+                  icon="i-tabler-rotate rotate-180"
+                  label="present start"
+                  title="Present from start"
                   to={
                     presentation
                       ? `/p/${
@@ -127,14 +97,7 @@ export default function Viewer() {
                         }?${presentFromStartSearchParameters.toString()}`
                       : '/'
                   }
-                >
-                  <button className="" type="button" title="Present from start">
-                    <div className="i-tabler-rotate rotate-180" />
-                    <div className="text-xs text-white max-w-min">
-                      present start
-                    </div>
-                  </button>
-                </Link>
+                />
               </div>
             </div>
           </div>
