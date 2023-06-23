@@ -72,6 +72,12 @@ export const renderForBot = onRequest(async (request, response) => {
       : '?slide=' + String(request.query.slide)
   }`;
 
+  const title = `${presentationData.title}${
+    presentationData.username.length > 0
+      ? ' by ' + presentationData.username
+      : ''
+  }`;
+
   response
     .setHeader('cache-control', 'public, max-age=3600, immutable')
     .setHeader('vary', 'User-Agent')
@@ -87,11 +93,7 @@ export const renderForBot = onRequest(async (request, response) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Inspired from: https://css-tricks.com/essential-meta-tags-social-media/#aa-final-markup -->
   <!--  Essential META Tags -->
-  <meta property="og:title" content="${presentationData.title}${
-    presentationData.username.length > 0
-      ? ' by ' + presentationData.username
-      : ''
-  }">
+  <meta property="og:title" content="${title}">
   <meta property="og:type" content="website" />
   <meta property="og:image" content="${pageUrl}">
   <meta property="og:url" content="${shareUrl}">
@@ -100,6 +102,7 @@ export const renderForBot = onRequest(async (request, response) => {
   <meta property="og:description" content="${description}">
   <meta property="og:site_name" content="Slidr.app">
   <meta name="twitter:image:alt" content="${presentationData.title}">
+  <title>${title}</title>
   </head>
   <body>
     <h1>${presentationData.title}</h1>
