@@ -36,11 +36,13 @@ export default function Viewer() {
       <div className="flex flex-col items-center pb-6">
         <div className="flex flex-col gap-4 items-stretch w-full max-w-screen-lg lt-lg:px-4">
           <div className="flex flex-col w-full rounded-lg overflow-hidden border-primary">
-            <Slideshow
-              pageIndex={slideIndex}
-              pages={presentation?.pages ?? []}
-              forward={forward}
-            />
+            <div className="flex" onClick={navNext}>
+              <Slideshow
+                pageIndex={slideIndex}
+                pages={presentation?.pages ?? []}
+                forward={forward}
+              />
+            </div>
             <div className="flex flex-row w-full items-start shadow-lg gap-0.5 bg-black items-stretch relative pt-1">
               <div className="h-1 content-empty w-full absolute top-0 left-0">
                 <ProgressBar
