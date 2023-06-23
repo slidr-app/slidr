@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import Loading from './Loading';
+import Loading from '../Loading';
 
 export default function Slideshow({
   pageIndex,

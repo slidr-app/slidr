@@ -16,7 +16,7 @@ import Reactions from '../components/reactions/Reactions';
 import ReactionControls from '../components/reactions/ReactionControls';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
-import Slideshow from '../components/Slideshow';
+import Slideshow from '../components/slides/Slideshow';
 import usePresentation from '../components/slides/use-presentation';
 import Shares from '../components/Shares';
 

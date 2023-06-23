@@ -17,10 +17,10 @@ import {
 import Reactions from '../components/reactions/Reactions';
 import useReactions from '../components/reactions/use-reactions';
 import useRemoteReactions from '../components/reactions/use-remote-reactions';
-import Toolbar from '../components/Toolbar';
+import Toolbar from '../components/toolbar/Toolbar';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
-import Slideshow from '../components/Slideshow';
+import Slideshow from '../components/slides/Slideshow';
 import usePresentation from '../components/slides/use-presentation';
 
 function Presentation() {

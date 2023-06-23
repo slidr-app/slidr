@@ -2,7 +2,7 @@ import {useEffect} from 'react';
 import clsx from 'clsx';
 import DefaultLayout from '../layouts/DefaultLayout';
 import usePresentation from '../components/slides/use-presentation';
-import Slideshow from '../components/Slideshow';
+import Slideshow from '../components/slides/Slideshow';
 import useSearchParametersSlideIndex from '../components/slides/use-search-parameter-slide-index';
 import {useSlideIndex} from '../components/slides/use-slide-index';
 import {auth} from '../firebase';

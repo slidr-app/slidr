@@ -21,7 +21,7 @@ import Timer from '../components/Timer';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
 import usePresentation from '../components/slides/use-presentation';
-import Slideshow from '../components/Slideshow';
+import Slideshow from '../components/slides/Slideshow';
 
 const textSizes = [
   'text-xs',

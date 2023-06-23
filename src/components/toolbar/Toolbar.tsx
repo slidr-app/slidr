@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import {useEffect, useState} from 'react';
-import {type PresentationDoc} from '../../functions/src/presentation';
-import {auth} from '../firebase';
-import Button from './toolbar/Button';
-import NavButtons from './toolbar/NavButtons';
+import {type PresentationDoc} from '../../../functions/src/presentation';
+import {auth} from '../../firebase';
+import Button from './Button';
+import NavButtons from './NavButtons';
 
 export default function Toolbar({
   onPrevious,
