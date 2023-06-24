@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import {type PresentationDoc} from '../../functions/src/presentation';
+import RoundButton from './toolbar/RoundButton';
 
 export default function Shares({
   presentation,
@@ -38,58 +39,35 @@ export default function Shares({
 
   return (
     <div className="flex flex-row justify-center gap-4 relative flex-wrap">
-      <a
-        href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+      <RoundButton
+        newTab
+        to={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
           tweetText,
         )}`}
-        target="_blank"
-        rel="noreferrer"
-        className="flex flex-col items-center"
-      >
-        <button
-          type="button"
-          className="btn rounded-full w-[4rem] h-[4rem] flex items-center justify-center"
-          title="Tweet this slide"
-        >
-          <div className="i-tabler-brand-twitter w-[2rem] h-[2rem]" />
-        </button>
-        <div className="text-sm">tweet</div>
-      </a>
-      <a
-        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+        icon="i-tabler-brand-twitter w-[2rem] h-[2rem]"
+        label="tweet"
+        title="Tweet this slide"
+      />
+      <RoundButton
+        newTab
+        to={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
           shareUrl,
         )}`}
-        target="_blank"
-        className="flex flex-col items-center"
-        rel="noreferrer"
-      >
-        <button
-          type="button"
-          className="btn rounded-full w-[4rem] h-[4rem] flex items-center justify-center"
-          title="Post slide to LinkedIn"
-        >
-          <div className="i-tabler-brand-linkedin w-[2rem] h-[2rem]" />
-        </button>
-        <div className="text-sm">share</div>
-      </a>
-      <a
-        href={shareUrl}
-        className="flex flex-col items-center"
+        icon="i-tabler-brand-linkedin w-[2rem] h-[2rem]"
+        label="post"
+        title="Post slide to LinkedIn"
+      />
+      <RoundButton
+        to={shareUrl}
+        icon="i-tabler-link w-[2rem] h-[2rem]"
+        label={copied ? 'copied!' : 'copy'}
+        title="Copy link to slide"
         onClick={(event) => {
           event.preventDefault();
           void window.navigator.clipboard.writeText(shareUrl);
           setCopied(true);
         }}
-      >
-        <button
-          type="button"
-          className="btn rounded-full w-[4rem] h-[4rem] flex items-center justify-center"
-          title="Copy link to slide"
-        >
-          <div className="i-tabler-link w-[2rem] h-[2rem]" />
-        </button>
-        <div className="text-sm">{copied ? 'copied!' : 'copy'}</div>
-      </a>
+      />
     </div>
   );
 }
