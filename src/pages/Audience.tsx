@@ -82,7 +82,7 @@ export default function Audience() {
   );
 
   return (
-    <div className="flex flex-col gap-8 p-4 position-relative overflow-x-hidden overflow-y-auto min-h-screen items-center">
+    <div className="flex flex-col gap-8 p-4 lt-sm:p-0 position-relative overflow-x-hidden overflow-y-auto min-h-screen items-center">
       <div className="max-w-2xl mx-auto w-full">
         <Slideshow pageIndex={slideIndex} pages={presentation?.pages ?? []} />
       </div>

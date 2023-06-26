@@ -22,6 +22,8 @@ import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Disconnected from '../components/Disconnected';
 import usePresentation from '../components/slides/use-presentation';
 import Slideshow from '../components/slides/Slideshow';
+import NavButtons from '../components/toolbar/NavButtons';
+import Button from '../components/toolbar/Button';
 
 const textSizes = [
   'text-xs',
@@ -141,7 +143,7 @@ export default function Speaker() {
     >
       <div className="flex flex-col overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full">
         <div className="flex flex-col gap-4">
-          <div className="w-full header flex flex-row gap-4 justify-evenly">
+          <div className="w-full header flex flex-row gap-4 justify-evenly items-center h-14">
             <div>
               Slide:{' '}
               <span className="font-bold font-mono">{slideIndex + 1}</span>
@@ -185,90 +187,63 @@ export default function Speaker() {
             </div>
           </div>
           <div className="self-center flex flex-col gap-6">
-            <div className="grid grid-cols-2 gap-6">
-              <button
-                type="button"
-                className="btn"
-                title="Previous slide"
-                onClick={() => {
-                  navPrevious();
-                }}
-              >
-                <div className="i-tabler-circle-arrow-left w-9 h-9" />
-              </button>
-              <button
-                type="button"
-                className="btn"
-                title="Next slide"
-                onClick={() => {
-                  navNext();
-                }}
-              >
-                <div className="i-tabler-circle-arrow-right w-9 h-9" />
-              </button>
-              <button
-                type="button"
-                className="btn"
-                title="Go to start"
-                onClick={() => {
+            <div className="grid grid-cols-2 gap-6 first:children:p6">
+              <NavButtons
+                border
+                onNext={navNext}
+                onPrevious={navPrevious}
+                onStart={() => {
                   setSlideIndex(0);
                 }}
-              >
-                <div className="i-tabler-circle-chevrons-left w-6 h-6" />
-              </button>
-              <button
-                type="button"
-                className="btn"
-                title="Go to end"
-                onClick={() => {
+                onEnd={() => {
                   setSlideIndex((presentation?.pages?.length ?? 1) - 1);
                 }}
-              >
-                <div className="i-tabler-circle-chevrons-right w-6 h-6" />
-              </button>
+              />
             </div>
             <ReactionControls
               handleConfetti={postConfettiBroadcastSupabase}
               handleReaction={postReaction}
             />
-            <button
-              type="button"
-              className="btn"
-              title="Confetti"
+            <Button
+              border
+              icon="i-tabler-circle-off"
+              label="clear"
+              title="Clear reactions"
               onClick={() => {
                 postConfettiResetBroadcastChannel();
               }}
-            >
-              <div className="i-tabler-circle-off w-6 h-6 mr-2" />
-            </button>
+            />
           </div>
         </div>
       </div>
       <div className="overflow-x-hidden overflow-y-auto w-full h-full">
         <div className="flex flex-col gap-4">
-          <div className="self-center w-full header">Speaker Notes</div>
+          <div className="flex flex-col self-center w-full header h-14 justify-center">
+            Speaker Notes
+          </div>
           <div className="self-center flex flex-row gap-4 flex-wrap">
-            <button
-              className="btn flex-shrink-0"
-              type="button"
+            <Button
+              border
+              icon="i-tabler-zoom-in"
+              label="in"
+              title="Zoom in"
               onClick={() => {
                 setTextSize(zoom(true));
               }}
-            >
-              <div className="i-tabler-zoom-in" />
-            </button>
+            />
+
             <div className="flex justify-center items-center text-base flex-shrink-0">
               <div>{textSize.replace('text-', '')}</div>
             </div>
-            <button
-              className="btn flex-shrink-0"
-              type="button"
+            <Button
+              border
+              icon="i-tabler-zoom-out"
+              label="out"
+              title="Zoom out"
               onClick={() => {
                 setTextSize(zoom(false));
               }}
-            >
-              <div className="i-tabler-zoom-out" />
-            </button>
+            />
           </div>
           <div className={clsx('p-2 prose max-w-full font-inter', textSize)}>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
