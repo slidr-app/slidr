@@ -1,24 +1,4 @@
-import clsx from 'clsx';
-
-function ReactionButton({
-  icon,
-  handleReaction,
-}: {
-  icon: string;
-  handleReaction: (icon: string) => void;
-}) {
-  return (
-    <button
-      className="btn relative flex items-center justify-center"
-      type="button"
-      onClick={() => {
-        handleReaction(icon);
-      }}
-    >
-      <div className={clsx('w-8 h-8 min-w-8 min-h-8', icon)} />
-    </button>
-  );
-}
+import Button from '../toolbar/Button';
 
 export default function ReactionControls({
   handleConfetti,
@@ -28,31 +8,56 @@ export default function ReactionControls({
   handleReaction: (icon: string) => void;
 }) {
   return (
-    <div className="max-w-lg mx-auto grid grid-cols-4 gap-4">
-      <button
-        type="button"
-        className="btn relative col-span-4"
+    <div className="max-w-lg mx-auto grid grid-cols-[4rem_4rem_4rem_4rem] gap-4 grid-rows-[4rem_4rem]">
+      <Button
+        border
+        label="confetti"
+        title="Throw some confetti"
+        icon="i-fluent-emoji-flat-party-popper h-8 w-8"
+        className="relative col-span-4"
         onClick={() => {
           handleConfetti();
         }}
-      >
-        <div className="i-fluent-emoji-flat-party-popper w-8 h-8" />
-      </button>
-      <ReactionButton
-        icon="i-fluent-emoji-flat-red-heart"
-        handleReaction={handleReaction}
       />
-      <ReactionButton
-        icon="i-fluent-emoji-flat-smiling-face"
-        handleReaction={handleReaction}
+      <Button
+        border
+        label="love"
+        title="React with love"
+        icon="i-fluent-emoji-flat-red-heart h-8 w-8"
+        className="relative"
+        onClick={() => {
+          handleReaction('i-fluent-emoji-flat-red-heart');
+        }}
       />
-      <ReactionButton
-        icon="i-fluent-emoji-flat-clapping-hands"
-        handleReaction={handleReaction}
+      <Button
+        border
+        label="smile"
+        title="React with a smile"
+        icon="i-fluent-emoji-flat-smiling-face h-8 w-8"
+        className="relative"
+        onClick={() => {
+          handleReaction('i-fluent-emoji-flat-smiling-face');
+        }}
       />
-      <ReactionButton
-        icon="i-fluent-emoji-flat-exploding-head"
-        handleReaction={handleReaction}
+      <Button
+        border
+        label="clap"
+        title="React with clapping hands"
+        icon="i-fluent-emoji-flat-clapping-hands h-8 w-8"
+        className="relative"
+        onClick={() => {
+          handleReaction('i-fluent-emoji-flat-clapping-hands');
+        }}
+      />
+      <Button
+        border
+        label="explode"
+        title="React with a exploding brain"
+        icon="i-fluent-emoji-flat-exploding-head h-8 w-8"
+        className="relative"
+        onClick={() => {
+          handleReaction('i-fluent-emoji-flat-exploding-head');
+        }}
       />
     </div>
   );

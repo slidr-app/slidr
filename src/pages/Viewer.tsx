@@ -9,7 +9,7 @@ import {auth} from '../firebase';
 import ProgressBar from '../components/ProgressBar';
 import Shares from '../components/Shares';
 import NavButtons from '../components/toolbar/NavButtons';
-import Button from '../components/toolbar/Button';
+import LinkButton from '../components/toolbar/LinkButton';
 
 export default function Viewer() {
   const presentation = usePresentation();
@@ -70,14 +70,16 @@ export default function Viewer() {
                 )}
               >
                 {isOwner && (
-                  <Button
+                  <LinkButton
+                    clientRoute
                     icon="i-tabler-pencil"
                     label="edit"
                     title="Edit presentation"
                     to={presentation ? `/e/${presentation.id}` : '/'}
                   />
                 )}
-                <Button
+                <LinkButton
+                  clientRoute
                   icon="i-tabler-presentation"
                   label="present"
                   title="Present from current slide"
@@ -87,7 +89,8 @@ export default function Viewer() {
                       : '/'
                   }
                 />
-                <Button
+                <LinkButton
+                  clientRoute
                   icon="i-tabler-rotate rotate-180"
                   label="present start"
                   title="Present from start"

@@ -4,6 +4,7 @@ import {type PresentationDoc} from '../../../functions/src/presentation';
 import {auth} from '../../firebase';
 import Button from './Button';
 import NavButtons from './NavButtons';
+import LinkButton from './LinkButton';
 
 export default function Toolbar({
   onPrevious,
@@ -84,8 +85,7 @@ export default function Toolbar({
           onStart={onStart}
           onEnd={onEnd}
         />
-        <Button
-          anchor
+        <LinkButton
           icon="i-tabler-speakerphone"
           label="speaker"
           title="Open speaker view"
@@ -104,8 +104,7 @@ export default function Toolbar({
             );
           }}
         />
-        <Button
-          anchor
+        <LinkButton
           newTab
           icon="i-tabler-eyeglass"
           label="audience"
@@ -114,14 +113,16 @@ export default function Toolbar({
             window.location.search
           }`}
         />
-        <Button
+        <LinkButton
+          clientRoute
           icon="i-tabler-eye"
           label="view"
           title="View presentation in browser"
           to={`/v/${presentation?.id ?? ''}`}
         />
         {isOwner && (
-          <Button
+          <LinkButton
+            clientRoute
             icon="i-tabler-pencil"
             label="edit"
             title="Edit presentation"

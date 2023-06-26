@@ -27,23 +27,18 @@ export default function RoundButton({
     // eslint-disable-next-line react/jsx-no-target-blank
     <a
       href={to}
-      className="flex flex-col items-center all-[button]:hover:(bg-gray-700)"
+      className="flex flex-col items-center all-[button]:hover:(bg-gray-700) text-teal all-[button]:active:(text-white bg-black)"
       onClick={onClick}
       {...anchorProps}
     >
       <button
         type="button"
-        className="btn rounded-full w-[4rem] h-[4rem] flex items-center justify-center bg-gray-800"
+        className="border-teal border-2 shadow-primary rounded-full w-[4rem] h-[4rem] flex items-center justify-center bg-gray-800 bg-opacity-80"
         title={title}
       >
-        <div
-          className={clsx(
-            'w-[2rem] h-[2rem] text-teal active:(text-white)',
-            icon,
-          )}
-        />
+        <div className={clsx('w-[2rem] h-[2rem]', icon)} />
       </button>
-      <div className="text-sm">{label}</div>
+      <div className="text-sm text-white">{label}</div>
     </a>
   );
 }
