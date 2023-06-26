@@ -1,4 +1,4 @@
-import {useEffect} from 'react';
+import {useEffect, useMemo} from 'react';
 import clsx from 'clsx';
 import DefaultLayout from '../layouts/DefaultLayout';
 import usePresentation from '../components/slides/use-presentation';
@@ -10,6 +10,7 @@ import ProgressBar from '../components/ProgressBar';
 import Shares from '../components/Shares';
 import NavButtons from '../components/toolbar/NavButtons';
 import LinkButton from '../components/toolbar/LinkButton';
+import useKeys from '../use-keys';
 
 export default function Viewer() {
   const presentation = usePresentation();
@@ -23,6 +24,17 @@ export default function Viewer() {
       slideCount: presentation?.pages?.length ?? 0,
     });
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
+
+  const keyHandlers = useMemo(
+    () =>
+      new Map([
+        ['ArrowLeft', navPrevious],
+        ['ArrowRight', navNext],
+        ['Space', navNext],
+      ]),
+    [navNext, navPrevious],
+  );
+  useKeys(keyHandlers);
 
   const presentFromStartSearchParameters = new URLSearchParams(
     document.location.search,
