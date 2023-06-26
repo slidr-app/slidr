@@ -118,7 +118,7 @@ export default function Toolbar({
           icon="i-tabler-eye"
           label="view"
           title="View presentation in browser"
-          to={`/v/${presentation?.id ?? ''}`}
+          to={`/v/${presentation?.id ?? ''}${window.location.search}`}
         />
         {isOwner && (
           <LinkButton
