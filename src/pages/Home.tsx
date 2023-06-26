@@ -49,9 +49,11 @@ export default function Home() {
       }
     >
       <div className="flex flex-col items-center gap-6">
-        <div className="flex flex-col gap-1 items-center">
-          <div className="text-2xl">Slidr.app: making presentations fun!</div>
-          <div className="text-sm">
+        <div className="p-4 flex flex-col gap-1 items-center">
+          <div className="text-2xl text-center">
+            Slidr.app: making presentations fun!
+          </div>
+          <div className="text-sm text-center">
             Slidr is currently in beta, come back often to see what&apos;s new.
           </div>
         </div>
@@ -133,7 +135,7 @@ export default function Home() {
               </div>
             </div>
           )) ?? (
-            <div className="absolute top-50% left-50%">
+            <div className="flex flex-col col-span-2 lt-sm:col-span-1 h-40 items-center justify-center">
               <Loading />
             </div>
           )}

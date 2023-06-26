@@ -128,7 +128,7 @@ export default function DefaultLayout({
         </div>
       </div>
       {children}
-      <div className="my-6 text-sm flex flex-col items-center">
+      <div className="my-6 text-sm flex flex-col items-center text-center">
         <div>&copy; 2023 Slidr.app</div>
         <div className="prose">
           <a

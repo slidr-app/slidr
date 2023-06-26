@@ -367,7 +367,7 @@ export default function Export() {
           />
         </div>
       ) : (
-        <div className="absolute top-0 flex flex-col items-center justify-center w-screen h-screen overflow-hidden">
+        <div className="flex flex-col col-span-2 lt-sm:col-span-1 h-40 items-center justify-center">
           <Loading />
         </div>
       )}
