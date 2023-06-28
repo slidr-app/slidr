@@ -28,3 +28,4 @@ dist-ssr
 
 src/presentations/thumbs
 TODO.md
+*.serviceaccount.json

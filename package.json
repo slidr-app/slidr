@@ -12,7 +12,7 @@
     "prepush": "pnpm run lint && pnpm run build:all",
     "build:functions": "pnpm --dir functions build",
     "build:all": "pnpm run build && pnpm run build:functions",
-    "deploy": "pnpm exec firebase deploy --only hosting:slidr,storage,firestore,functions:renderForBot"
+    "deploy": "firebase deploy"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.24.0",

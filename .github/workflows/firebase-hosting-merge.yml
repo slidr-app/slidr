@@ -8,6 +8,7 @@ on:
       - main
       - firebase
       - firebase-render-bots
+      - firebase-prod
 
 # Cancel any previous CI runs for this branch or PR
 concurrency:
@@ -45,10 +46,16 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_KEY }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
 
       - name: Create SA key
-        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SUPA_PRESENTATION }}' > $HOME/gcloud.json
+        run: echo '${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}' > $HOME/gcloud.json
 
       - name: Deploy
         # This requires a lot of pesky permissions in GCP, inspired from: https://davelms.medium.com/deploy-firebase-functions-using-github-actions-7dbafbd4df77 
-        run: GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json pnpm run deploy
+        run: GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json pnpm run deploy --project ${{ secrets.VITE_FIREBASE_PROJECT_ID }}

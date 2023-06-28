@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import {initializeApp} from 'firebase/app';
 import {getAuth} from 'firebase/auth';
+import {getAnalytics} from 'firebase/analytics';
 import {getFirestore} from 'firebase/firestore/lite';
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -8,16 +9,20 @@ import {getFirestore} from 'firebase/firestore/lite';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyB4Q1fZMqKqn_KtjgBK8qBj652gNy72LhE',
-  authDomain: 'supa-presentation.firebaseapp.com',
-  projectId: 'supa-presentation',
-  storageBucket: 'supa-presentation.appspot.com',
-  messagingSenderId: '270298647382',
-  appId: '1:270298647382:web:bc3d0d9e9965f9606ba4f7',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
+
+// Only load analytics in production
+export const analytics = import.meta.env.PROD ? getAnalytics(app) : undefined;
+
 export const auth = getAuth(app);
 export const firestore = getFirestore(app);
 
