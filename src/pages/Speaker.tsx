@@ -9,7 +9,6 @@ import useKeys from '../use-keys';
 import useConfetti from '../components/confetti/use-confetti';
 import useBroadcastChannel from '../components/broadcast/use-broadcast-channel';
 import useSearchParametersSlideIndex from '../components/slides/use-search-parameter-slide-index';
-import useBroadcastSupabase from '../components/broadcast/use-broadcast-supabase';
 import ProgressBar from '../components/ProgressBar';
 import {
   useChannelHandlers,
@@ -19,11 +18,11 @@ import ReactionControls from '../components/reactions/ReactionControls';
 import useRemoteReactions from '../components/reactions/use-remote-reactions';
 import Timer from '../components/Timer';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
-import Disconnected from '../components/Disconnected';
 import usePresentation from '../components/slides/use-presentation';
 import Slideshow from '../components/slides/Slideshow';
 import NavButtons from '../components/toolbar/NavButtons';
 import Button from '../components/toolbar/Button';
+import useBroadcastFirebase from '../components/broadcast/use-broadcast-firestore';
 
 const textSizes = [
   'text-xs',
@@ -81,15 +80,8 @@ export default function Speaker() {
   const {postConfettiReset: postConfettiResetBroadcastChannel} = useConfetti({
     postMessage: postBroadcastChannel,
   });
-  const {
-    postMessage: postBroadcastSupabase,
-    paused,
-    unPause,
-  } = useBroadcastSupabase({
-    channelId: presentationId!,
+  const {postMessage: postBroadcastSupabase} = useBroadcastFirebase({
     sessionId,
-    // Pause the speaker view after 1 hour
-    idleTimeout: 60 * 60 * 1000,
   });
   // We fire confetti on the supabase channel (never reset, ignore incoming confetti)
   const {postConfetti: postConfettiBroadcastSupabase} = useConfetti({
@@ -258,7 +250,6 @@ export default function Speaker() {
         slideIndex={slideIndex}
         slideCount={presentation?.pages?.length ?? 0}
       />
-      <Disconnected paused={paused} unPause={unPause} />
     </div>
   );
 }

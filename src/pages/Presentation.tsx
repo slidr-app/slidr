@@ -7,7 +7,6 @@ import useKeys from '../use-keys';
 import useConfetti from '../components/confetti/use-confetti';
 import useBroadcastChannel from '../components/broadcast/use-broadcast-channel';
 import useSearchParametersSlideIndex from '../components/slides/use-search-parameter-slide-index';
-import useBroadcastSupabase from '../components/broadcast/use-broadcast-supabase';
 import Confetti from '../components/confetti/Confetti';
 import ProgressBar from '../components/ProgressBar';
 import {
@@ -19,9 +18,9 @@ import useReactions from '../components/reactions/use-reactions';
 import useRemoteReactions from '../components/reactions/use-remote-reactions';
 import Toolbar from '../components/toolbar/Toolbar';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
-import Disconnected from '../components/Disconnected';
 import Slideshow from '../components/slides/Slideshow';
 import usePresentation from '../components/slides/use-presentation';
+import useBroadcastFirebase from '../components/broadcast/use-broadcast-firestore';
 
 function Presentation() {
   const {presentationId} = useParams();
@@ -61,17 +60,9 @@ function Presentation() {
     handleIncomingBroadcast: handleIncomingBroadcastSupabase,
     setHandlers: setHandlersBroadcastSupabase,
   } = useChannelHandlers();
-  const {
-    postMessage: postBroadcastSupabase,
-    paused,
-    unPause,
-  } = useBroadcastSupabase({
-    channelId: presentationId!,
+  const {postMessage: postBroadcastSupabase} = useBroadcastFirebase({
     sessionId,
     onIncoming: handleIncomingBroadcastSupabase,
-    // Pause the presentation view after 1 hour
-    idleTimeout: 60 * 60 * 1000,
-    heartbeatData: {index: slideIndex},
   });
   const {setSlideIndex: setSupabaseSlideIndex} = useSlideIndex({
     postMessage: postBroadcastSupabase,
@@ -190,7 +181,6 @@ function Presentation() {
         className="position-absolute top-0 left-0 h-full w-full pointer-events-none"
         {...swipeHandlers}
       />
-      <Disconnected paused={paused} unPause={unPause} />
       {presentation && (
         <Toolbar
           presentation={presentation}

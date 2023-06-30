@@ -12,7 +12,7 @@ import {
   updateDoc,
   getDoc,
   doc,
-} from 'firebase/firestore/lite';
+} from 'firebase/firestore';
 import {
   ref as storageRef,
   uploadBytes,

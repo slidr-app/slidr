@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {getDoc, doc} from 'firebase/firestore/lite';
+import {getDoc, doc} from 'firebase/firestore';
 import {useParams} from 'react-router-dom';
 import {
   type PresentationData,

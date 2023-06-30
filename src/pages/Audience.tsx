@@ -1,8 +1,7 @@
 import {useState, useEffect} from 'react';
-import {Link, useParams} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import useConfetti from '../components/confetti/use-confetti';
 import {useSlideIndex} from '../components/slides/use-slide-index';
-import useBroadcastSupabase from '../components/broadcast/use-broadcast-supabase';
 import useSearchParametersSlideIndex from '../components/slides/use-search-parameter-slide-index';
 import Confetti from '../components/confetti/Confetti';
 import ProgressBar from '../components/ProgressBar';
@@ -15,13 +14,13 @@ import useReactions from '../components/reactions/use-reactions';
 import Reactions from '../components/reactions/Reactions';
 import ReactionControls from '../components/reactions/ReactionControls';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
-import Disconnected from '../components/Disconnected';
 import Slideshow from '../components/slides/Slideshow';
 import usePresentation from '../components/slides/use-presentation';
 import Shares from '../components/Shares';
+import useBroadcastFirebase from '../components/broadcast/use-broadcast-firestore';
 
 export default function Audience() {
-  const {presentationId} = useParams();
+  // Const {presentationId} = useParams();
   const presentation = usePresentation();
 
   useEffect(() => {
@@ -34,26 +33,19 @@ export default function Audience() {
 
   // Setup supabase broadcast channel
   const {handleIncomingBroadcast, setHandlers} = useChannelHandlers();
-  const {
-    postMessage: postBroadcastMessage,
-    connected: connectedSupabase,
-    paused,
-    unPause,
-  } = useBroadcastSupabase({
-    channelId: presentationId!,
+  const {postMessage: postBroadcastMessage} = useBroadcastFirebase({
+    // ChannelId: presentationId!,
     sessionId,
     onIncoming: handleIncomingBroadcast,
-    // Pause supabase after 5 mins of inactivity (no reactions)
-    // Visibility changes will automatically reconnect
-    idleTimeout: 5 * 60 * 1000,
   });
 
-  console.log({connectedSupabase});
+  // Console.log({connectedSupabase});
   // Track the slide index from the broadcast channel
   const {
     slideIndex,
     setSlideIndex,
     handlers: slideIndexHandlers,
+    forward,
   } = useSlideIndex({
     slideCount: presentation?.pages?.length ?? 0,
   });
@@ -84,18 +76,22 @@ export default function Audience() {
   return (
     <div className="flex flex-col gap-8 p-4 lt-sm:p-0 position-relative overflow-x-hidden overflow-y-auto min-h-screen items-center">
       <div className="max-w-2xl mx-auto w-full">
-        <Slideshow pageIndex={slideIndex} pages={presentation?.pages ?? []} />
+        <Slideshow
+          pageIndex={slideIndex}
+          pages={presentation?.pages ?? []}
+          forward={forward}
+        />
       </div>
 
       <Confetti fire={fire} />
       <Reactions reactions={reactions} removeReaction={removeReaction} />
       <ReactionControls
         handleConfetti={() => {
-          setFire({});
+          // SetFire({});
           postConfetti();
         }}
         handleReaction={(icon) => {
-          addReaction(icon);
+          // AddReaction(icon);
           postReaction(icon);
         }}
       />
@@ -120,7 +116,6 @@ export default function Audience() {
         slideIndex={slideIndex}
         slideCount={presentation?.pages?.length ?? 0}
       />
-      <Disconnected paused={paused} unPause={unPause} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {deleteDoc, doc, updateDoc} from 'firebase/firestore/lite';
+import {deleteDoc, doc, updateDoc} from 'firebase/firestore';
 import {ref, deleteObject, listAll, getStorage} from 'firebase/storage';
 import clsx from 'clsx';
 import usePresentation from '../components/slides/use-presentation';

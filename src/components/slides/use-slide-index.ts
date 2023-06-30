@@ -59,17 +59,12 @@ export function useSlideIndex({
       [
         'slide index',
         (payload: Payload) => {
-          updateSlideIndex(payload.index);
-        },
-      ],
-      [
-        'heartbeat',
-        (payload: Payload) => {
+          setForward(payload.index! >= slideIndex);
           updateSlideIndex(payload.index);
         },
       ],
     ],
-    [updateSlideIndex],
+    [updateSlideIndex, slideIndex],
   );
 
   return {

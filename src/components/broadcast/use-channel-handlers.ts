@@ -1,8 +1,26 @@
 import {useCallback, useEffect, useState} from 'react';
 
-export type Payload = {id: string; index?: number; icon?: string};
+export type Payload =
+  | {
+      id: 'slide index';
+      index: number;
+      icon?: never;
+    }
+  | {
+      id: 'reaction';
+      index?: never;
+      icon: string;
+    }
+  | {
+      id: 'confetti' | 'confetti reset';
+      index?: never;
+      icon?: never;
+    };
 export type Handler = (payload: Payload) => void;
-export type HandlerEntry = [string, Handler];
+export type HandlerEntry = [
+  'slide index' | 'reaction' | 'confetti' | 'confetti reset',
+  Handler,
+];
 export type HandlerEntries = HandlerEntry[];
 
 export function useChannelHandlers() {

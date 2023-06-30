@@ -15,7 +15,6 @@
     "deploy": "firebase deploy"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.24.0",
     "@unocss/reset": "^0.53.3",
     "clsx": "^1.2.1",
     "firebase": "^9.22.1",

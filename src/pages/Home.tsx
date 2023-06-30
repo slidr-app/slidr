@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {getDocs, collection, orderBy, query} from 'firebase/firestore/lite';
+import {getDocs, collection, orderBy, query} from 'firebase/firestore';
 import {auth, firestore} from '../firebase.ts';
 import {
   type PresentationDoc,

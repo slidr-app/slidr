@@ -8,7 +8,7 @@ import {
   setDoc,
   updateDoc,
   where,
-} from 'firebase/firestore/lite';
+} from 'firebase/firestore';
 import {useDebouncedCallback} from 'use-debounce';
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext, type UserDoc} from '../components/UserProvider';

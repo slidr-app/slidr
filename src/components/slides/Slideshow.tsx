@@ -22,6 +22,8 @@ export default function Slideshow({
 
   // Use a function for readability
   function pageUnder() {
+    // TODO: track previous slideIndex in state with a useEffect
+    // Calculate the pageUnder using that
     if (forward === true && pageIndex > 0) {
       return pageIndex - 1;
     }
