@@ -14,9 +14,20 @@ export default function Shares({
     slideIndex + 1
   }`;
 
-  const tweetText = `${presentation?.title ?? 'preentation'}${
-    presentation?.username === undefined ? '' : ' by ' + presentation.username
-  } ${shareUrl}`;
+  const tweetText =
+    presentation === undefined
+      ? ''
+      : `${
+          presentation.title.length > 0 ? presentation.title : 'presentation'
+        }${
+          presentation.username.length > 0 ? ' by ' + presentation.username : ''
+        }${
+          // TODO: make the twitter handle required in the rules and set it to an empty string on upload
+          // Then remove the ?? '' below
+          (presentation.twitterHandle ?? '').length > 0
+            ? ' ' + presentation.twitterHandle
+            : ''
+        } ${shareUrl}`;
 
   const [copied, setCopied] = useState(false);
   useEffect(() => {

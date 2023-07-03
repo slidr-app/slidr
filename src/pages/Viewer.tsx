@@ -121,7 +121,10 @@ export default function Viewer() {
             <div>{presentation?.title ?? ''}</div>
             {presentation && (
               <div className="text-base">
-                by {presentation.username ?? 'Anonymous User'}
+                by{' '}
+                {presentation.username.length > 0
+                  ? presentation.username
+                  : 'Anonymous User'}
               </div>
             )}
           </div>
