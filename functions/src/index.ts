@@ -38,7 +38,7 @@ export const renderForBot = onRequest(async (request, response) => {
     return;
   }
 
-  logger.info('bot', {userAgent: request.get('user-agent')});
+  // Logger.info('bot', {userAgent: request.get('user-agent')});
 
   const presentationId = request.path.split('/')[2];
 
