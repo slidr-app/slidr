@@ -26,11 +26,38 @@
     ],
     "headers": [
       {
+        "source": "/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=0, s-maxage=3600"
+          }
+        ]
+      },
+      {
         "source": "**/assets/*",
         "headers": [
           {
             "key": "Cache-Control",
             "value": "max-age=604800, immutable"
+          }
+        ]
+      },
+      {
+        "source": "/workbox-*.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=604800, immutable"
+          }
+        ]
+      },
+      {
+        "source": "/*.@(png|ico|svg)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=3600"
           }
         ]
       }
