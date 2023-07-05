@@ -3,12 +3,22 @@
 
 <head>
   <meta charset="UTF-8" />
+
+  <!-- Make fonts work offline: https://vite-pwa-org.netlify.app/workbox/generate-sw.html -->
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link rel="preconnect" crossorigin="anonymous" href="https://fonts.gstatic.com">
+
   <!-- Favicons inspired from: https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs -->
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" type="image/svg+xml" href="/icon.svg" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="mask-icon" href="/mask-icon.svg" color="#000000">
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- PWA minimum: https://vite-pwa-org.netlify.app/guide/pwa-minimal-requirements.html -->
+  <meta property="description" content="Interactive presentations, for free.">
+  <meta name="theme-color" content="#000000">
 
   <!-- Inspired from: https://css-tricks.com/essential-meta-tags-social-media/#aa-final-markup -->
   <!--  Essential META Tags -->

@@ -1,10 +1,40 @@
 import clsx from 'clsx';
+import {useContext, useEffect} from 'react';
+import {UpdateContext} from './UpdateProvider';
 
 export default function SaveIndicator({
   saveState,
 }: {
   saveState: 'saved' | 'saving' | 'dirty';
 }) {
+  const {
+    needRefresh,
+    setIsHandlerOverridden: setOverrideHandler,
+    update,
+  } = useContext(UpdateContext);
+
+  useEffect(() => {
+    // Inform the UpdateProvider that we will handle the update ourselves
+    setOverrideHandler(true);
+
+    return () => {
+      // Clear our update
+      setOverrideHandler(false);
+    };
+  }, [setOverrideHandler]);
+
+  useEffect(() => {
+    if (!needRefresh) {
+      return;
+    }
+
+    if (saveState === 'saved') {
+      update();
+    }
+
+    // Don't do anything if we are dirty or still saving
+    // It will get updated once we switch to saved
+  }, [needRefresh, saveState, update]);
   return (
     <div
       className={clsx(
