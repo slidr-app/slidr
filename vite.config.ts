@@ -11,10 +11,12 @@ export default defineConfig(({command, mode}) => {
       react(),
       vitePWA({
         registerType: 'autoUpdate',
-        workbox: {
-          globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        },
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+        // Chrome says not to precache icons since users will generally only down 1 of the set
+        // Refer to: https://developer.chrome.com/docs/workbox/precaching-dos-and-donts/
+        // workbox: {
+        //   globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        // },
+        // includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
         manifest: {
           name: 'Slidr.app',
           // eslint-disable-next-line @typescript-eslint/naming-convention
