@@ -10,7 +10,6 @@ export default defineConfig(({command, mode}) => {
       unoCSS(),
       react(),
       vitePWA({
-        registerType: 'autoUpdate',
         // Chrome says not to precache icons since users will generally only down 1 of the set
         // Refer to: https://developer.chrome.com/docs/workbox/precaching-dos-and-donts/
         // workbox: {
