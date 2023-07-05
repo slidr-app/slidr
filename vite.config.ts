@@ -15,17 +15,37 @@ export default defineConfig(({command, mode}) => {
         // workbox: {
         //   globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         // },
-        // includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
 
         workbox: {
           globIgnores: [
             '**/node_modules/**/*',
-            // For now, don't cache the upload page, it has a huge ~2MB worker
+            // For now, don't cache the upload page assets, it has a huge ~2MB worker
             'assets/pdf.worker*.js',
             'assets/Upload*.js',
           ],
+
           // Don't cache the upload route (will generate offline error)
+          // TODO: consider adding a wrapper for this page, or a special error handler
+          // in order to have a message instructing the user they mush be online to upload.
           navigateFallbackDenylist: [/^\/upload/],
+
+          // Make fonts work offline: https://vite-pwa-org.netlify.app/workbox/generate-sw.html
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'gstatic-fonts-cache',
+                expiration: {
+                  maxEntries: 10,
+                  maxAgeSeconds: 60 * 60 * 24 * 365, // <== 365 days
+                },
+                cacheableResponse: {
+                  statuses: [0, 200],
+                },
+              },
+            },
+          ],
         },
         manifest: {
           name: 'Slidr.app',
