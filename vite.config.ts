@@ -16,6 +16,17 @@ export default defineConfig(({command, mode}) => {
         //   globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
         // },
         // includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+
+        workbox: {
+          globIgnores: [
+            '**/node_modules/**/*',
+            // For now, don't cache the upload page, it has a huge ~2MB worker
+            'assets/pdf.worker*.js',
+            'assets/Upload*.js',
+          ],
+          // Don't cache the upload route (will generate offline error)
+          navigateFallbackDenylist: [/^\/upload/],
+        },
         manifest: {
           name: 'Slidr.app',
           // eslint-disable-next-line @typescript-eslint/naming-convention
