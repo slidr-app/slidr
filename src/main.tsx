@@ -8,6 +8,7 @@ import './index.css';
 import ErrorPage from './pages/ErrorPage.tsx';
 import Loading from './components/Loading.tsx';
 import {UserProvider} from './components/UserProvider.tsx';
+import {UpdateProvider} from './components/UpdateProvider.tsx';
 
 const Audience = lazy(async () => import('./pages/Audience.tsx'));
 const Speaker = lazy(async () => import('./pages/Speaker.tsx'));
@@ -108,16 +109,18 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(
   <React.StrictMode>
-    <UserProvider>
-      <Suspense
-        fallback={
-          <div className="h-screen w-screen">
-            <Loading />
-          </div>
-        }
-      >
-        <RouterProvider router={router} />
-      </Suspense>
-    </UserProvider>
+    <UpdateProvider>
+      <UserProvider>
+        <Suspense
+          fallback={
+            <div className="h-screen w-screen">
+              <Loading />
+            </div>
+          }
+        >
+          <RouterProvider router={router} />
+        </Suspense>
+      </UserProvider>
+    </UpdateProvider>
   </React.StrictMode>,
 );

@@ -11,8 +11,9 @@
     "prepare": "husky install",
     "prepush": "pnpm run lint && pnpm run build:all",
     "build:functions": "pnpm --dir functions build",
-    "build:all": "pnpm run build && pnpm run build:functions",
-    "deploy": "firebase deploy"
+    "build:all": "pwa-assets-generator && pnpm run build && pnpm run build:functions",
+    "deploy": "firebase deploy",
+    "generate-pwa-assets": "pwa-assets-generator"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.24.0",
@@ -47,6 +48,7 @@
     "@unocss/preset-web-fonts": "^0.53.3",
     "@unocss/transformer-directives": "^0.53.3",
     "@unocss/transformer-variant-group": "^0.53.3",
+    "@vite-pwa/assets-generator": "^0.0.3",
     "@vitejs/plugin-react": "^4.0.0",
     "eslint": "^8.41.0",
     "eslint-config-xo-react": "^0.27.0",
@@ -64,6 +66,7 @@
     "vite-imagetools": "^5.0.4",
     "vite-plugin-pwa": "^0.16.4",
     "vite-plugin-run": "^0.4.1",
+    "workbox-window": "^7.0.0",
     "xo": "^0.54.2"
   }
 }

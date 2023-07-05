@@ -93,6 +93,9 @@ devDependencies:
   '@unocss/transformer-variant-group':
     specifier: ^0.53.3
     version: 0.53.3
+  '@vite-pwa/assets-generator':
+    specifier: ^0.0.3
+    version: 0.0.3
   '@vitejs/plugin-react':
     specifier: ^4.0.0
     version: 4.0.0(vite@4.3.9)
@@ -144,6 +147,9 @@ devDependencies:
   vite-plugin-run:
     specifier: ^0.4.1
     version: 0.4.1
+  workbox-window:
+    specifier: ^7.0.0
+    version: 7.0.0
   xo:
     specifier: ^0.54.2
     version: 0.54.2(webpack@5.88.0)
@@ -1603,6 +1609,10 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
+  /@canvas/image-data@1.0.0:
+    resolution: {integrity: sha512-BxOqI5LgsIQP1odU5KMwV9yoijleOPzHL18/YvNqF9KFSGF2K/DLlYAbDQsWqd/1nbaFuSkYD/191dpMtNh4vw==}
+    dev: true
+
   /@colors/colors@1.5.0:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
@@ -2675,7 +2685,7 @@ packages:
         optional: true
     dependencies:
       '@babel/core': 7.21.8
-      '@babel/helper-module-imports': 7.21.4
+      '@babel/helper-module-imports': 7.22.5
       '@rollup/pluginutils': 3.1.0(rollup@2.79.1)
       rollup: 2.79.1
     dev: true
@@ -3295,6 +3305,19 @@ packages:
       vite: 4.3.9
     transitivePeerDependencies:
       - rollup
+    dev: true
+
+  /@vite-pwa/assets-generator@0.0.3:
+    resolution: {integrity: sha512-rGjzFTGAZsY9fIf9qGbvXbo38Yj0MbAtTxAaL/GBlEU0+q/m6upw+4HKE58p2MnjUAOOBHf0871u3onHtkPWlQ==}
+    engines: {node: '>=16.14.0'}
+    hasBin: true
+    dependencies:
+      cac: 6.7.14
+      colorette: 2.0.20
+      consola: 3.1.0
+      sharp: 0.32.1
+      sharp-ico: 0.1.5
+      unconfig: 0.3.9
     dev: true
 
   /@vitejs/plugin-react@4.0.0(vite@4.3.9):
@@ -4675,6 +4698,23 @@ packages:
   /decamelize@6.0.0:
     resolution: {integrity: sha512-Fv96DCsdOgB6mdGl67MT5JaTNKRzrzill5OH5s8bjYJXVlcXyPYGyPsUkWyGV5p1TXI5esYIYMMeDJL0hEIwaA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dev: true
+
+  /decode-bmp@0.2.1:
+    resolution: {integrity: sha512-NiOaGe+GN0KJqi2STf24hfMkFitDUaIoUU3eKvP/wAbLe8o6FuW5n/x7MHPR0HKvBokp6MQY/j7w8lewEeVCIA==}
+    engines: {node: '>=8.6.0'}
+    dependencies:
+      '@canvas/image-data': 1.0.0
+      to-data-view: 1.1.0
+    dev: true
+
+  /decode-ico@0.4.1:
+    resolution: {integrity: sha512-69NZfbKIzux1vBOd31al3XnMnH+2mqDhEgLdpygErm4d60N+UwA5Sq5WFjmEDQzumgB9fElojGwWG0vybVfFmA==}
+    engines: {node: '>=8.6'}
+    dependencies:
+      '@canvas/image-data': 1.0.0
+      decode-bmp: 0.2.1
+      to-data-view: 1.1.0
     dev: true
 
   /decode-named-character-reference@1.0.2:
@@ -6727,6 +6767,10 @@ packages:
     hasBin: true
     dev: true
 
+  /ico-endec@0.1.6:
+    resolution: {integrity: sha512-ZdLU38ZoED3g1j3iEyzcQj+wAkY2xfWNkymszfJPoxucIUhK7NayQ+/C4Kv0nDFMIsbtbEHldv3V8PU494/ueQ==}
+    dev: true
+
   /iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
     engines: {node: '>=0.10.0'}
@@ -8555,7 +8599,7 @@ packages:
     resolution: {integrity: sha512-zNy02qivjjRosswoYmPi8hIKJRr8MpQyeKT6qlcq/OnOgA3Rhoae+IYOqsM9V5+JnHWmxKnWOT2GxvtqdtOCXA==}
     engines: {node: '>=10'}
     dependencies:
-      semver: 7.5.0
+      semver: 7.5.1
     dev: true
 
   /node-addon-api@6.1.0:
@@ -9927,7 +9971,7 @@ packages:
     peerDependencies:
       rollup: ^2.0.0
     dependencies:
-      '@babel/code-frame': 7.21.4
+      '@babel/code-frame': 7.22.5
       jest-worker: 26.6.2
       rollup: 2.79.1
       serialize-javascript: 4.0.0
@@ -10118,6 +10162,14 @@ packages:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
     dev: true
 
+  /sharp-ico@0.1.5:
+    resolution: {integrity: sha512-a3jODQl82NPp1d5OYb0wY+oFaPk7AvyxipIowCHk7pBsZCWgbe0yAkU2OOXdoH0ENyANhyOQbs9xkAiRHcF02Q==}
+    dependencies:
+      decode-ico: 0.4.1
+      ico-endec: 0.1.6
+      sharp: 0.32.1
+    dev: true
+
   /sharp@0.32.1:
     resolution: {integrity: sha512-kQTFtj7ldpUqSe8kDxoGLZc1rnMFU0AO2pqbX6pLy3b7Oj8ivJIdoKNwxHVQG2HN6XpHPJqCSM2nsma2gOXvOg==}
     engines: {node: '>=14.15.0'}
@@ -10127,7 +10179,7 @@ packages:
       detect-libc: 2.0.1
       node-addon-api: 6.1.0
       prebuild-install: 7.1.1
-      semver: 7.5.0
+      semver: 7.5.1
       simple-get: 4.0.1
       tar-fs: 2.1.1
       tunnel-agent: 0.6.0
@@ -10711,6 +10763,10 @@ packages:
     dependencies:
       is-absolute: 1.0.0
       is-negated-glob: 1.0.0
+    dev: true
+
+  /to-data-view@1.1.0:
+    resolution: {integrity: sha512-1eAdufMg6mwgmlojAx3QeMnzB/BTVp7Tbndi3U7ftcT2zCZadjxkkmLmd97zmaxWi+sgGcgWrokmpEoy0Dn0vQ==}
     dev: true
 
   /to-fast-properties@2.0.0:
