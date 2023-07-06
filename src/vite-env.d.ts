@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference types="vite/client" />
-// import type * as client from 'vite/client';
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference types="vite-plugin-pwa/react" />
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 interface ImportMetaEnv {
