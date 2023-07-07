@@ -2,10 +2,7 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
-on:
-  push:
-    branches:
-      - main
+on: push
 
 # Cancel any previous CI runs for this branch or PR
 concurrency:
@@ -14,6 +11,36 @@ concurrency:
 
 jobs:
   build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "pnpm"
+
+      - name: Output debugging info
+        run: node -v && npm -v && pnpm -v
+
+      - name: Install
+        run: pnpm install && pnpm --dir functions install
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Build
+        run: pnpm run build:all
+
+  deploy_to_staging:
+    if: github.ref_name == 'main' || github.ref_name == 'production'
+    environment: ${{ github.ref_name == 'main' && 'staging' || github.ref_name == 'production' && 'production' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -49,7 +76,7 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
 
       - name: Create SA key
-        run: echo '${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}' > $HOME/gcloud.json
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > $HOME/gcloud.json
 
       - name: Deploy
         # This requires a lot of pesky permissions in GCP, inspired from: https://davelms.medium.com/deploy-firebase-functions-using-github-actions-7dbafbd4df77 
