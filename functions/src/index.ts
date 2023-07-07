@@ -38,6 +38,7 @@ export const renderForBot = onRequest(async (request, response) => {
     return;
   }
 
+  // Force redeploy
   logger.info('bot', {userAgent: request.get('user-agent')});
 
   const presentationId = request.path.split('/')[2];
