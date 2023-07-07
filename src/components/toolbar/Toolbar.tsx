@@ -68,11 +68,13 @@ export default function Toolbar({
     >
       <div
         className={clsx(
-          'grid gap-0.5 first:children:landscape:(rounded-l-md overflow-hidden) first:children:portrait:(rounded-t-md overflow-hidden) last:children:landscape:(rounded-r-md overflow-hidden) last:children:portrait:(rounded-b-md overflow-hidden) children:(shadow-lg shadow-teal-800)',
-          isOwner ? 'grid-cols-9' : 'grid-cols-8',
+          'grid gap-0.5 children:(shadow-lg shadow-teal-800)',
+          'first:children:landscape:(rounded-l-md overflow-hidden) last:children:landscape:(rounded-r-md overflow-hidden)',
+          'first:children:portrait:(rounded-t-md overflow-hidden) last:children:portrait:(rounded-b-md overflow-hidden)',
+          isOwner ? 'grid-cols-10' : 'grid-cols-9',
           isOwner
-            ? 'portrait:(grid-cols-1 grid-rows-9)'
-            : 'portrait:(grid-cols-1 grid-rows-8)',
+            ? 'portrait:(grid-cols-1 grid-rows-10)'
+            : 'portrait:(grid-cols-1 grid-rows-9)',
         )}
         onClick={(event) => {
           // Prevents navigating forward when toolbar is over the click to advance area
@@ -135,6 +137,13 @@ export default function Toolbar({
                 title="Hide toolbar"
               /> */}
         {/* <div className="border-l-black border-l-1 mx-1" /> */}
+        <LinkButton
+          clientRoute
+          icon="i-tabler-home"
+          label="home"
+          title="Home"
+          to="/"
+        />
         <Button
           disabled={!document.fullscreenEnabled}
           icon={
