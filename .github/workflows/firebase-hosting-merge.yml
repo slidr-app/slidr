@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - firebase
 
 # Cancel any previous CI runs for this branch or PR
 concurrency:
@@ -34,22 +33,24 @@ jobs:
         run: node -v && npm -v && pnpm -v
 
       - name: Install
-        run: pnpm install
+        run: pnpm install && pnpm --dir functions install
 
       - name: Lint
         run: pnpm run lint
 
       - name: Build
-        run: pnpm run build
+        run: pnpm run build:all
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_KEY: ${{ secrets.VITE_SUPABASE_KEY }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
 
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SUPA_PRESENTATION }}'
-          channelId: live
-          projectId: supa-presentation
-          target: "${{ github.ref_name == 'firebase' && 'slidr' || 'present' }}"
+      - name: Create SA key
+        run: echo '${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}' > $HOME/gcloud.json
 
+      - name: Deploy
+        # This requires a lot of pesky permissions in GCP, inspired from: https://davelms.medium.com/deploy-firebase-functions-using-github-actions-7dbafbd4df77 
+        run: GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud.json pnpm run deploy --project ${{ secrets.VITE_FIREBASE_PROJECT_ID }}

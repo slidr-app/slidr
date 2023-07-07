@@ -1,145 +1,138 @@
-import {Document, Page} from 'react-pdf';
-import * as pdfjs from 'pdfjs-dist';
-import {useState, useEffect, useRef} from 'react';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
-import {useParams} from 'react-router-dom';
-import useConfetti from '../confetti/use-confetti';
-import '../pdf/pdf.css';
-import {useSlideIndex} from '../slides/use-slide-index';
-import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
-import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
-import Confetti from '../confetti/Confetti';
-import {presentations} from '../slides/presentation-urls';
-import {pageMessageProperties, pdfMessageProperties} from '../pdf/PdfMessages';
+import {useEffect, useMemo} from 'react';
+import clsx from 'clsx';
+import DefaultLayout from '../layouts/DefaultLayout';
+import usePresentation from '../components/slides/use-presentation';
+import Slideshow from '../components/slides/Slideshow';
+import useSearchParametersSlideIndex from '../components/slides/use-search-parameter-slide-index';
+import {useSlideIndex} from '../components/slides/use-slide-index';
+import {auth} from '../firebase';
 import ProgressBar from '../components/ProgressBar';
-import {
-  useChannelHandlers,
-  useCombinedHandlers,
-} from '../broadcast/use-channel-handlers';
-import useRemoteReactions from '../reactions/use-remote-reactions';
-import useReactions from '../reactions/use-reactions';
-import Reactions from '../reactions/Reactions';
-import ReactionControls from '../reactions/ReactionControls';
-import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
-import Disconnected from '../components/Disconnected';
-
-const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
+import Shares from '../components/Shares';
+import NavButtons from '../components/toolbar/NavButtons';
+import LinkButton from '../components/toolbar/LinkButton';
+import useKeys from '../use-keys';
 
 export default function Viewer() {
-  // Determine the presentation and update the page title
-  const {presentationSlug} = useParams();
-
-  if (presentations[presentationSlug!] === undefined) {
-    // Intentionally throw so we can show our error page
-    throw new Error(`Presentation '${presentationSlug!}' does not exist`);
-  }
+  const presentation = usePresentation();
 
   useEffect(() => {
-    document.title = `Present - ${presentationSlug!} - Audience`;
-  }, [presentationSlug]);
+    document.title = `Slidr - ${presentation?.title ?? 'Unnamed Presentation'}`;
+  }, [presentation]);
 
-  const sessionId = useSearchParametersSessionId();
-
-  // Setup supabase broadcast channel
-  const {handleIncomingBroadcast, setHandlers} = useChannelHandlers();
-  const {
-    postMessage: postBroadcastMessage,
-    connected: connectedSupabase,
-    paused,
-    unPause,
-  } = useBroadcastSupabase({
-    channelId: presentationSlug!,
-    sessionId,
-    onIncoming: handleIncomingBroadcast,
-    // Pause supabase after 5 mins of inactivity (no reactions)
-    // Visibility changes will automatically reconnect
-    idleTimeout: 5 * 60 * 1000,
-  });
-
-  console.log({connectedSupabase});
-  // Track the slide index from the broadcast channel
-  const {
-    setSlideCount,
-    slideIndex,
-    setSlideIndex,
-    slideCount,
-    handlers: slideIndexHandlers,
-  } = useSlideIndex({
-    postMessage: postBroadcastMessage,
-    ignorePost: true,
-  });
+  const {slideIndex, setSlideIndex, navNext, navPrevious, forward} =
+    useSlideIndex({
+      slideCount: presentation?.pages?.length ?? 0,
+    });
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
-  // Configure the confetti to use the broadcast channel
-  const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
-  const {postConfetti, handlers: confettiHandlers} = useConfetti({
-    postMessage: postBroadcastMessage,
-    onConfetti: setFire,
-  });
-
-  // Configure reaction broadcasting
-  const {reactions, removeReaction, addReaction} = useReactions();
-  const {postReaction, handlers: handlersReactions} = useRemoteReactions({
-    postMessage: postBroadcastMessage,
-    onReaction: addReaction,
-  });
-
-  // Combine all of the incoming message handlers
-  useCombinedHandlers(
-    setHandlers,
-    confettiHandlers,
-    slideIndexHandlers,
-    handlersReactions,
+  const keyHandlers = useMemo(
+    () =>
+      new Map([
+        ['ArrowLeft', navPrevious],
+        ['ArrowRight', navNext],
+        ['Space', navNext],
+      ]),
+    [navNext, navPrevious],
   );
+  useKeys(keyHandlers);
 
-  // Optimize the rendering of pdf pages by tracking the container width
-  const pdfRef = useRef<HTMLDivElement>(null);
-  const pdfWidth = pdfRef.current?.clientWidth;
+  const presentFromStartSearchParameters = new URLSearchParams(
+    document.location.search,
+  );
+  presentFromStartSearchParameters.set('slide', '1');
+
+  const isOwner = presentation?.uid === auth.currentUser?.uid;
 
   return (
-    <div className="flex flex-col gap-4 p-4 position-relative overflow-x-hidden overflow-y-auto min-h-screen">
-      <div ref={pdfRef} className="max-w-2xl mx-auto w-full">
-        <Document
-          className="w-full aspect-video z--1"
-          file={presentations[presentationSlug!]}
-          {...pdfMessageProperties}
-          onLoadSuccess={(pdf) => {
-            setSlideCount(pdf.numPages);
-          }}
-        >
-          <Page
-            key={`page-${slideIndex}`}
-            className="w-full h-full z--1"
-            pageIndex={slideIndex}
-            width={pdfWidth}
-            {...pageMessageProperties}
-          />
-        </Document>
+    <DefaultLayout title={presentation?.title ?? ''}>
+      <div className="flex flex-col items-center pb-6">
+        <div className="flex flex-col gap-4 items-stretch w-full max-w-screen-lg lt-lg:px-4">
+          <div className="flex flex-col w-full rounded-lg overflow-hidden border-primary">
+            <div className="flex" onClick={navNext}>
+              <Slideshow
+                pageIndex={slideIndex}
+                pages={presentation?.pages ?? []}
+                forward={forward}
+              />
+            </div>
+            <div className="flex flex-row flex-wrap w-full justify-between shadow-lg gap-0.5 bg-black items-stretch relative pt-1">
+              <div className="h-1 content-empty w-full absolute top-0 left-0">
+                <ProgressBar
+                  absolute
+                  slideCount={presentation?.pages?.length ?? 0}
+                  slideIndex={slideIndex}
+                />
+              </div>
+              <div className="grid grid-cols-4 gap-0.5 flex-grow">
+                <NavButtons
+                  onPrevious={navPrevious}
+                  onNext={navNext}
+                  onStart={() => {
+                    setSlideIndex(0);
+                  }}
+                  onEnd={() => {
+                    setSlideIndex((presentation?.pages?.length ?? 1) - 1);
+                  }}
+                />
+              </div>
+              <div
+                className={clsx(
+                  'grid gap-0.5 flex-grow',
+                  isOwner ? 'grid-cols-3' : 'grid-cols-2',
+                )}
+              >
+                {isOwner && (
+                  <LinkButton
+                    clientRoute
+                    icon="i-tabler-pencil"
+                    label="edit"
+                    title="Edit presentation"
+                    to={presentation ? `/e/${presentation.id}` : '/'}
+                  />
+                )}
+                <LinkButton
+                  clientRoute
+                  icon="i-tabler-presentation"
+                  label="present"
+                  title="Present from current slide"
+                  to={
+                    presentation
+                      ? `/p/${presentation.id}${document.location.search}`
+                      : '/'
+                  }
+                />
+                <LinkButton
+                  clientRoute
+                  icon="i-tabler-rotate rotate-180"
+                  label="present start"
+                  title="Present from start"
+                  to={
+                    presentation
+                      ? `/p/${
+                          presentation.id
+                        }?${presentFromStartSearchParameters.toString()}`
+                      : '/'
+                  }
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col">
+            <div>{presentation?.title ?? ''}</div>
+            {presentation && (
+              <div className="text-base">
+                by{' '}
+                {presentation.username.length > 0
+                  ? presentation.username
+                  : 'Anonymous User'}
+              </div>
+            )}
+          </div>
+          <div className="flex self-start">
+            <Shares presentation={presentation} slideIndex={slideIndex} />
+          </div>
+        </div>
       </div>
-
-      <Confetti fire={fire} />
-      <Reactions reactions={reactions} removeReaction={removeReaction} />
-      <ReactionControls
-        handleConfetti={() => {
-          setFire({});
-          postConfetti();
-        }}
-        handleReaction={(icon) => {
-          addReaction(icon);
-          postReaction(icon);
-        }}
-      />
-      <div className="prose text-center relative self-center">
-        <a href="https://devrel.codyfactory.eu">
-          <button type="button" className="btn">
-            Learn More
-          </button>
-        </a>
-      </div>
-      <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
-      <Disconnected paused={paused} unPause={unPause} />
-    </div>
+    </DefaultLayout>
   );
 }

@@ -1,98 +1,146 @@
-import {useEffect, Fragment} from 'react';
+import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {Document, Page} from 'react-pdf';
-import * as pdfjs from 'pdfjs-dist';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
-import {presentations, thumbs} from '../slides/presentation-urls.ts';
+import {getDocs, collection, orderBy, query} from 'firebase/firestore';
+import {auth, firestore} from '../firebase.ts';
 import {
-  pdfMessageProperties,
-  pageMessageProperties,
-} from '../pdf/PdfMessages.tsx';
-import '../pdf/pdf.css';
-
-const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
-
-const presentationSlugs = Object.keys(presentations).sort();
+  type PresentationDoc,
+  type PresentationData,
+} from '../../functions/src/presentation';
+import DefaultLayout from '../layouts/DefaultLayout.tsx';
+import Loading from '../components/Loading.tsx';
 
 export default function Home() {
   useEffect(() => {
-    document.title = `Present - Home`;
+    document.title = `Slidr - Home`;
+  }, []);
+
+  const [presentations, setPresentations] = useState<PresentationDoc[]>();
+
+  useEffect(() => {
+    async function getPresentations() {
+      const querySnapshot = await getDocs(
+        query(
+          collection(firestore, 'presentations'),
+          orderBy('rendered', 'desc'),
+        ),
+      );
+
+      setPresentations(
+        querySnapshot.docs.map((doc) => {
+          const presentation: PresentationDoc = {
+            id: doc.id,
+            ...(doc.data() as PresentationData),
+          };
+          return presentation;
+        }),
+      );
+    }
+
+    void getPresentations();
   }, []);
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="w-full px-4">
-        <div className="header self-center w-full text-3xl">
-          Present!
-          <div className="i-tabler-microphone-2 ml-2" />
+    <DefaultLayout
+      title={
+        <>
+          Presentations
+          <div className="text-teal i-tabler-microphone-2 ml-2" />
+        </>
+      }
+    >
+      <div className="flex flex-col items-center gap-6">
+        <div className="p-4 flex flex-col gap-1 items-center">
+          <div className="text-2xl text-center">
+            Slidr.app: making presentations fun!
+          </div>
+          <div className="text-sm text-center">
+            Slidr is currently in beta, come back often to see what&apos;s new.
+          </div>
         </div>
-      </div>
-      <div className="p-4 grid grid-cols-[600px_auto] lt-md:grid-cols-1 gap-y-8 lt-md:gap-y-0 even:children:lt-md:mb-8">
-        {presentationSlugs.map((presentationSlug) => (
-          <Fragment key={presentationSlug}>
-            <div className="w-full aspect-video shadow-primary border-primary md:rounded-r-none lt-md:rounded-b-none overflow-hidden bg-black flex items-center justify-center">
-              <div className="w-full h-full">
-                <Link to={`/${presentationSlug}`} className="">
-                  {thumbs.has(presentationSlug) ? (
-                    <Document
-                      className="w-full h-full object-contain relative"
-                      file={thumbs.get(presentationSlug)}
-                      {...pdfMessageProperties}
-                    >
-                      <Page
-                        className="w-full h-full"
-                        pageIndex={0}
-                        {...pageMessageProperties}
-                      />
-                    </Document>
-                  ) : (
-                    <div>no preview</div>
+        <div className="grid grid-cols-2 lt-sm:grid-cols-1 max-w-screen-lg w-full mx-auto gap-8 px-4 justify-center pb-6">
+          {presentations?.map((presentation) => (
+            <div
+              key={presentation.id}
+              className="relative flex flex-col shadow-primary border-primary overflow-hidden sm:odd:last:(col-span-2 w-50% mx-auto)"
+            >
+              <div className="relative w-full h-full siblings:hover:opacity-100 border-b-2 border-teal">
+                <Link to={`/v/${presentation.id}`} className="">
+                  <div className="absolute w-full h-full bg-black opacity-0 hover:(opacity-60) flex items-center justify-center">
+                    <div className="flex flex-col items-center ">
+                      <div className="i-tabler-eye w-6rem h-6rem" />
+                      <div>view</div>
+                    </div>
+                  </div>
+                  {(presentation.title.length > 0 ||
+                    presentation.username.length > 0) && (
+                    <div className="absolute top-0 left-0 flex flex-col items-start bg-transparent pointer-events-none">
+                      {presentation.title.length > 0 && (
+                        <div className="p-2 rounded-br-md bg-gray-900 bg-opacity-85">
+                          {presentation.title}
+                        </div>
+                      )}
+                      {presentation.username.length > 0 && (
+                        <div className="px-2 pb-1 rounded-br-md bg-gray-900 bg-opacity-85 text-base">
+                          by {presentation.username}
+                        </div>
+                      )}
+                    </div>
                   )}
+                  <img
+                    className="w-full aspect-video"
+                    src={presentation.pages[presentation.thumbIndex ?? 0]}
+                  />
                 </Link>
               </div>
-            </div>
-
-            <div className="border-2 border-primary shadow-primary md:border-l-none md:rounded-l-none lt-md:border-t-none lt-md:rounded-t-none relative p-4 flex flex-col justify-center bg-black">
-              <div className="flex-grow flex items-center justify-center">
-                <Link to={`/${presentationSlug}`}>
+              <div className="flex flex-row pt-2 items-center gap-4 px-4 lt-sm:(gap-2 px-2)">
+                <Link to={`/v/${presentation.id}`} className="flex">
                   <button
-                    className="btn border-none shadow-none p-2 flex flex-col items-center justify-center"
+                    className="hover:children:(nav-active) overflow-hidden pb-2"
                     type="button"
+                    title="View presentation"
                   >
-                    <div className="text-3xl">{presentationSlug}</div>
-                    <div className="text-base font-normal">
-                      <div className="i-tabler-presentation mr-2" />
-                      present
+                    <div className="flex flex-col items-center border-b-2 border-black">
+                      <div className="i-tabler-eye" />
+                      <div className="text-base font-normal px-2">view</div>
                     </div>
                   </button>
                 </Link>
-              </div>
-              <div className="flex flex-row items-center justify-center flex-wrap justify-around">
-                <Link to={`/${presentationSlug}/speaker`} className="flex">
+                <Link to={`/p/${presentation.id}`} className="flex">
                   <button
-                    className="btn border-none shadow-none flex flex-col items-center p-2"
+                    className="hover:children:(nav-active) overflow-hidden pb-2"
                     type="button"
+                    title="Start presentation"
                   >
-                    <div className="i-tabler-speakerphone" />
-                    <div className="text-base font-normal">speaker</div>
+                    <div className="flex flex-col items-center border-b-2 border-black">
+                      <div className="i-tabler-presentation" />
+                      <div className="text-base font-normal px-2">present</div>
+                    </div>
                   </button>
                 </Link>
-                <Link to={`/${presentationSlug}/view`} className="">
-                  <button
-                    className="btn border-none shadow-none flex flex-col items-center p-2"
-                    type="button"
-                  >
-                    <div className="i-tabler-eyeglass" />
-                    <div className="text-base font-normal">audience</div>
-                  </button>
-                </Link>
+                <div className="flex-grow flex-shrink" />
+                {presentation.uid === auth.currentUser?.uid && (
+                  <Link className="flex" to={`/e/${presentation.id}`}>
+                    <button
+                      className="hover:children:(nav-active) overflow-hidden pb-2"
+                      type="button"
+                      title="Edit presentation"
+                    >
+                      <div className="flex flex-col items-center border-b-2 border-black">
+                        <div className="i-tabler-pencil" />
+                        <div className="text-base font-normal px-2">edit</div>
+                      </div>
+                    </button>
+                  </Link>
+                )}
               </div>
             </div>
-          </Fragment>
-        ))}
+          )) ?? (
+            <div className="flex flex-col col-span-2 lt-sm:col-span-1 h-40 items-center justify-center">
+              <Loading />
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </DefaultLayout>
   );
 }

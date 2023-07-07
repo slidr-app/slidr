@@ -1,55 +1,84 @@
 {
-  "hosting": [
+  "hosting": {
+    "public": "dist",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/p/**",
+        "function": "renderForBot"
+      },
+      {
+        "source": "/i/**",
+        "function": "renderForBot"
+      },
+      {
+        "source": "/v/**",
+        "function": "renderForBot"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=0, s-maxage=3600"
+          }
+        ]
+      },
+      {
+        "source": "**/assets/*",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=604800, immutable"
+          }
+        ]
+      },
+      {
+        "source": "/workbox-*.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=604800, immutable"
+          }
+        ]
+      },
+      {
+        "source": "/*.@(png|ico|svg)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=3600"
+          }
+        ]
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "functions": [
     {
-      "target": "present",
-      "public": "dist",
+      "source": "functions",
+      "codebase": "default",
       "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ],
-      "headers": [
-        {
-          "source": "**/assets/*",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "max-age=604800, immutable"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "target": "slidr",
-      "public": "dist",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ],
-      "headers": [
-        {
-          "source": "**/assets/*",
-          "headers": [
-            {
-              "key": "Cache-Control",
-              "value": "max-age=604800, immutable"
-            }
-          ]
-        }
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
       ]
     }
   ]

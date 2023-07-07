@@ -5,6 +5,7 @@ import presetIcons from '@unocss/preset-icons';
 import presetTypography from '@unocss/preset-typography';
 import transformerVariantGroup from '@unocss/transformer-variant-group';
 import transformerDirectives from '@unocss/transformer-directives';
+import presetWebFonts from '@unocss/preset-web-fonts';
 
 export default defineConfig({
   presets: [
@@ -35,14 +36,59 @@ export default defineConfig({
         },
       },
     }),
+    presetWebFonts({
+      // Prefer bunny provider, but it seems to be broken with 2 theme overrides (only loads the first)
+      provider: 'google',
+      fonts: {
+        mono: ['Inconsolata'],
+        sans: [
+          // {
+          //   name: 'Jura',
+          //   weights: ['400', '600'],
+          // },
+          // {
+          //   name: 'Saira Condensed',
+          //   weights: ['400', '600'],
+          // },
+          {
+            name: 'Saira',
+            weights: ['400', '500'],
+          },
+          // I like Abel, but it is only 400 weight and the bold is ugly on safari.
+          // {
+          //   name: 'Abel',
+          //   weights: ['400', '600'],
+          // },
+        ],
+        // Sans: ['Saira', 'Abel:400,600'],
+        inter: [
+          {
+            name: 'Inter',
+            weights: ['400', '600', '700'],
+            italic: true,
+          },
+          {
+            name: 'sans-serif',
+            provider: 'none',
+          },
+        ],
+      },
+    }),
   ],
   transformers: [transformerDirectives(), transformerVariantGroup()],
   shortcuts: {
     'border-primary': 'rounded-md border-2 border-teal',
     'shadow-primary': 'shadow-xl shadow-teal-800',
-    btn: 'py-2 px-4 font-semibold shadow-primary  border-primary bg-black',
+    'border-focus': 'rounded-md border-2 border-violet-700',
+    'shadow-focus': 'shadow-xl shadow-violet-700',
+    'outline-focus': 'outline outline-2 outline-gray-200',
+    btn: 'py-2 px-4 font-medium shadow-primary  border-primary bg-black',
+    input:
+      'p-2 shadow-primary border-primary bg-gray-900 text-white focus-visible:(border-focus outline-focus shadow-focus)',
     header:
-      'text-2xl border-primary border-t-none rounded-t-none shadow-primary text-center py-2 font-semibold',
+      'text-2xl border-primary border-t-none rounded-t-none shadow-primary text-center py-2 font-medium',
+    'nav-active': 'border-b-2 border-teal shadow-md shadow-teal-800',
+    'nav-inactive': 'border-b-2 border-black shadow-none',
   },
   // https://github.com/unocss/unocss/discussions/2012
   theme: {

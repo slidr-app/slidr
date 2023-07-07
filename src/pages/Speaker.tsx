@@ -1,36 +1,28 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import {Document, Page} from 'react-pdf';
-import * as pdfjs from 'pdfjs-dist';
-import {useMemo, useState, useCallback, useEffect, useRef} from 'react';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
+import {useMemo, useState, useCallback, useEffect} from 'react';
 import {useParams} from 'react-router-dom';
 import clsx from 'clsx';
 import {useSwipeable} from 'react-swipeable';
-import {useSlideIndex} from '../slides/use-slide-index';
+import {useSlideIndex} from '../components/slides/use-slide-index';
 import useKeys from '../use-keys';
-import useConfetti from '../confetti/use-confetti';
-import useBroadcastChannel from '../broadcast/use-broadcast-channel';
-import useSearchParametersSlideIndex from '../slides/use-search-parameter-slide-index';
-import useBroadcastSupabase from '../broadcast/use-broadcast-supabase';
-import {presentations} from '../slides/presentation-urls';
-import useNotes from '../slides/use-notes';
-import {pageMessageProperties, pdfMessageProperties} from '../pdf/PdfMessages';
+import useConfetti from '../components/confetti/use-confetti';
+import useBroadcastChannel from '../components/broadcast/use-broadcast-channel';
+import useSearchParametersSlideIndex from '../components/slides/use-search-parameter-slide-index';
 import ProgressBar from '../components/ProgressBar';
 import {
   useChannelHandlers,
   useCombinedHandlers,
-} from '../broadcast/use-channel-handlers';
-import ReactionControls from '../reactions/ReactionControls';
-import useRemoteReactions from '../reactions/use-remote-reactions';
+} from '../components/broadcast/use-channel-handlers';
+import ReactionControls from '../components/reactions/ReactionControls';
+import useRemoteReactions from '../components/reactions/use-remote-reactions';
 import Timer from '../components/Timer';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
-import Disconnected from '../components/Disconnected';
-import '../pdf/pdf.css';
-
-const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
+import usePresentation from '../components/slides/use-presentation';
+import Slideshow from '../components/slides/Slideshow';
+import NavButtons from '../components/toolbar/NavButtons';
+import Button from '../components/toolbar/Button';
+import useBroadcastFirebase from '../components/broadcast/use-broadcast-firestore';
 
 const textSizes = [
   'text-xs',
@@ -48,19 +40,16 @@ const textSizes = [
 ];
 
 export default function Speaker() {
-  const {presentationSlug} = useParams();
-
-  if (presentations[presentationSlug!] === undefined) {
-    throw new Error(`Presentation '${presentationSlug!}' does not exist`);
-  }
+  const {presentationId} = useParams();
+  const presentation = usePresentation();
 
   useEffect(() => {
-    document.title = `Present - ${presentationSlug!} - Speaker`;
-  }, [presentationSlug]);
+    document.title = `Slidr - ${
+      presentation?.title ?? 'Unnamed Presentation'
+    } - Speaker`;
+  }, [presentation]);
 
   const sessionId = useSearchParametersSessionId();
-
-  const notes = useNotes(presentationSlug!);
 
   // Sync the slide index with the broadcast channel (speaker view)
   const {
@@ -68,20 +57,19 @@ export default function Speaker() {
     setHandlers: setHandlersBroadcastChannel,
   } = useChannelHandlers();
   const postBroadcastChannel = useBroadcastChannel({
-    channelId: presentationSlug!,
+    channelId: presentationId!,
     onIncoming: handleIncomingBroadcastChannel,
   });
   const {
     slideIndex,
     setSlideIndex,
-    prevSlideIndex,
-    nextSlideIndex,
-    slideCount,
-    setSlideCount,
     navNext,
     navPrevious,
     handlers: handlersSlideIndexBroadcastChannel,
-  } = useSlideIndex({postMessage: postBroadcastChannel});
+  } = useSlideIndex({
+    postMessage: postBroadcastChannel,
+    slideCount: presentation?.pages?.length ?? 0,
+  });
   useCombinedHandlers(
     setHandlersBroadcastChannel,
     handlersSlideIndexBroadcastChannel,
@@ -92,15 +80,8 @@ export default function Speaker() {
   const {postConfettiReset: postConfettiResetBroadcastChannel} = useConfetti({
     postMessage: postBroadcastChannel,
   });
-  const {
-    postMessage: postBroadcastSupabase,
-    paused,
-    unPause,
-  } = useBroadcastSupabase({
-    channelId: presentationSlug!,
+  const {postMessage: postBroadcastSupabase} = useBroadcastFirebase({
     sessionId,
-    // Pause the speaker view after 1 hour
-    idleTimeout: 60 * 60 * 1000,
   });
   // We fire confetti on the supabase channel (never reset, ignore incoming confetti)
   const {postConfetti: postConfettiBroadcastSupabase} = useConfetti({
@@ -147,15 +128,6 @@ export default function Speaker() {
     };
   }, []);
 
-  // Calculate the correct width for the pdf pages
-  // This ensures that they are rendered at the ideal resolution, rather than scaled by css
-  const previousRef = useRef<HTMLDivElement>(null);
-  const nextRef = useRef<HTMLDivElement>(null);
-  const currentRef = useRef<HTMLDivElement>(null);
-  const previousWidth = previousRef.current?.clientWidth;
-  const nextWidth = nextRef.current?.clientWidth;
-  const currentWidth = currentRef.current?.clientWidth;
-
   return (
     <div
       className="p-4 pt-0 grid grid-cols-[auto_1fr] gap-5 h-screen overflow-hidden lt-sm:(flex flex-col overflow-auto h-auto w-full)"
@@ -163,7 +135,7 @@ export default function Speaker() {
     >
       <div className="flex flex-col overflow-x-hidden overflow-y-auto sm:resize-x w-md lt-sm:w-full">
         <div className="flex flex-col gap-4">
-          <div className="w-full header flex flex-row gap-4 justify-evenly">
+          <div className="w-full header flex flex-row gap-4 justify-evenly items-center h-14">
             <div>
               Slide:{' '}
               <span className="font-bold font-mono">{slideIndex + 1}</span>
@@ -172,31 +144,18 @@ export default function Speaker() {
               <Timer />
             </div>
           </div>
-          <Document
-            file={presentations[presentationSlug!]}
-            className="grid grid-cols-2 gap-4"
-            {...pdfMessageProperties}
-            onLoadSuccess={(pdf) => {
-              setSlideCount(pdf.numPages);
-            }}
-          >
-            <div ref={currentRef} className="w-full col-span-2 aspect-video">
-              <Page
-                key={`page-${slideIndex}`}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <Slideshow
+                pages={presentation?.pages ?? []}
                 pageIndex={slideIndex}
-                className="w-full h-full"
-                width={currentWidth}
-                {...pageMessageProperties}
               />
             </div>
-            <div ref={previousRef} className="w-full aspect-video col-start-1">
+            <div className="w-full aspect-video col-start-1">
               {slideIndex > 0 ? (
-                <Page
-                  key={`page-${prevSlideIndex}`}
-                  pageIndex={prevSlideIndex}
-                  className="w-full h-full"
-                  width={previousWidth}
-                  {...pageMessageProperties}
+                <Slideshow
+                  pages={presentation?.pages ?? []}
+                  pageIndex={slideIndex - 1}
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center">
@@ -205,14 +164,11 @@ export default function Speaker() {
                 </div>
               )}
             </div>
-            <div ref={nextRef} className="w-full aspect-video col-start-2">
-              {slideIndex < slideCount - 1 ? (
-                <Page
-                  key={`page-${nextSlideIndex}`}
-                  pageIndex={nextSlideIndex}
-                  className="w-full h-full"
-                  width={nextWidth}
-                  {...pageMessageProperties}
+            <div className="w-full aspect-video col-start-2">
+              {slideIndex < (presentation?.pages?.length ?? 1) - 1 ? (
+                <Slideshow
+                  pages={presentation?.pages ?? []}
+                  pageIndex={slideIndex + 1}
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center">
@@ -221,97 +177,79 @@ export default function Speaker() {
                 </div>
               )}
             </div>
-          </Document>
+          </div>
           <div className="self-center flex flex-col gap-6">
-            <div className="grid grid-cols-2 gap-6">
-              <button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  navPrevious();
-                }}
-              >
-                <div className="i-tabler-circle-arrow-left w-9 h-9" />
-              </button>
-              <button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  navNext();
-                }}
-              >
-                <div className="i-tabler-circle-arrow-right w-9 h-9" />
-              </button>
-              <button
-                type="button"
-                className="btn"
-                onClick={() => {
+            <div className="grid grid-cols-2 gap-6 first:children:p6">
+              <NavButtons
+                border
+                onNext={navNext}
+                onPrevious={navPrevious}
+                onStart={() => {
                   setSlideIndex(0);
                 }}
-              >
-                <div className="i-tabler-circle-chevrons-left w-6 h-6" />
-              </button>
-              <button
-                type="button"
-                className="btn"
-                onClick={() => {
-                  setSlideIndex(slideCount - 1);
+                onEnd={() => {
+                  setSlideIndex((presentation?.pages?.length ?? 1) - 1);
                 }}
-              >
-                <div className="i-tabler-circle-chevrons-right w-6 h-6" />
-              </button>
+              />
             </div>
             <ReactionControls
               handleConfetti={postConfettiBroadcastSupabase}
               handleReaction={postReaction}
             />
-            <button
-              type="button"
-              className="btn"
+            <Button
+              border
+              icon="i-tabler-circle-off"
+              label="clear"
+              title="Clear reactions"
               onClick={() => {
                 postConfettiResetBroadcastChannel();
               }}
-            >
-              <div className="i-tabler-circle-off w-6 h-6 mr-2" />
-            </button>
+            />
           </div>
         </div>
       </div>
       <div className="overflow-x-hidden overflow-y-auto w-full h-full">
         <div className="flex flex-col gap-4">
-          <div className="self-center w-full header">Speaker Notes</div>
+          <div className="flex flex-col self-center w-full header h-14 justify-center">
+            Speaker Notes
+          </div>
           <div className="self-center flex flex-row gap-4 flex-wrap">
-            <button
-              className="btn flex-shrink-0"
-              type="button"
+            <Button
+              border
+              icon="i-tabler-zoom-in"
+              label="in"
+              title="Zoom in"
               onClick={() => {
                 setTextSize(zoom(true));
               }}
-            >
-              <div className="i-tabler-zoom-in" />
-            </button>
+            />
+
             <div className="flex justify-center items-center text-base flex-shrink-0">
               <div>{textSize.replace('text-', '')}</div>
             </div>
-            <button
-              className="btn flex-shrink-0"
-              type="button"
+            <Button
+              border
+              icon="i-tabler-zoom-out"
+              label="out"
+              title="Zoom out"
               onClick={() => {
                 setTextSize(zoom(false));
               }}
-            >
-              <div className="i-tabler-zoom-out" />
-            </button>
+            />
           </div>
-          <div className={clsx('p-2 prose max-w-full', textSize)}>
+          <div className={clsx('p-2 prose max-w-full font-inter', textSize)}>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {notes.get(slideIndex) ?? ''}
+              {presentation?.notes?.find((note) =>
+                note.pageIndices.includes(slideIndex),
+              )?.markdown ?? ''}
             </ReactMarkdown>
           </div>
         </div>
       </div>
-      <ProgressBar slideIndex={slideIndex} slideCount={slideCount} />
-      <Disconnected paused={paused} unPause={unPause} />
+      <ProgressBar
+        slideIndex={slideIndex}
+        slideCount={presentation?.pages?.length ?? 0}
+      />
     </div>
   );
 }

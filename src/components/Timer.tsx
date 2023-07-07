@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import Button from './toolbar/Button';
 
 export default function Timer() {
   const [startTime, setStartTime] = useState<number>(Date.now());
@@ -34,22 +35,23 @@ export default function Timer() {
   }, [startTime]);
 
   return (
-    <div className="font-mono flex flex-row items-center">
+    <div className="font-mono flex flex-row items-center gap-4">
       <div>
         {String(elapsedTime.hours).padStart(2, '0')}:
         {String(elapsedTime.minutes).padStart(2, '0')}:
         {String(elapsedTime.seconds).padStart(2, '0')}
       </div>
-      <div className="ml-2">
-        <button
-          className="flex"
-          type="button"
+      <div className="">
+        <Button
+          border
+          title="Reset timer"
+          icon="i-tabler-rotate"
+          label="reset"
+          className="important-flex-row important-p1 important-shadow-md gap-1"
           onClick={() => {
             reset();
           }}
-        >
-          <div className="i-tabler-rotate" />
-        </button>
+        />
       </div>
     </div>
   );

@@ -28,3 +28,10 @@ dist-ssr
 
 src/presentations/thumbs
 TODO.md
+*.serviceaccount.json
+
+# Don't commit auto generated icons
+public/apple-touch-icon-*.png
+public/favicon.ico
+public/maskable-icon-*.png
+public/pwa-*.png
