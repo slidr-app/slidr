@@ -56,15 +56,10 @@
     "eslint-plugin-react-refresh": "^0.4.1",
     "firebase-tools": "^12.2.1",
     "husky": "^8.0.3",
-    "imagetools-core": "^4.0.3",
-    "pdf-lib": "^1.17.1",
-    "rimraf": "^5.0.1",
     "typescript": "^5.0.2",
     "unocss": "^0.53.3",
     "vite": "^4.3.9",
-    "vite-imagetools": "^5.0.4",
     "vite-plugin-pwa": "^0.16.4",
-    "vite-plugin-run": "^0.4.1",
     "workbox-window": "^7.0.0",
     "xo": "^0.54.2"
   }
