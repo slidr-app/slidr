@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode staging",
     "build": "tsc && vite build",
     "lint": "xo",
     "preview": "vite preview",
@@ -14,9 +14,9 @@
     "build:all": "pwa-assets-generator && pnpm run build && pnpm run build:functions",
     "deploy": "firebase deploy",
     "generate-pwa-assets": "pwa-assets-generator",
-    "test": "VITE_FIREBASE_PROJECT_ID=demo-test firebase emulators:exec --project demo-test --only auth,firestore,storage vitest",
-    "test:ui": "VITE_FIREBASE_PROJECT_ID=demo-test firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest --ui'",
-    "coverage": "VITE_FIREBASE_PROJECT_ID=demo-test firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest run --coverage'"
+    "test": "firebase emulators:exec --project demo-test --only auth,firestore,storage vitest",
+    "test:ui": "firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest --ui'",
+    "coverage": "firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest run --coverage'"
   },
   "dependencies": {
     "@unocss/reset": "^0.53.3",
