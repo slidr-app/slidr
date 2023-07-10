@@ -81,5 +81,28 @@ export default defineConfig(({command, mode}) => {
         },
       }),
     ],
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: './src/test/setup.ts',
+      include: ['src/**/*.Test.tsx'],
+      coverage: {
+        // Src: [`${process.cwd()}/src`],
+        all: true,
+        exclude: [
+          '.xo-config.cjs',
+          'pwa-assets.config.ts',
+          'uno.config.ts',
+          'functions/**',
+          'tests',
+          '**/*.Test.tsx',
+          'src/test/**',
+        ],
+        reporter: ['text', 'html', 'clover', 'json', 'text-summary'],
+      },
+      // You might want to disable it, if you don't have tests that rely on CSS
+      // since parsing CSS is slow
+      // css: true,
+    },
   };
 });
