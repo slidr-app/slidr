@@ -12,7 +12,7 @@
     "prepush": "pnpm run lint && pnpm run build:all && pnpm run test:once",
     "build:functions": "pnpm --dir functions build",
     "build:all": "pwa-assets-generator && pnpm run build && pnpm run build:functions",
-    "deploy": "firebase deploy --only functions:renderForBot,auth,firestore,storage",
+    "deploy": "firebase deploy --only functions:renderForBot,auth,firestore,storage,hosting",
     "generate-pwa-assets": "pwa-assets-generator",
     "test": "firebase emulators:exec --project demo-test --only auth,firestore,storage vitest",
     "test:once": "firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest --run'",
