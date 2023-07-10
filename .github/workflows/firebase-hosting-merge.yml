@@ -39,6 +39,9 @@ jobs:
       - name: Build
         run: pnpm run build:all
 
+      - name: Integration tests
+        run: pnpm run test
+
   deploy:
     if: github.ref_name == 'main' || github.ref_name == 'production'
     environment: ${{ github.ref_name == 'main' && 'staging' || github.ref_name == 'production' && 'production' }}
