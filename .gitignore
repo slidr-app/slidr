@@ -23,8 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
+coverage
+
 .firebase
-.env
 
 src/presentations/thumbs
 TODO.md

@@ -10,8 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build_and_lint:
-    if: github.ref_name != 'main' && github.ref_name != 'production'
+  build_and_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -39,9 +38,19 @@ jobs:
       - name: Build
         run: pnpm run build:all
 
+      - name: Setup emulator cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/firebase/emulators
+          key: ${{ runner.os }}
+
+      - name: Integration tests
+        run: pnpm run test
+
   deploy:
     if: github.ref_name == 'main' || github.ref_name == 'production'
     environment: ${{ github.ref_name == 'main' && 'staging' || github.ref_name == 'production' && 'production' }}
+    needs: build_and_test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -63,8 +72,7 @@ jobs:
       - name: Install
         run: pnpm install && pnpm --dir functions install
 
-      - name: Lint
-        run: pnpm run lint
+      # Note: no linting or testing, since it was done in the previous job
 
       - name: Build
         run: pnpm run build:all
