@@ -38,6 +38,12 @@ jobs:
       - name: Build
         run: pnpm run build:all
 
+      - name: Setup emulator cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/firebase/emulators
+          key: ${{ runner.os }}
+
       - name: Integration tests
         run: pnpm run test
 
