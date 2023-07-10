@@ -22,8 +22,8 @@ export default function Slideshow({
 
   // Use a function for readability
   function pageUnder() {
-    // TODO: track previous slideIndex in state with a useEffect
-    // Calculate the pageUnder using that
+    // Depending on the direction, the page under will be the previous or next index
+    // There is nothing to render if we are already at the first or last index
     if (forward === true && pageIndex > 0) {
       return pageIndex - 1;
     }
@@ -40,6 +40,7 @@ export default function Slideshow({
       {pageUnderIndex !== undefined && (
         <img
           key={pageUnderIndex}
+          aria-hidden
           className="w-full h-full absolute top-0 left-0"
           // @ts-expect-error fetchPriority is not in the react typings
           // eslint-disable-next-line react/no-unknown-property
@@ -74,6 +75,7 @@ export default function Slideshow({
         .map((page) => (
           <img
             key={page}
+            aria-hidden
             className="w-full h-full absolute top-0 left-0 hidden"
             // @ts-expect-error fetchPriority is not in the react typings
             // eslint-disable-next-line react/no-unknown-property
