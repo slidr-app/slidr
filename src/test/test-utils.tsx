@@ -17,7 +17,7 @@ function customRender(ui: React.ReactElement, options = {}) {
 
 export function renderRoute(route: string, options = {}) {
   const router = createMemoryRouter(Routes, {initialEntries: [route]});
-  return render(<RouterProvider router={router} />, options);
+  return customRender(<RouterProvider router={router} />, options);
 }
 
 export * from '@testing-library/react';
