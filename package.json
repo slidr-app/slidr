@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --mode staging",
+    "dev": "firebase emulators:exec --project demo-test --only auth,firestore,storage --import test-data 'vite --mode emulator'",
+    "dev:update": "firebase emulators:exec --project demo-test --only auth,firestore,storage --import test-data 'vite --mode emulator' --export-on-exit",
     "build": "tsc && vite build",
     "lint": "xo",
     "preview": "vite preview",
@@ -14,10 +15,10 @@
     "build:all": "pwa-assets-generator && pnpm run build && pnpm run build:functions",
     "deploy": "firebase deploy --only functions:renderForBot,auth,firestore,storage,hosting",
     "generate-pwa-assets": "pwa-assets-generator",
-    "test": "firebase emulators:exec --project demo-test --only auth,firestore,storage vitest",
-    "test:once": "firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest --run'",
-    "test:ui": "firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest --ui'",
-    "coverage": "firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest run --coverage'",
+    "test": "firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest --mode emulator'",
+    "test:once": "firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest --run --mode emulator'",
+    "test:ui": "firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest --ui --mode emulator'",
+    "coverage": "firebase emulators:exec --project demo-test --only auth,firestore,storage 'vitest run --coverage --mode emulator'",
     "emulators": "firebase emulators:start --project demo-test --only auth,firestore,storage"
   },
   "dependencies": {
