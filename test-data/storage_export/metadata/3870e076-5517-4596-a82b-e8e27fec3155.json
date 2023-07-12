@@ -1,0 +1,20 @@
+{
+  "name": "presentations/9VDijYJFAhAyCuXLaXvz/jwB52wdhggJal_0IoYzK0.pdf",
+  "bucket": "demo-test.appspot.com",
+  "metageneration": 1,
+  "generation": 1689154976390,
+  "contentType": "application/pdf",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "cacheControl": "public;max-age=604800",
+  "downloadTokens": [
+    "9f8a2137-8588-4182-8c2b-5d727712bcdd"
+  ],
+  "etag": "Bh/OynQKt+Aj1aR7/Sw+cGOweAc",
+  "customMetadata": {},
+  "timeCreated": "2023-07-12T09:42:56.390Z",
+  "updated": "2023-07-12T09:42:56.390Z",
+  "size": 17380,
+  "md5Hash": "09B6VcgknpyyQNgAGezJKA==",
+  "crc32c": "1074732155"
+}

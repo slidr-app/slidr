@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from 'react';
+import {lazy, useCallback, useEffect, useState} from 'react';
 import {
   type User,
   isSignInWithEmailLink,
@@ -10,6 +10,8 @@ import {Link, useNavigate} from 'react-router-dom';
 import clsx from 'clsx';
 import {auth} from '../firebase';
 import Loading from '../components/Loading';
+
+const DevSignIn = lazy(async () => import('../components/DevSignIn'));
 
 export default function SignIn() {
   useEffect(() => {
@@ -157,6 +159,7 @@ export default function SignIn() {
           Please click on the link sent in the email. You can close this page.
         </div>
       )}
+      {import.meta.env.MODE === 'emulator' && <DevSignIn />}
     </div>
   );
 }
