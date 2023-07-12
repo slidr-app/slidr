@@ -1,15 +1,9 @@
-import {connectStorageEmulator, getStorage} from 'firebase/storage';
-import {connectAuthEmulator, signInAnonymously} from 'firebase/auth';
-import {connectFirestoreEmulator, doc, setDoc} from 'firebase/firestore';
-import {app, auth, firestore} from '../firebase';
+import {signInAnonymously} from 'firebase/auth';
+import {doc, setDoc} from 'firebase/firestore';
+import {auth, firestore} from '../firebase';
 import {screen, userEvent, renderRoute} from '../test/test-utils';
 
 beforeAll(async () => {
-  const storage = getStorage(app);
-  connectAuthEmulator(auth, 'http://127.0.0.1:9099');
-  connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
-  connectStorageEmulator(storage, '127.0.0.1', 9199);
-
   // Use anonymous auth because email link is complicated to emulate
   const cred = await signInAnonymously(auth);
 
