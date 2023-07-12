@@ -1,0 +1,20 @@
+{
+  "name": "presentations/9jzgjgn3zXnbUY7eJj5h/001_DKQpEpn99enBJ8cBYeCui.webp",
+  "bucket": "demo-test.appspot.com",
+  "metageneration": 1,
+  "generation": 1689160590510,
+  "contentType": "image/webp",
+  "storageClass": "STANDARD",
+  "contentDisposition": "inline",
+  "cacheControl": "public, max-age=604800, immutable",
+  "downloadTokens": [
+    "da5ca447-630b-4787-a98e-d2ab4e2ed207"
+  ],
+  "etag": "fTVOvHzTrf0uMtUGw1e3TuXNOAY",
+  "customMetadata": {},
+  "timeCreated": "2023-07-12T11:16:30.510Z",
+  "updated": "2023-07-12T11:16:30.510Z",
+  "size": 7248,
+  "md5Hash": "LuDCdu7PnOLkBgWGEfHToQ==",
+  "crc32c": "1166286266"
+}
