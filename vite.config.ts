@@ -85,7 +85,7 @@ export default defineConfig(({command, mode}) => {
       globals: true,
       environment: 'jsdom',
       setupFiles: './src/test/setup.ts',
-      include: ['src/**/*.Test.tsx'],
+      include: ['src/**/*.[Tt]est.ts?(x)'],
       coverage: {
         // Src: [`${process.cwd()}/src`],
         all: true,
