@@ -2,6 +2,11 @@ export type Doc = {
   id: string;
 };
 
+export type Note = {
+  pageIndices: [number, ...number[]];
+  markdown: string;
+};
+
 // TODO: use this when uploading
 export type PresentationData = {
   title: string;
@@ -15,8 +20,3 @@ export type PresentationData = {
   thumbIndex?: number;
 };
 export type PresentationDoc = Doc & PresentationData;
-
-export type Note = {
-  pageIndices: number[];
-  markdown: string;
-};

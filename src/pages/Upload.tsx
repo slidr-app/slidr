@@ -210,7 +210,7 @@ export default function Export() {
 
       const nextPages = await Promise.all(uploadPromises);
       const nextNotes = nextPages.map((_, pageIndex) => ({
-        pageIndices: [pageIndex],
+        pageIndices: [pageIndex] as [number, ...number[]],
         markdown: '',
       }));
 
