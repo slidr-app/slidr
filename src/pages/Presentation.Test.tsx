@@ -1,21 +1,14 @@
-import {connectStorageEmulator, getStorage} from 'firebase/storage';
-import {connectAuthEmulator, signInAnonymously} from 'firebase/auth';
-import {connectFirestoreEmulator, doc, setDoc} from 'firebase/firestore';
-import {app, auth, firestore} from '../firebase';
+import {signInAnonymously} from 'firebase/auth';
+import {doc, setDoc} from 'firebase/firestore';
+import {auth, firestore} from '../firebase';
 import {screen, userEvent, renderRoute} from '../test/test-utils';
 
 beforeAll(async () => {
-  const storage = getStorage(app);
-  connectAuthEmulator(auth, 'http://127.0.0.1:9099');
-  connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
-  connectStorageEmulator(storage, '127.0.0.1', 9199);
-
   // Use anonymous auth because email link is complicated to emulate
   const cred = await signInAnonymously(auth);
 
-  // Clear firestore before we start
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents',
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/presentation-1',
     {method: 'DELETE'},
   );
 
@@ -46,12 +39,30 @@ describe('Presentation view', () => {
     expect(slide2).toHaveAttribute('src', 'img2.jpg');
   });
 
+  it('can navigate to the last slide with toolbar', async () => {
+    renderRoute('/p/presentation-1');
+    await screen.findByRole('img', {name: 'Slide page 1'});
+    const end = screen.getByRole('button', {name: 'end'});
+    await userEvent.click(end);
+    const slide2 = await screen.findByRole('img', {name: 'Slide page 3'});
+    expect(slide2).toHaveAttribute('src', 'img3.jpg');
+  });
+
   it('can navigate to the next slide by clicking on the image', async () => {
     renderRoute('/p/presentation-1');
     const slide1 = await screen.findByRole('img', {name: 'Slide page 1'});
     await userEvent.click(slide1);
     const slide2 = await screen.findByRole('img', {name: 'Slide page 2'});
     expect(slide2).toHaveAttribute('src', 'img2.jpg');
+  });
+
+  it('can navigate to the last slide with toolbar', async () => {
+    renderRoute('/p/presentation-1');
+    await screen.findByRole('img', {name: 'Slide page 1'});
+    const end = screen.getByRole('button', {name: 'end'});
+    await userEvent.click(end);
+    const slide2 = await screen.findByRole('img', {name: 'Slide page 3'});
+    expect(slide2).toHaveAttribute('src', 'img3.jpg');
   });
 
   it('can read the slide index from the search params', async () => {
@@ -69,13 +80,16 @@ describe('Presentation view', () => {
     expect(slide1).toHaveAttribute('src', 'img1.jpg');
   });
 
-  // It.skip('should increment count on click', async () => {
-  //   render(<Presentation />);
-  //   void userEvent.click(screen.getByRole('button'));
-  //   expect(await screen.findByText(/count is: 1/i)).toBeInTheDocument();
-  // });
+  it('can navigate to the first slide with toolbar', async () => {
+    renderRoute('/p/presentation-1?slide=3');
+    await screen.findByRole('img', {name: 'Slide page 3'});
+    const start = await screen.findByRole('button', {name: 'start'});
+    await userEvent.click(start);
+    const slide1 = await screen.findByRole('img', {name: 'Slide page 1'});
+    expect(slide1).toHaveAttribute('src', 'img1.jpg');
+  });
 
-  // it.skip('uses flexbox in app header', async () => {
+  // It.skip('uses flexbox in app header', async () => {
   //   render(<Presentation />);
   //   const element = screen.getByRole('banner');
   //   expect(element.className).toEqual('App-header');

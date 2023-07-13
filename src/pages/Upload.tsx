@@ -18,6 +18,7 @@ import {
   uploadBytes,
   getDownloadURL,
   getStorage,
+  connectStorageEmulator,
 } from 'firebase/storage';
 import {nanoid} from 'nanoid';
 import {auth, firestore, app} from '../firebase';
@@ -34,6 +35,10 @@ const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 const storage = getStorage(app);
+
+if (import.meta.env.MODE === 'emulator') {
+  connectStorageEmulator(storage, '127.0.0.1', 9199);
+}
 
 export default function Export() {
   useEffect(() => {
@@ -205,7 +210,7 @@ export default function Export() {
 
       const nextPages = await Promise.all(uploadPromises);
       const nextNotes = nextPages.map((_, pageIndex) => ({
-        pageIndices: [pageIndex],
+        pageIndices: [pageIndex] as [number, ...number[]],
         markdown: '',
       }));
 

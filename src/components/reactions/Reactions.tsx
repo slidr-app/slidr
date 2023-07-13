@@ -6,6 +6,13 @@ import {type Reaction as ReactionType} from './use-reactions';
 // https://eng.butter.us/awesome-floating-emoji-reactions-using-framer-motion-styled-components-and-lottie-36b9f479a9f9
 // https://www.daily.co/blog/add-flying-emoji-reactions-to-a-custom-daily-video-call/
 
+const reactionLabels: Record<string, string> = {
+  'i-fluent-emoji-flat-red-heart': 'love',
+  'i-fluent-emoji-flat-smiling-face': 'smile',
+  'i-fluent-emoji-flat-clapping-hands': 'applause',
+  'i-fluent-emoji-flat-exploding-head': 'mind blown',
+};
+
 function Reaction({
   onReactionDone,
   icon = 'i-fluent-emoji-flat-red-heart',
@@ -53,6 +60,8 @@ function Reaction({
   return (
     <div
       ref={reactionRef}
+      aria-label={reactionLabels[icon] ?? 'unknown'}
+      role="figure"
       style={{left: `var(--reaction-x-offset)`}}
       className={clsx(
         'animate-emoji absolute bottom--100px bottom--12 leading-none text-size-12 overflow-visible',
