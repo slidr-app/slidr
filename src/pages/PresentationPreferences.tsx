@@ -4,7 +4,10 @@ import {deleteDoc, doc, updateDoc} from 'firebase/firestore';
 import {ref, deleteObject, listAll, getStorage} from 'firebase/storage';
 import clsx from 'clsx';
 import usePresentation from '../components/slides/use-presentation';
-import {type Note} from '../../functions/src/presentation';
+import {
+  type PresentationUpdate,
+  type Note,
+} from '../../functions/src/presentation';
 import {app, firestore} from '../firebase';
 import DefaultLayout from '../layouts/DefaultLayout';
 import PresentationPreferencesEditor, {
@@ -32,7 +35,7 @@ export default function PresentationPreferences() {
     await updateDoc(doc(firestore, 'presentations', presentationId!), {
       notes,
       title,
-    });
+    } satisfies PresentationUpdate);
     setSavingState((currentState) =>
       currentState === 'saving' ? 'saved' : currentState,
     );

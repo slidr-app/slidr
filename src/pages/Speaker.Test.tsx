@@ -10,6 +10,7 @@ import {
   queryByRole,
 } from '../test/test-utils';
 import Routes from '../Routes';
+import {type PresentationCreate} from '../../functions/src/presentation';
 
 beforeAll(async () => {
   // Use anonymous auth because email link is complicated to emulate
@@ -33,12 +34,12 @@ beforeAll(async () => {
   // Add a single presentation to firestore
   await setDoc(doc(firestore, 'presentations', 'speakertest'), {
     uid: cred.user.uid,
-    created: Date.now(),
+    created: new Date(),
     username: 'test user',
     pages: ['img1.jpg', 'img2.jpg', 'img3.jpg'],
     notes: [],
     title: 'test presentation',
-  });
+  } satisfies PresentationCreate);
 });
 
 describe('Speaker view', () => {

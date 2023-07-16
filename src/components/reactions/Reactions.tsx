@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import {useEffect, useMemo, useRef} from 'react';
-import {type Reaction as ReactionType} from './use-reactions';
+import {type Reaction as ReactionType} from './reaction';
 
 // This file is inspired from these 2 articles:
 // https://eng.butter.us/awesome-floating-emoji-reactions-using-framer-motion-styled-components-and-lottie-36b9f479a9f9

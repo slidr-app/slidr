@@ -1,6 +1,8 @@
 import {useCallback, useEffect, useState} from 'react';
 import {onSnapshot, collection, addDoc, setDoc, doc} from 'firebase/firestore';
 import {firestore as db} from '../../firebase';
+import {type ReactionData} from '../reactions/reaction';
+import {type SessionData} from '../slides/sessions';
 import {type Payload, type Handler} from './use-channel-handlers';
 
 export default function useBroadcastFirebase({
@@ -29,21 +31,21 @@ export default function useBroadcastFirebase({
         return addDoc(collection(db, 'sessions', sessionId, 'reactions'), {
           reaction: payload.icon,
           ttl,
-        });
+        } satisfies ReactionData);
       }
 
       if (payload.id === 'confetti') {
         return addDoc(collection(db, 'sessions', sessionId, 'reactions'), {
           reaction: 'confetti',
           ttl,
-        });
+        } satisfies ReactionData);
       }
 
       if (payload.id === 'slide index') {
         return setDoc(doc(db, 'sessions', sessionId), {
           slideIndex: payload.index,
           ttl,
-        });
+        } satisfies SessionData);
       }
 
       // Note: we don't handle the 'confetti reset' action as it always happens on the broadcast channel

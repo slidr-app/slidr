@@ -1,9 +1,5 @@
 import {useCallback, useState} from 'react';
-
-export type Reaction = {
-  id: number;
-  icon: string;
-};
+import {type Reaction} from './reaction';
 
 export default function useReactions(): {
   removeReaction: (reaction: Reaction) => void;
