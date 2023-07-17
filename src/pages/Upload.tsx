@@ -90,6 +90,7 @@ export default function Export() {
           created: new Date(),
           uid: auth.currentUser!.uid,
           username: userData?.username ?? '',
+          twitterHandle: userData?.twitterHandle ?? '',
           pages: [],
           notes: [],
           title: '',

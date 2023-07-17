@@ -10,19 +10,21 @@ service cloud.firestore {
       
       allow create: if request.auth != null
       	// TODO: should this be aligned with all the possible fields?
-      	&& request.resource.data.keys().hasAll(['uid', 'created', 'username', 'pages', 'notes', 'title'])
-      	&& request.resource.data.keys().hasOnly(['uid', 'created', 'username', 'pages', 'notes', 'title'])
+      	&& request.resource.data.keys().hasAll(['uid', 'created', 'username', 'pages', 'notes', 'title', 'twitterHandle'])
+      	&& request.resource.data.keys().hasOnly(['uid', 'created', 'username', 'pages', 'notes', 'title', 'twitterHandle'])
         && request.auth.uid == request.resource.data.uid;
         
       allow update: if request.auth != null
         && request.auth.uid == resource.data.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['original', 'pages', 'rendered', 'title', 'notes', 'username']); 
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['original', 'pages', 'rendered', 'title', 'notes', 'username', 'twitterHandle']); 
       
       allow delete: if request.auth != null
         && request.auth.uid == resource.data.uid;
     }
     match /users/{userId} {
-    	allow write: if request.auth != null && request.auth.uid == userId;
+    	allow write: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.keys().hasAll(['username', 'twitterHandle'])
+        && request.resource.data.keys().hasOnly(['username', 'twitterHandle']);
       allow read: if request.auth != null && request.auth.uid == userId;
     }
     match /sessions/{sessionId} {

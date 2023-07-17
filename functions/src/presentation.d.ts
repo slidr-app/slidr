@@ -14,6 +14,7 @@ export type PresentationCreate = {
   notes: Note[];
   uid: string;
   username: string;
+  twitterHandle: string;
 };
 
 export type PresentationUpdate =
@@ -22,6 +23,7 @@ export type PresentationUpdate =
     }
   | {
       username: string;
+      twitterHandle: string;
     }
   | {
       title: string;
@@ -34,11 +36,12 @@ export type PresentationUpdate =
       notes: Note[];
     };
 
-export type PresentationData = PresentationCreate &
-  PresentationUpdate & {
-    // Thumb: string;
-    // TODO: use this in function metadata
-    twitterHandle?: string;
-    thumbIndex?: number;
-  };
+export type PresentationData = PresentationCreate & {
+  original: string;
+  rendered: Date;
+
+  // Thumb: string;
+  // TODO: use this in function metadata
+  thumbIndex?: number;
+};
 export type PresentationDoc = Doc & PresentationData;

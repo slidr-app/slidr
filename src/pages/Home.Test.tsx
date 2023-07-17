@@ -39,6 +39,7 @@ beforeAll(async () => {
     pages: [],
     notes: [],
     title: 'home1',
+    twitterHandle: '@doesnotexist',
   } satisfies PresentationCreate);
   await updateDoc(doc(firestore, 'presentations', 'home-p1'), {
     notes: [],
@@ -54,6 +55,7 @@ beforeAll(async () => {
     pages: ['img1.jpg', 'img2.jpg', 'img3.jpg'],
     notes: [],
     title: 'home2',
+    twitterHandle: '@doesnotexist',
   } satisfies PresentationCreate);
   await updateDoc(doc(firestore, 'presentations', 'home-p2'), {
     notes: [],
@@ -69,6 +71,7 @@ beforeAll(async () => {
     pages: ['img1.jpg', 'img2.jpg', 'img3.jpg'],
     notes: [],
     title: 'home3',
+    twitterHandle: '@doesnotexist',
   } satisfies PresentationCreate);
   await updateDoc(doc(firestore, 'presentations', 'home-p3'), {
     notes: [],
