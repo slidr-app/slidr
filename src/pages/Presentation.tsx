@@ -1,6 +1,5 @@
 import {useState, useEffect, useMemo, useCallback} from 'react';
 import QRCode from 'react-qr-code';
-import {useParams} from 'react-router-dom';
 import {useSwipeable} from 'react-swipeable';
 import {useSlideIndex} from '../components/slides/use-slide-index';
 import useKeys from '../use-keys';
@@ -23,11 +22,12 @@ import usePresentation from '../components/slides/use-presentation';
 import useBroadcastFirebase from '../components/broadcast/use-broadcast-firestore';
 
 function Presentation() {
-  const {presentationId} = useParams();
   const presentation = usePresentation();
 
   useEffect(() => {
-    document.title = `Slidr - ${presentation?.title ?? 'Unnamed Presentation'}`;
+    document.title = `Slidr - ${
+      presentation.data?.title ?? 'Unnamed Presentation'
+    }`;
   }, [presentation]);
 
   // Const [forward, setForward] = useState<boolean>(true);
@@ -39,7 +39,7 @@ function Presentation() {
     setHandlers: setHandlersBroadcastChannel,
   } = useChannelHandlers();
   const postBroadcastChannel = useBroadcastChannel({
-    channelId: presentationId!,
+    channelId: presentation.id ?? 'unknown',
     onIncoming: handleIncomingBroadcastChannel,
   });
   const {
@@ -51,7 +51,7 @@ function Presentation() {
     forward,
   } = useSlideIndex({
     postMessage: postBroadcastChannel,
-    slideCount: presentation?.pages?.length ?? 0,
+    slideCount: presentation.data?.pages?.length ?? 0,
   });
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
@@ -66,7 +66,7 @@ function Presentation() {
   });
   const {setSlideIndex: setSupabaseSlideIndex} = useSlideIndex({
     postMessage: postBroadcastSupabase,
-    slideCount: presentation?.pages?.length ?? 0,
+    slideCount: presentation.data?.pages?.length ?? 0,
   });
   useEffect(() => {
     setSupabaseSlideIndex(slideIndex);
@@ -155,7 +155,7 @@ function Presentation() {
       <div className="w-full max-w-[calc(100vh_*_(16/9))] aspect-video">
         <Slideshow
           pageIndex={slideIndex}
-          pages={presentation?.pages ?? []}
+          pages={presentation.data?.pages ?? []}
           forward={forward}
         />
       </div>
@@ -175,7 +175,7 @@ function Presentation() {
       </div>
       <ProgressBar
         slideIndex={slideIndex}
-        slideCount={presentation?.pages?.length ?? 0}
+        slideCount={presentation.data?.pages?.length ?? 0}
       />
       <div
         className="position-absolute top-0 left-0 h-full w-full pointer-events-none"
@@ -190,7 +190,7 @@ function Presentation() {
             setSlideIndex(0);
           }}
           onEnd={() => {
-            setSlideIndex((presentation?.pages?.length ?? 1) - 1);
+            setSlideIndex((presentation.data?.pages?.length ?? 1) - 1);
           }}
         />
       )}

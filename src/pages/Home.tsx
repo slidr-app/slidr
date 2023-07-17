@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {getDocs, collection, orderBy, query} from 'firebase/firestore';
+import {collection, orderBy, query, onSnapshot} from 'firebase/firestore';
 import {auth, firestore} from '../firebase.ts';
 import {
   type PresentationDoc,
@@ -17,26 +17,23 @@ export default function Home() {
   const [presentations, setPresentations] = useState<PresentationDoc[]>();
 
   useEffect(() => {
-    async function getPresentations() {
-      const querySnapshot = await getDocs(
-        query(
-          collection(firestore, 'presentations'),
-          orderBy('rendered', 'desc'),
-        ),
-      );
-
-      setPresentations(
-        querySnapshot.docs.map((doc) => {
-          const presentation: PresentationDoc = {
-            id: doc.id,
-            ...(doc.data() as PresentationData),
-          };
-          return presentation;
-        }),
-      );
-    }
-
-    void getPresentations();
+    return onSnapshot(
+      query(
+        collection(firestore, 'presentations'),
+        orderBy('rendered', 'desc'),
+      ),
+      (querySnapshot) => {
+        setPresentations(
+          querySnapshot.docs.map((doc) => {
+            const presentation: PresentationDoc = {
+              id: doc.id,
+              data: doc.data() as PresentationData,
+            };
+            return presentation;
+          }),
+        );
+      },
+    );
   }, []);
 
   return (
@@ -82,17 +79,17 @@ export default function Home() {
                         <div>view</div>
                       </div>
                     </div>
-                    {(presentation.title.length > 0 ||
-                      presentation.username.length > 0) && (
+                    {(presentation.data.title.length > 0 ||
+                      presentation.data.username.length > 0) && (
                       <div className="absolute top-0 left-0 flex flex-col items-start bg-transparent pointer-events-none">
-                        {presentation.title.length > 0 && (
+                        {presentation.data.title.length > 0 && (
                           <div className="p-2 rounded-br-md bg-gray-900 bg-opacity-85">
-                            {presentation.title}
+                            {presentation.data.title}
                           </div>
                         )}
-                        {presentation.username.length > 0 && (
+                        {presentation.data.username.length > 0 && (
                           <div className="px-2 pb-1 rounded-br-md bg-gray-900 bg-opacity-85 text-base">
-                            by {presentation.username}
+                            by {presentation.data.username}
                           </div>
                         )}
                       </div>
@@ -100,7 +97,11 @@ export default function Home() {
                     {/* Hide the alt text with 0pt font, hacky! */}
                     <img
                       className="w-full aspect-video text-[0]"
-                      src={presentation.pages[presentation.thumbIndex ?? 0]}
+                      src={
+                        presentation.data.pages[
+                          presentation.data.thumbIndex ?? 0
+                        ]
+                      }
                       alt="thumbnail"
                       role="presentation"
                     />
@@ -134,7 +135,7 @@ export default function Home() {
                     </button>
                   </Link>
                   <div className="flex-grow flex-shrink" />
-                  {presentation.uid === auth.currentUser?.uid && (
+                  {presentation.data.uid === auth.currentUser?.uid && (
                     <Link className="flex" to={`/e/${presentation.id}`}>
                       <button
                         className="hover:children:(nav-active) overflow-hidden pb-2"

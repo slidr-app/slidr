@@ -1,5 +1,4 @@
 import {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
 import {deleteDoc, doc, updateDoc} from 'firebase/firestore';
 import {ref, deleteObject, listAll, getStorage} from 'firebase/storage';
 import clsx from 'clsx';
@@ -17,12 +16,11 @@ import PresentationPreferencesEditor, {
 const storage = getStorage(app);
 
 export default function PresentationPreferences() {
-  const {presentationId} = useParams();
   const presentation = usePresentation();
 
   useEffect(() => {
     document.title = `Slidr - ${
-      presentation?.title ?? 'Unnamed Presentation'
+      presentation.data?.title ?? 'Unnamed Presentation'
     } - Preferences`;
   }, [presentation]);
 
@@ -32,7 +30,7 @@ export default function PresentationPreferences() {
 
   async function saveNotes() {
     setSavingState('saving');
-    await updateDoc(doc(firestore, 'presentations', presentationId!), {
+    await updateDoc(doc(firestore, 'presentations', presentation.id!), {
       notes,
       title,
     } satisfies PresentationUpdate);
@@ -43,9 +41,9 @@ export default function PresentationPreferences() {
 
   useEffect(() => {
     // Use notes from the DB
-    if (presentation) {
-      setNotes(presentation.notes);
-      setTitle(presentation.title);
+    if (presentation.data) {
+      setNotes(presentation.data.notes);
+      setTitle(presentation.data.title);
     }
   }, [presentation]);
 
@@ -60,7 +58,7 @@ export default function PresentationPreferences() {
     }
 
     if (deleteState === 'confirm') {
-      const presentationPath = `presentations/${presentation!.id}`;
+      const presentationPath = `presentations/${presentation.id!}`;
 
       setDeleteState('deleting');
 
@@ -85,7 +83,7 @@ export default function PresentationPreferences() {
             title={title}
             setTitle={setTitle}
             setNotes={setNotes}
-            pages={presentation?.pages ?? []}
+            pages={presentation.data?.pages ?? []}
             onSave={() => {
               void saveNotes();
             }}

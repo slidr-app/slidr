@@ -1,7 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {useMemo, useState, useCallback, useEffect} from 'react';
-import {useParams} from 'react-router-dom';
 import clsx from 'clsx';
 import {useSwipeable} from 'react-swipeable';
 import {useSlideIndex} from '../components/slides/use-slide-index';
@@ -40,12 +39,11 @@ const textSizes = [
 ];
 
 export default function Speaker() {
-  const {presentationId} = useParams();
   const presentation = usePresentation();
 
   useEffect(() => {
     document.title = `Slidr - ${
-      presentation?.title ?? 'Unnamed Presentation'
+      presentation.data?.title ?? 'Unnamed Presentation'
     } - Speaker`;
   }, [presentation]);
 
@@ -57,7 +55,7 @@ export default function Speaker() {
     setHandlers: setHandlersBroadcastChannel,
   } = useChannelHandlers();
   const postBroadcastChannel = useBroadcastChannel({
-    channelId: presentationId!,
+    channelId: presentation.id ?? 'unknown',
     onIncoming: handleIncomingBroadcastChannel,
   });
   const {
@@ -68,7 +66,7 @@ export default function Speaker() {
     handlers: handlersSlideIndexBroadcastChannel,
   } = useSlideIndex({
     postMessage: postBroadcastChannel,
-    slideCount: presentation?.pages?.length ?? 0,
+    slideCount: presentation.data?.pages?.length ?? 0,
   });
   useCombinedHandlers(
     setHandlersBroadcastChannel,
@@ -147,14 +145,14 @@ export default function Speaker() {
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <Slideshow
-                pages={presentation?.pages ?? []}
+                pages={presentation.data?.pages ?? []}
                 pageIndex={slideIndex}
               />
             </div>
             <div className="w-full aspect-video col-start-1">
               {slideIndex > 0 ? (
                 <Slideshow
-                  pages={presentation?.pages ?? []}
+                  pages={presentation.data?.pages ?? []}
                   pageIndex={slideIndex - 1}
                 />
               ) : (
@@ -165,9 +163,9 @@ export default function Speaker() {
               )}
             </div>
             <div className="w-full aspect-video col-start-2">
-              {slideIndex < (presentation?.pages?.length ?? 1) - 1 ? (
+              {slideIndex < (presentation.data?.pages?.length ?? 1) - 1 ? (
                 <Slideshow
-                  pages={presentation?.pages ?? []}
+                  pages={presentation.data?.pages ?? []}
                   pageIndex={slideIndex + 1}
                 />
               ) : (
@@ -188,7 +186,7 @@ export default function Speaker() {
                   setSlideIndex(0);
                 }}
                 onEnd={() => {
-                  setSlideIndex((presentation?.pages?.length ?? 1) - 1);
+                  setSlideIndex((presentation.data?.pages?.length ?? 1) - 1);
                 }}
               />
             </div>
@@ -239,7 +237,7 @@ export default function Speaker() {
           </div>
           <div className={clsx('p-2 prose max-w-full font-inter', textSize)}>
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {presentation?.notes?.find((note) =>
+              {presentation.data?.notes?.find((note) =>
                 note.pageIndices.includes(slideIndex),
               )?.markdown ?? ''}
             </ReactMarkdown>
@@ -248,7 +246,7 @@ export default function Speaker() {
       </div>
       <ProgressBar
         slideIndex={slideIndex}
-        slideCount={presentation?.pages?.length ?? 0}
+        slideCount={presentation.data?.pages?.length ?? 0}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import {useEffect, useState} from 'react';
-import {type PresentationDoc} from '../../../functions/src/presentation';
+import {type PresentationAndId} from '../../../functions/src/presentation';
 import {auth} from '../../firebase';
 import Button from './Button';
 import NavButtons from './NavButtons';
@@ -17,7 +17,7 @@ export default function Toolbar({
   onNext: () => void;
   onStart: () => void;
   onEnd: () => void;
-  presentation?: PresentationDoc;
+  presentation: PresentationAndId;
 }) {
   // Force the toolbar to be shown for a short time
   const [forceToolbar, setForceToolbar] = useState(false);
@@ -57,7 +57,7 @@ export default function Toolbar({
     };
   }, []);
 
-  const isOwner = presentation?.uid === auth.currentUser?.uid;
+  const isOwner = presentation.data?.uid === auth.currentUser?.uid;
 
   return (
     <div
@@ -128,7 +128,7 @@ export default function Toolbar({
             icon="i-tabler-pencil"
             label="edit"
             title="Edit presentation"
-            to={presentation ? `/e/${presentation.id}` : '/'}
+            to={`/e/${presentation.id ?? ''}`}
           />
         )}
         {/* <button

@@ -111,7 +111,7 @@ export default function Export() {
       } satisfies PresentationUpdate);
       setRendering(true);
     },
-    [userData?.username],
+    [userData?.username, userData?.twitterHandle],
   );
 
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
