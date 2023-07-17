@@ -57,6 +57,7 @@ export default function UserPreferences() {
       userPresentationsSnapshot.docs.map(async (presentation) =>
         updateDoc(doc(firestore, 'presentations', presentation.id), {
           username: userData.username!,
+          twitterHandle: userData.twitterHandle!,
         } satisfies PresentationUpdate),
       ),
     );
@@ -68,17 +69,46 @@ export default function UserPreferences() {
   return (
     <DefaultLayout title="User Preferences">
       <div className="max-w-screen-sm mx-auto grid grid-cols-[auto_1fr] gap-4 w-full">
-        <label className="flex items-center justify-end">Email:</label>
+        <div className="flex items-center justify-end">Email:</div>
         <div className="">{user?.email ?? ''}</div>
-        <label className="flex items-center justify-end">Username:</label>
+        <label
+          id="username-label"
+          className="flex flex-col items-end justify-center"
+        >
+          <div>Username:</div>
+          <div className="text-xs">(optional)</div>
+        </label>
         <input
+          aria-labelledby="username-label"
           className="input flex-grow"
           value={userData.username ?? ''}
+          placeholder="your name"
           onChange={(event) => {
             setSaveState('dirty');
             setUserData((currentUser) => ({
               ...currentUser,
               username: event.target.value,
+            }));
+            void save();
+          }}
+        />
+        <label
+          id="twitter-label"
+          className="flex flex-col items-end justify-center"
+        >
+          <div>Twitter handle:</div>
+          <div className="text-xs">(optional)</div>
+        </label>
+        <input
+          aria-labelledby="twitter-label"
+          className="input flex-grow"
+          value={userData.twitterHandle ?? ''}
+          placeholder="@yourhandle"
+          onChange={(event) => {
+            setSaveState('dirty');
+            setUserData((currentUser) => ({
+              ...currentUser,
+              twitterHandle: event.target.value,
             }));
             void save();
           }}

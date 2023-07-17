@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "pnpm run emulators:exec --import test-data 'pnpm run dev:start'",
+    "dev": "pnpm run emulators:exec --ui --import test-data 'pnpm run dev:start'",
     "dev:update": "pnpm run emulators:exec --import test-data 'pnpm run dev:start' --export-on-exit",
     "dev:start": "vite --mode emulator",
     "build": "tsc && vite build",

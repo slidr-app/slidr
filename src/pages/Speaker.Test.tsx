@@ -39,6 +39,7 @@ beforeAll(async () => {
     pages: ['img1.jpg', 'img2.jpg', 'img3.jpg'],
     notes: [],
     title: 'test presentation',
+    twitterHandle: '@doesnotexist',
   } satisfies PresentationCreate);
 });
 
