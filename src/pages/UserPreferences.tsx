@@ -2,8 +2,8 @@ import {useContext, useEffect, useState} from 'react';
 import {
   collection,
   doc,
-  getDoc,
   getDocs,
+  onSnapshot,
   query,
   setDoc,
   updateDoc,
@@ -21,23 +21,23 @@ export default function UserPreferences() {
   const [userData, setUserData] = useState<UserDoc>({});
 
   useEffect(() => {
-    async function getUserDoc() {
-      if (!user) {
-        return;
-      }
+    if (!user) {
+      return;
+    }
 
-      const userSnapshot = await getDoc(doc(firestore, `users/${user.uid}`));
-      if (!userSnapshot.exists()) {
+    return onSnapshot(doc(firestore, `users/${user.uid}`), (snapshot) => {
+      if (!snapshot.exists()) {
         setUserData({});
         return;
       }
 
-      const nextUser = userSnapshot.data() as UserDoc;
+      const snaphshotData = snapshot.data() as UserDoc;
 
-      setUserData({username: nextUser.username});
-    }
-
-    void getUserDoc();
+      setUserData({
+        username: snaphshotData.username,
+        twitterHandle: snaphshotData.twitterHandle,
+      });
+    });
   }, [user]);
 
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'dirty'>(
