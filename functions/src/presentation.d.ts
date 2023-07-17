@@ -38,7 +38,7 @@ export type PresentationData = PresentationCreate &
   PresentationUpdate & {
     // Thumb: string;
     // TODO: use this in function metadata
-    twitterHandle: string;
+    twitterHandle?: string;
     thumbIndex?: number;
   };
 export type PresentationDoc = Doc & PresentationData;

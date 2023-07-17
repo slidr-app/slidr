@@ -25,7 +25,7 @@ export default function Shares({
           // TODO: make the twitter handle required in the rules and set it to an empty string on upload
           // Then remove the ?? '' below
           (presentation.twitterHandle ?? '').length > 0
-            ? ' ' + presentation.twitterHandle
+            ? ' ' + presentation.twitterHandle!
             : ''
         } ${shareUrl}`;
 
