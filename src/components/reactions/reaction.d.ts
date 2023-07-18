@@ -1,17 +1,11 @@
 import {type Timestamp, type FieldValue} from 'firebase/firestore';
 
 export type IconReaction = 'love' | 'smile' | 'applause' | 'explode';
-
 export type ConfettiReaction = 'confetti' | 'confetti clear';
-
 export type ReactionType = IconReaction | ConfettiReaction;
-
-// Export type ReactionRecord = Record<string, ReactionType>;
-export type ReactionMap = Map<string, ReactionType>;
 export type ReactionEntry = [string, ReactionType];
 export type IconReactionEntry = [string, IconReaction];
 export type IconReactionMap = Map<string, IconReaction>;
-export type ConfettiReactionEntry = [string, ConfettiReaction];
 
 type CommonReactionData = {
   reaction: ReactionType;
