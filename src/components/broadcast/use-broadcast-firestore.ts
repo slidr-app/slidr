@@ -1,7 +1,17 @@
 import {useCallback, useEffect, useState} from 'react';
-import {onSnapshot, collection, addDoc, setDoc, doc} from 'firebase/firestore';
+import {
+  onSnapshot,
+  collection,
+  addDoc,
+  setDoc,
+  doc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import {firestore as db} from '../../firebase';
-import {type ReactionData} from '../reactions/reaction';
+import {
+  type IncomingReactionData,
+  type ReactionData,
+} from '../reactions/reaction';
 import {type SessionData} from '../slides/sessions';
 import {type Payload, type Handler} from './use-channel-handlers';
 
@@ -28,16 +38,12 @@ export default function useBroadcastFirebase({
       const ttl = new Date(Date.now() + 60 * 60 * 1000);
 
       if (payload.id === 'reaction') {
+        // Ignore the id when posting, it will get generated
+        const [, reaction] = payload.reaction;
         return addDoc(collection(db, 'sessions', sessionId, 'reactions'), {
-          reaction: payload.icon,
+          reaction,
           ttl,
-        } satisfies ReactionData);
-      }
-
-      if (payload.id === 'confetti') {
-        return addDoc(collection(db, 'sessions', sessionId, 'reactions'), {
-          reaction: 'confetti',
-          ttl,
+          created: serverTimestamp(),
         } satisfies ReactionData);
       }
 
@@ -47,10 +53,6 @@ export default function useBroadcastFirebase({
           ttl,
         } satisfies SessionData);
       }
-
-      // Note: we don't handle the 'confetti reset' action as it always happens on the broadcast channel
-
-      console.error(new Error(`bad post payload: ${payload.id}`));
     },
     [sessionId],
   );
@@ -64,10 +66,6 @@ export default function useBroadcastFirebase({
 
     let mounted = true;
 
-    console.log('(re)creating channel');
-
-    let firstSnapshot = true;
-
     const unsubscribeReactions = onSnapshot(
       collection(db, 'sessions', sessionId, 'reactions'),
       (next) => {
@@ -78,35 +76,31 @@ export default function useBroadcastFirebase({
 
         setConnected(true);
 
-        if (firstSnapshot) {
-          // Ignore first snapshot
-          console.log('first snapshot, skipping');
-          firstSnapshot = false;
-          return;
-        }
-
         if (!onIncoming) {
           return;
         }
 
+        const now = Date.now();
+
         for (const change of next.docChanges()) {
-          console.log('change', change);
-          if (change.type === 'added') {
-            const data = change.doc.data();
-
-            // Special case for confetti
-            // Note: we don't handle the 'confetti reset' action as it always happens on the broadcast channel
-
-            if (data.reaction === 'confetti') {
-              onIncoming({id: 'confetti'});
-              continue;
-            }
-
-            onIncoming({id: 'reaction', icon: data.reaction as string});
+          if (change.type !== 'added') {
             continue;
           }
 
-          console.log('unexpected change', change);
+          const reactionData = change.doc.data({
+            serverTimestamps: 'estimate',
+          }) as IncomingReactionData;
+
+          console.log('data', reactionData);
+          // Ignore reactions older than 30 seconds
+          if (now - reactionData.created.toMillis() > 30_000) {
+            continue;
+          }
+
+          onIncoming({
+            id: 'reaction',
+            reaction: [change.doc.id, reactionData.reaction],
+          });
         }
       },
       (error) => {

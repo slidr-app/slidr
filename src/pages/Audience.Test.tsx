@@ -15,16 +15,6 @@ beforeAll(async () => {
     {method: 'DELETE'},
   );
 
-  await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/test',
-    {method: 'DELETE'},
-  );
-
-  await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/test/reactions',
-    {method: 'DELETE'},
-  );
-
   // Add a single presentation to firestore
   await setDoc(doc(firestore, 'presentations', 'presentation-2'), {
     uid: cred.user.uid,
@@ -35,6 +25,18 @@ beforeAll(async () => {
     title: 'test presentation',
     twitterHandle: '@doesnotexist',
   } satisfies PresentationCreate);
+});
+
+beforeEach(async () => {
+  await fetch(
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/test',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/test/reactions',
+    {method: 'DELETE'},
+  );
 });
 
 describe('Audience view', () => {

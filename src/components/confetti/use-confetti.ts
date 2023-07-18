@@ -1,8 +1,5 @@
 import {useCallback, useMemo} from 'react';
-import {
-  type HandlerEntries,
-  type Handler,
-} from '../broadcast/use-channel-handlers';
+import {type Handler, type Payload} from '../broadcast/use-channel-handlers';
 
 export default function useConfetti({
   postMessage,
@@ -15,30 +12,31 @@ export default function useConfetti({
 }): {
   postConfetti: () => void;
   postConfettiReset: () => void;
-  handlers: HandlerEntries;
+  handlers: Handler[];
 } {
   const postConfetti = useCallback(() => {
-    postMessage?.({id: 'confetti'});
+    postMessage?.({id: 'reaction', reaction: ['', 'confetti']});
   }, [postMessage]);
 
   const postConfettiReset = useCallback(() => {
-    postMessage?.({id: 'confetti reset'});
+    postMessage?.({id: 'reaction', reaction: ['', 'confetti clear']});
   }, [postMessage]);
 
-  const handlers = useMemo<HandlerEntries>(
+  const handlers = useMemo<Handler[]>(
     () => [
-      [
-        'confetti',
-        () => {
+      (payload: Payload) => {
+        if (payload.id === 'reaction' && payload.reaction[1] === 'confetti') {
           onConfetti?.({});
-        },
-      ],
-      [
-        'confetti reset',
-        () => {
+        }
+      },
+      (payload: Payload) => {
+        if (
+          payload.id === 'reaction' &&
+          payload.reaction[1] === 'confetti clear'
+        ) {
           onReset?.({});
-        },
-      ],
+        }
+      },
     ],
     [onConfetti, onReset],
   );

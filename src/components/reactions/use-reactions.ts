@@ -1,59 +1,56 @@
 import {useCallback, useState} from 'react';
-import {type Reaction} from './reaction';
+import {
+  type ReactionEntry,
+  type IconReactionEntry,
+  type IconReactionMap,
+  type IconReaction,
+} from './reaction';
 
 export default function useReactions(): {
-  removeReaction: (reaction: Reaction) => void;
-  addReaction: (icon: string) => void;
-  reactions: Reaction[];
+  removeReaction: (reaction: IconReactionEntry) => void;
+  addReaction: (reaction: IconReactionEntry) => void;
+  reactions: IconReactionMap;
   clearReactions: () => void;
 } {
-  const [reactions, setReactions] = useState<{
-    nextIndex: number;
-    currentReactions: Reaction[];
-  }>({
-    nextIndex: 0,
-    currentReactions: [],
-  });
+  const [reactions, setReactions] = useState<IconReactionMap>(
+    new Map<string, IconReaction>(),
+  );
 
   const removeReaction = useCallback(
-    (reaction: Reaction) => {
-      setReactions((currentReactions) => ({
-        ...currentReactions,
-        currentReactions: currentReactions.currentReactions.filter(
-          (existingReaction) => existingReaction.id !== reaction.id,
-        ),
-      }));
+    ([id]: ReactionEntry) => {
+      setReactions((currentReactions) => {
+        const nextReactions = new Map(currentReactions);
+        nextReactions.delete(id);
+        return nextReactions;
+      });
     },
     [setReactions],
   );
 
   const addReaction = useCallback(
-    (icon: string) => {
-      setReactions((currentReactions) => ({
-        nextIndex: currentReactions.nextIndex + 1,
-        currentReactions: [
-          ...currentReactions.currentReactions,
-          {
-            id: currentReactions.nextIndex,
-            icon,
-          },
-        ],
-      }));
+    ([id, reaction]: IconReactionEntry) => {
+      setReactions((currentReactions) => {
+        // Don't add existing reactions
+        if (currentReactions.has(id)) {
+          return currentReactions;
+        }
+
+        const nextReactions = new Map(currentReactions);
+        nextReactions.set(id, reaction);
+        return nextReactions;
+      });
     },
     [setReactions],
   );
 
   const clearReactions = useCallback(() => {
-    setReactions((currentReactions) => ({
-      ...currentReactions,
-      currentReactions: [],
-    }));
+    setReactions(new Map<string, IconReaction>());
   }, [setReactions]);
 
   return {
     removeReaction,
     addReaction,
-    reactions: reactions.currentReactions,
+    reactions,
     clearReactions,
   };
 }

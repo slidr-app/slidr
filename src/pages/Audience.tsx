@@ -39,7 +39,6 @@ export default function Audience() {
     onIncoming: handleIncomingBroadcast,
   });
 
-  // Console.log({connectedSupabase});
   // Track the slide index from the broadcast channel
   const {
     slideIndex,
@@ -90,9 +89,9 @@ export default function Audience() {
           // SetFire({});
           postConfetti();
         }}
-        handleReaction={(icon) => {
+        handleReaction={(reaction) => {
           // AddReaction(icon);
-          postReaction(icon);
+          postReaction(reaction);
         }}
       />
       <Shares presentation={presentation} slideIndex={slideIndex} />
