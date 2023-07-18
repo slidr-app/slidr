@@ -7,16 +7,48 @@ export type Note = {
   markdown: string;
 };
 
-// TODO: use this when uploading
-export type PresentationData = {
+export type PresentationCreate = {
+  created: Date;
   title: string;
-  thumb: string;
   pages: string[];
   notes: Note[];
   uid: string;
   username: string;
-  // TODO: use this in function metadata
   twitterHandle: string;
+};
+
+export type PresentationUpdate =
+  | {
+      original: string;
+    }
+  | {
+      username: string;
+      twitterHandle: string;
+    }
+  | {
+      title: string;
+      notes: Note[];
+    }
+  | {
+      pages: string[];
+      rendered: Date;
+      title: string;
+      notes: Note[];
+    };
+
+export type PresentationData = PresentationCreate & {
+  original: string;
+  rendered: Date;
+
+  // Thumb: string;
+  // TODO: use this in function metadata
   thumbIndex?: number;
 };
-export type PresentationDoc = Doc & PresentationData;
+export type PresentationDoc = Doc & {
+  data: PresentationData;
+};
+
+export type PresentationAndId = {
+  id?: string;
+  data?: PresentationData;
+};

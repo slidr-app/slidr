@@ -13,6 +13,7 @@ export type User = {
 
 export type UserDoc = {
   username?: string;
+  twitterHandle?: string;
 };
 
 export const UserContext = createContext<{

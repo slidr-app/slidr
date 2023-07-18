@@ -16,12 +16,14 @@ export default function Viewer() {
   const presentation = usePresentation();
 
   useEffect(() => {
-    document.title = `Slidr - ${presentation?.title ?? 'Unnamed Presentation'}`;
+    document.title = `Slidr - ${
+      presentation.data?.title ?? 'Unnamed Presentation'
+    }`;
   }, [presentation]);
 
   const {slideIndex, setSlideIndex, navNext, navPrevious, forward} =
     useSlideIndex({
-      slideCount: presentation?.pages?.length ?? 0,
+      slideCount: presentation.data?.pages?.length ?? 0,
     });
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
@@ -41,17 +43,17 @@ export default function Viewer() {
   );
   presentFromStartSearchParameters.set('slide', '1');
 
-  const isOwner = presentation?.uid === auth.currentUser?.uid;
+  const isOwner = presentation.data?.uid === auth.currentUser?.uid;
 
   return (
-    <DefaultLayout title={presentation?.title ?? ''}>
+    <DefaultLayout title={presentation.data?.title ?? ''}>
       <div className="flex flex-col items-center pb-6">
         <div className="flex flex-col gap-4 items-stretch w-full max-w-screen-lg lt-lg:px-4">
           <div className="flex flex-col w-full rounded-lg overflow-hidden border-primary">
             <div className="flex" onClick={navNext}>
               <Slideshow
                 pageIndex={slideIndex}
-                pages={presentation?.pages ?? []}
+                pages={presentation.data?.pages ?? []}
                 forward={forward}
               />
             </div>
@@ -59,7 +61,7 @@ export default function Viewer() {
               <div className="h-1 content-empty w-full absolute top-0 left-0">
                 <ProgressBar
                   absolute
-                  slideCount={presentation?.pages?.length ?? 0}
+                  slideCount={presentation.data?.pages?.length ?? 0}
                   slideIndex={slideIndex}
                 />
               </div>
@@ -71,7 +73,7 @@ export default function Viewer() {
                     setSlideIndex(0);
                   }}
                   onEnd={() => {
-                    setSlideIndex((presentation?.pages?.length ?? 1) - 1);
+                    setSlideIndex((presentation.data?.pages?.length ?? 1) - 1);
                   }}
                 />
               </div>
@@ -87,7 +89,7 @@ export default function Viewer() {
                     icon="i-tabler-pencil"
                     label="edit"
                     title="Edit presentation"
-                    to={presentation ? `/e/${presentation.id}` : '/'}
+                    to={`/e/${presentation.id ?? ''}`}
                   />
                 )}
                 <LinkButton
@@ -95,35 +97,27 @@ export default function Viewer() {
                   icon="i-tabler-presentation"
                   label="present"
                   title="Present from current slide"
-                  to={
-                    presentation
-                      ? `/p/${presentation.id}${document.location.search}`
-                      : '/'
-                  }
+                  to={`/p/${presentation.id ?? ''}${document.location.search}`}
                 />
                 <LinkButton
                   clientRoute
                   icon="i-tabler-rotate rotate-180"
                   label="present start"
                   title="Present from start"
-                  to={
-                    presentation
-                      ? `/p/${
-                          presentation.id
-                        }?${presentFromStartSearchParameters.toString()}`
-                      : '/'
-                  }
+                  to={`/p/${
+                    presentation.id ?? ''
+                  }?${presentFromStartSearchParameters.toString()}`}
                 />
               </div>
             </div>
           </div>
           <div className="flex flex-col">
-            <div>{presentation?.title ?? ''}</div>
-            {presentation && (
+            <div>{presentation.data?.title ?? ''}</div>
+            {presentation.data?.username && (
               <div className="text-base">
                 by{' '}
-                {presentation.username.length > 0
-                  ? presentation.username
+                {presentation.data.username.length > 0
+                  ? presentation.data.username
                   : 'Anonymous User'}
               </div>
             )}

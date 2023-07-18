@@ -26,7 +26,11 @@ import '../components/pdf/pdf.css';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
-import {type Note} from '../../functions/src/presentation';
+import {
+  type PresentationCreate,
+  type Note,
+  type PresentationUpdate,
+} from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext, type UserDoc} from '../components/UserProvider';
 import Loading from '../components/Loading';
@@ -84,12 +88,13 @@ export default function Export() {
         collection(firestore, 'presentations'),
         {
           created: new Date(),
-          uid: auth.currentUser?.uid,
+          uid: auth.currentUser!.uid,
           username: userData?.username ?? '',
+          twitterHandle: userData?.twitterHandle ?? '',
           pages: [],
           notes: [],
           title: '',
-        },
+        } satisfies PresentationCreate,
       );
       setPresentationRef(presentationRef);
       const originalName = `${nanoid()}.pdf`;
@@ -101,10 +106,12 @@ export default function Export() {
         cacheControl: 'public;max-age=604800',
       });
       const originalDownloadUrl = await getDownloadURL(originalRef);
-      await updateDoc(presentationRef, {original: originalDownloadUrl});
+      await updateDoc(presentationRef, {
+        original: originalDownloadUrl,
+      } satisfies PresentationUpdate);
       setRendering(true);
     },
-    [userData?.username],
+    [userData?.username, userData?.twitterHandle],
   );
 
   const {getRootProps, getInputProps, isDragActive} = useDropzone({
@@ -221,7 +228,7 @@ export default function Export() {
         rendered: new Date(),
         title,
         notes: nextNotes,
-      });
+      } satisfies PresentationUpdate);
       setPages(nextPages);
       setNotes(nextNotes);
       setUploadDone(true);
@@ -282,7 +289,7 @@ export default function Export() {
     await updateDoc(presentationRef, {
       notes,
       title,
-    });
+    } satisfies PresentationUpdate);
     setSavingState((currentState) =>
       currentState === 'saving' ? 'saved' : currentState,
     );

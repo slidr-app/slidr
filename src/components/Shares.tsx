@@ -1,12 +1,12 @@
 import {useEffect, useState} from 'react';
-import {type PresentationDoc} from '../../functions/src/presentation';
+import {type PresentationAndId} from '../../functions/src/presentation';
 import RoundButton from './toolbar/RoundButton';
 
 export default function Shares({
   presentation,
   slideIndex,
 }: {
-  presentation?: PresentationDoc;
+  presentation: PresentationAndId;
   slideIndex: number;
 }) {
   // TODO: should this parse window.location for the host?
@@ -15,17 +15,19 @@ export default function Shares({
   }`;
 
   const tweetText =
-    presentation === undefined
+    presentation.data === undefined
       ? ''
       : `${
-          presentation.title.length > 0 ? presentation.title : 'presentation'
+          presentation.data.title.length > 0
+            ? presentation?.data.title
+            : 'presentation'
         }${
-          presentation.username.length > 0 ? ' by ' + presentation.username : ''
+          presentation.data.username.length > 0
+            ? ' by ' + presentation.data.username
+            : ''
         }${
-          // TODO: make the twitter handle required in the rules and set it to an empty string on upload
-          // Then remove the ?? '' below
-          (presentation.twitterHandle ?? '').length > 0
-            ? ' ' + presentation.twitterHandle
+          presentation.data.twitterHandle.length > 0
+            ? ' ' + presentation.data.twitterHandle
             : ''
         } ${shareUrl}`;
 
