@@ -1,6 +1,9 @@
-# present
+# Slidr
 
 ## *Crazy interactive presentation framework 🎉*
+
+Start using slider now:\
+https://slidr.app
 
 <br><br>
 
@@ -25,10 +28,12 @@ _Mobile friendly audience view... go ahead, throw some confetti on the main scre
 
 ## Quickstart
 
-1. Create an account at `/signin`
-1. Upload a 16x9 pdf presentation to `/upload`
-1. Enjoy
+1. Create an account at https://slidr.app/signin
+1. Upload a 16x9 pdf presentation to https://slidr.app/upload
+1. Enjoy!
 
+
+## Dev
 ### Install
 
 ```bash
@@ -43,15 +48,49 @@ pnpm run build
 
 ### Debug
 
+Debugging in dev mode uses local emulators for the database, storage, and authentication.
+This allows the development to work offline (note that the fonts may not get loaded when offline).
+
+💡 A magic signin button will appear on the signin page when running in development mode to replace the email link signin.
+
 ```
 pnpm run dev
 ```
+### Lint
 
-## Techstack
+```
+pnpm run lint
+```
 
-Uses supabase to broadcast messages from the client view to the presentation view.
+### Test
 
-In order to build, the following env vars must be set:
+Testing uses the emulator suite to enable tests to run locally (no internet connection required) and predictably.
 
-- `VITE_SUPABASE_URL` supabase url
-- `VITE_SUPABASE_KEY` supabase key
+```
+pnpm run test
+```
+
+In order to pass parameters to `vitest` other than those in the `test` script, the emulators and vitest should be started in separate terminal instances:
+
+```
+pnpm run emulators
+```
+
+```
+pnpm run test:once [args for vitest]
+```
+
+### Build
+
+Create a production build:
+```
+pnpm run build
+```
+
+💡 Several environment variables are required to build a working site. See [.env.emulator](./env.emulator) for list of required environment variables.
+
+## Deployment
+
+The `main` branch is automatically deployed to the staging environment: https://staging.slidr.app
+
+The `production` branch is automatically deployed to the production environment: https://slidr.app
