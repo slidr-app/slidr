@@ -1,10 +1,6 @@
 import clsx from 'clsx';
 import {useEffect, useMemo, useRef} from 'react';
-import {
-  type IconReaction,
-  type IconReactionEntry,
-  type IconReactionMap,
-} from './reaction';
+import {type IconReaction, type IconReactionMap} from './reaction';
 import reactionsIconMap from './reaction-icons-map';
 
 // This file is inspired from these 2 articles:
@@ -74,20 +70,22 @@ export default function Reactions({
   removeReaction,
 }: {
   reactions: IconReactionMap;
-  removeReaction: (reaction: IconReactionEntry) => void;
+  removeReaction: (id: string) => void;
 }) {
   return (
     <div className="fixed top-0 left-0 h-screen w-screen pointer-events-none">
       <div className="relative left-[calc(3rem_+_20px)] h-full w-[calc(calc(100vw_-_6rem)_-_40px)] max-h-screen">
-        {Array.from(reactions.entries()).map(([id, reaction]) => (
-          <Reaction
-            key={id}
-            reaction={reaction}
-            onReactionDone={() => {
-              removeReaction([id, reaction]);
-            }}
-          />
-        ))}
+        {Array.from(reactions.entries())
+          .filter(([, renderedReaction]) => !renderedReaction.done)
+          .map(([id, renderedReaction]) => (
+            <Reaction
+              key={id}
+              reaction={renderedReaction.reaction}
+              onReactionDone={() => {
+                removeReaction(id);
+              }}
+            />
+          ))}
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import {
 } from 'firebase/firestore';
 import {firestore as db} from '../../firebase';
 import {
+  type ReactionEntry,
   type IncomingReactionData,
   type ReactionData,
 } from '../reactions/reaction';
@@ -37,14 +38,17 @@ export default function useBroadcastFirebase({
       // TTL 1 hour
       const ttl = new Date(Date.now() + 60 * 60 * 1000);
 
-      if (payload.id === 'reaction') {
-        // Ignore the id when posting, it will get generated
-        const [, reaction] = payload.reaction;
-        return addDoc(collection(db, 'sessions', sessionId, 'reactions'), {
-          reaction,
-          ttl,
-          created: serverTimestamp(),
-        } satisfies ReactionData);
+      if (payload.id === 'reactions') {
+        return Promise.all(
+          // Ignore the id when posting, it will get generated
+          payload.reactions.map(async ([, reaction]) => {
+            return addDoc(collection(db, 'sessions', sessionId, 'reactions'), {
+              reaction,
+              ttl,
+              created: serverTimestamp(),
+            } satisfies ReactionData);
+          }),
+        );
       }
 
       if (payload.id === 'slide index') {
@@ -82,26 +86,26 @@ export default function useBroadcastFirebase({
 
         const now = Date.now();
 
-        for (const change of next.docChanges()) {
-          if (change.type !== 'added') {
-            continue;
-          }
-
-          const reactionData = change.doc.data({
-            serverTimestamps: 'estimate',
-          }) as IncomingReactionData;
-
-          console.log('data', reactionData);
+        const reactions = next.docs
+          .map((snapshot) => {
+            const reactionData = snapshot.data({
+              serverTimestamps: 'estimate',
+            }) as IncomingReactionData;
+            return {
+              id: snapshot.id,
+              reaction: reactionData.reaction,
+              created: reactionData.created.toMillis(),
+            };
+          })
           // Ignore reactions older than 30 seconds
-          if (now - reactionData.created.toMillis() > 30_000) {
-            continue;
-          }
+          .filter((reactionDoc) => now - reactionDoc.created < 30_000)
+          .sort((a, b) => a.created - b.created)
+          .map(
+            (reactionDoc) =>
+              [reactionDoc.id, reactionDoc.reaction] satisfies ReactionEntry,
+          );
 
-          onIncoming({
-            id: 'reaction',
-            reaction: [change.doc.id, reactionData.reaction],
-          });
-        }
+        onIncoming({id: 'reactions', reactions});
       },
       (error) => {
         setConnected(false);

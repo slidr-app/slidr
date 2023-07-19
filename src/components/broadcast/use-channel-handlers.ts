@@ -8,8 +8,8 @@ export type Payload =
       icon?: never;
     }
   | {
-      id: 'reaction';
-      reaction: ReactionEntry;
+      id: 'reactions';
+      reactions: ReactionEntry[];
     };
 export type Handler = (payload: Payload) => void;
 

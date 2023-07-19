@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import {Link} from 'react-router-dom';
 import useConfetti from '../components/confetti/use-confetti';
 import {useSlideIndex} from '../components/slides/use-slide-index';
@@ -18,6 +18,7 @@ import Slideshow from '../components/slides/Slideshow';
 import usePresentation from '../components/slides/use-presentation';
 import Shares from '../components/Shares';
 import useBroadcastFirebase from '../components/broadcast/use-broadcast-firestore';
+import useClearReactions from '../components/reactions/use-clear-reactions';
 
 export default function Audience() {
   // Const {presentationId} = useParams();
@@ -51,17 +52,31 @@ export default function Audience() {
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
   // Configure the confetti to use the broadcast channel
-  const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
-  const {postConfetti, handlers: confettiHandlers} = useConfetti({
+  // const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
+  const [reset, setReset] = useState<boolean | Record<string, unknown>>(false);
+  const clearConfetti = useCallback(() => {
+    setReset({});
+  }, [setReset]);
+
+  const {
+    postConfetti,
+    handlers: confettiHandlers,
+    confettiReactions,
+  } = useConfetti({
     postMessage: postBroadcastMessage,
-    onConfetti: setFire,
   });
 
   // Configure reaction broadcasting
-  const {reactions, removeReaction, addReaction} = useReactions();
+  const {reactions, removeReaction, addReactions, clearReactions} =
+    useReactions();
   const {postReaction, handlers: handlersReactions} = useRemoteReactions({
     postMessage: postBroadcastMessage,
-    onReaction: addReaction,
+    onReactions: addReactions,
+  });
+
+  const {handlers: clearHandlers} = useClearReactions({
+    setClearConfetti: clearConfetti,
+    setClearIcons: clearReactions,
   });
 
   // Combine all of the incoming message handlers
@@ -70,6 +85,7 @@ export default function Audience() {
     confettiHandlers,
     slideIndexHandlers,
     handlersReactions,
+    clearHandlers,
   );
 
   return (
@@ -82,7 +98,8 @@ export default function Audience() {
         />
       </div>
 
-      <Confetti fire={fire} />
+      <Confetti confettiReactions={confettiReactions} clear={reset} />
+
       <Reactions reactions={reactions} removeReaction={removeReaction} />
       <ReactionControls
         handleConfetti={() => {

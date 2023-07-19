@@ -7,17 +7,17 @@ const reactionTypes = new Set(Array.from(reactionsIconMap.keys()));
 
 export default function useRemoteReactions({
   postMessage,
-  onReaction,
+  onReactions,
 }: {
   postMessage?: Handler;
-  onReaction?: (reaction: IconReactionEntry) => void;
+  onReactions?: (reaction: IconReactionEntry[]) => void;
 }): {
   postReaction: (reaction: IconReaction) => void;
   handlers: Handler[];
 } {
   const postReaction = useCallback(
     (reaction: IconReaction) => {
-      postMessage?.({id: 'reaction', reaction: ['', reaction]});
+      postMessage?.({id: 'reactions', reactions: [['', reaction]]});
     },
     [postMessage],
   );
@@ -25,16 +25,24 @@ export default function useRemoteReactions({
   const handlers = useMemo<Handler[]>(
     () => [
       (payload: Payload) => {
-        if (
-          payload.id === 'reaction' &&
-          // Use the 'as' operator here to force the check, not sure if there is a better way to check the string value using typescript
-          reactionTypes.has(payload.reaction[1] as IconReaction)
-        ) {
-          onReaction?.(payload.reaction as IconReactionEntry);
+        if (payload.id === 'reactions') {
+          // This is some hacky typescript magic.
+          // Need to know if the reaction is an icon
+          const iconReactions = payload.reactions
+            .filter(([, reaction]) =>
+              reactionTypes.has(reaction as IconReaction),
+            )
+            .map(([id, reaction]) => [
+              id,
+              // Map the reaction to a RenderedReaction
+              {reaction: reaction as IconReaction},
+            ]) satisfies IconReactionEntry[];
+
+          onReactions?.(iconReactions);
         }
       },
     ],
-    [onReaction],
+    [onReactions],
   );
 
   return {postReaction, handlers};

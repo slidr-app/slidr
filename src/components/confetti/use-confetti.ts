@@ -1,45 +1,33 @@
-import {useCallback, useMemo} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {type Handler, type Payload} from '../broadcast/use-channel-handlers';
+import {type ConfettiReactionEntry} from '../reactions/reaction';
 
-export default function useConfetti({
-  postMessage,
-  onConfetti,
-  onReset,
-}: {
-  postMessage?: Handler;
-  onConfetti?: (data: any) => void;
-  onReset?: (data: any) => void;
-}): {
+export default function useConfetti({postMessage}: {postMessage?: Handler}): {
   postConfetti: () => void;
-  postConfettiReset: () => void;
   handlers: Handler[];
+  confettiReactions: ConfettiReactionEntry[];
 } {
   const postConfetti = useCallback(() => {
-    postMessage?.({id: 'reaction', reaction: ['', 'confetti']});
+    postMessage?.({id: 'reactions', reactions: [['', 'confetti']]});
   }, [postMessage]);
 
-  const postConfettiReset = useCallback(() => {
-    postMessage?.({id: 'reaction', reaction: ['', 'confetti clear']});
-  }, [postMessage]);
+  const [confettiReactions, setConfettiReactions] = useState<
+    ConfettiReactionEntry[]
+  >([]);
 
   const handlers = useMemo<Handler[]>(
     () => [
       (payload: Payload) => {
-        if (payload.id === 'reaction' && payload.reaction[1] === 'confetti') {
-          onConfetti?.({});
-        }
-      },
-      (payload: Payload) => {
-        if (
-          payload.id === 'reaction' &&
-          payload.reaction[1] === 'confetti clear'
-        ) {
-          onReset?.({});
+        if (payload.id === 'reactions') {
+          const confettiReactions = payload.reactions.filter(
+            ([, reaction]) => reaction === 'confetti',
+          ) as ConfettiReactionEntry[];
+          setConfettiReactions(confettiReactions);
         }
       },
     ],
-    [onConfetti, onReset],
+    [],
   );
 
-  return {postConfetti, postConfettiReset, handlers};
+  return {postConfetti, handlers, confettiReactions};
 }

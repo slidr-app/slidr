@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import {nanoid} from 'nanoid';
 import {type Handler, type Payload} from './use-channel-handlers';
 
 export default function useBroadcastChannel({
@@ -18,6 +19,19 @@ export default function useBroadcastChannel({
     const channelMessageHandler = (event: MessageEvent) => {
       console.log('incoming bc', channelId, event);
       if (onIncoming) {
+        const incomingPayload = event.data as Payload;
+
+        if (incomingPayload.id === 'reactions') {
+          onIncoming({
+            id: 'reactions',
+            reactions: incomingPayload.reactions.map(([, reaction]) => [
+              nanoid(),
+              reaction,
+            ]),
+          });
+          return;
+        }
+
         onIncoming(event.data as Payload);
       }
     };
