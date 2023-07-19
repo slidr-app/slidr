@@ -2,7 +2,7 @@
 
 ## *Crazy interactive presentation framework 🎉*
 
-Start using slider now:\
+Start using Slidr now:\
 https://slidr.app
 
 <br><br>
