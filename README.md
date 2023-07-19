@@ -87,7 +87,7 @@ Create a production build:
 pnpm run build
 ```
 
-💡 Several environment variables are required to build a working site. See [.env.emulator](./env.emulator) for list of required environment variables.
+💡 Several environment variables are required to build a working site. See [.env.emulator](./env.emulator) for a list of required environment variables.
 
 ## Deployment
 
