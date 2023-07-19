@@ -8,6 +8,7 @@ import {
   render,
   findByRole,
   queryByRole,
+  waitForElementToBeRemoved,
 } from '../test/test-utils';
 import Routes from '../Routes';
 import {type PresentationCreate} from '../../functions/src/presentation';
@@ -176,9 +177,13 @@ describe('Speaker view', () => {
       name: 'love',
     });
 
+    const removalPromise = waitForElementToBeRemoved(() =>
+      queryByRole(presentation, 'figure', {name: 'love'}),
+    );
+
     const clear = await findByRole(speaker, 'button', {name: 'clear'});
     await userEvent.click(clear);
 
-    expect(queryByRole(presentation, 'figure', {name: 'love'})).toBeNull();
+    await removalPromise;
   });
 });
