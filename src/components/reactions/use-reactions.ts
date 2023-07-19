@@ -1,59 +1,60 @@
 import {useCallback, useState} from 'react';
-import {type Reaction} from './reaction';
+import {
+  type IconReactionEntry,
+  type IconReactionMap,
+  type RenderedReaction,
+} from './reaction';
 
 export default function useReactions(): {
-  removeReaction: (reaction: Reaction) => void;
-  addReaction: (icon: string) => void;
-  reactions: Reaction[];
+  removeReaction: (id: string) => void;
+  addReactions: (reactions: IconReactionEntry[]) => void;
+  reactions: IconReactionMap;
   clearReactions: () => void;
 } {
-  const [reactions, setReactions] = useState<{
-    nextIndex: number;
-    currentReactions: Reaction[];
-  }>({
-    nextIndex: 0,
-    currentReactions: [],
-  });
+  const [reactions, setReactions] = useState<IconReactionMap>(
+    new Map<string, RenderedReaction>(),
+  );
 
   const removeReaction = useCallback(
-    (reaction: Reaction) => {
-      setReactions((currentReactions) => ({
-        ...currentReactions,
-        currentReactions: currentReactions.currentReactions.filter(
-          (existingReaction) => existingReaction.id !== reaction.id,
-        ),
-      }));
+    (id: string) => {
+      setReactions((currentReactions) => {
+        const nextReactions = new Map(currentReactions);
+        nextReactions.set(id, {...nextReactions.get(id)!, done: true});
+        return nextReactions;
+      });
     },
     [setReactions],
   );
 
-  const addReaction = useCallback(
-    (icon: string) => {
-      setReactions((currentReactions) => ({
-        nextIndex: currentReactions.nextIndex + 1,
-        currentReactions: [
-          ...currentReactions.currentReactions,
-          {
-            id: currentReactions.nextIndex,
-            icon,
-          },
-        ],
-      }));
+  const addReactions = useCallback(
+    (reactions: IconReactionEntry[]) => {
+      setReactions(
+        (currentReactions) => new Map([...reactions, ...currentReactions]),
+      );
     },
     [setReactions],
   );
 
   const clearReactions = useCallback(() => {
-    setReactions((currentReactions) => ({
-      ...currentReactions,
-      currentReactions: [],
-    }));
+    setReactions(
+      (currentReactions) =>
+        // Set all reactions to done
+        new Map(
+          Array.from(currentReactions).map(([id, reaction]) => [
+            id,
+            {
+              ...reaction,
+              done: true,
+            },
+          ]),
+        ),
+    );
   }, [setReactions]);
 
   return {
     removeReaction,
-    addReaction,
-    reactions: reactions.currentReactions,
+    addReactions,
+    reactions,
     clearReactions,
   };
 }

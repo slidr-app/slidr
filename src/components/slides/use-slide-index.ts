@@ -1,9 +1,5 @@
 import {useCallback, useState, useMemo} from 'react';
-import {
-  type HandlerEntries,
-  type Handler,
-  type Payload,
-} from '../broadcast/use-channel-handlers';
+import {type Handler, type Payload} from '../broadcast/use-channel-handlers';
 
 export function useSlideIndex({
   postMessage,
@@ -16,7 +12,7 @@ export function useSlideIndex({
   setSlideIndex: (index: number) => void;
   navNext: () => void;
   navPrevious: () => void;
-  handlers: HandlerEntries;
+  handlers: Handler[];
   forward: boolean;
 } {
   const [slideIndex, setSlideIndex] = useState(0);
@@ -54,15 +50,14 @@ export function useSlideIndex({
     updateSlideIndexAndPost(previousSlideIndex);
   }, [updateSlideIndexAndPost, previousSlideIndex]);
 
-  const handlers = useMemo<HandlerEntries>(
+  const handlers = useMemo<Handler[]>(
     () => [
-      [
-        'slide index',
-        (payload: Payload) => {
-          setForward(payload.index! >= slideIndex);
+      (payload: Payload) => {
+        if (payload.id === 'slide index') {
+          setForward(payload.index >= slideIndex);
           updateSlideIndex(payload.index);
-        },
-      ],
+        }
+      },
     ],
     [updateSlideIndex, slideIndex],
   );

@@ -1,11 +1,14 @@
+import clsx from 'clsx';
 import Button from '../toolbar/Button';
+import {type IconReaction} from './reaction';
+import reactionsIconMap from './reaction-icons-map';
 
 export default function ReactionControls({
   handleConfetti,
   handleReaction,
 }: {
   handleConfetti: () => void;
-  handleReaction: (icon: string) => void;
+  handleReaction: (reaction: IconReaction) => void;
 }) {
   return (
     <div className="max-w-lg mx-auto grid grid-cols-[4rem_4rem_4rem_4rem] gap-4 grid-rows-[4rem_4rem]">
@@ -19,46 +22,19 @@ export default function ReactionControls({
           handleConfetti();
         }}
       />
-      <Button
-        border
-        label="love"
-        title="React with love"
-        icon="i-fluent-emoji-flat-red-heart h-8 w-8"
-        className="relative"
-        onClick={() => {
-          handleReaction('i-fluent-emoji-flat-red-heart');
-        }}
-      />
-      <Button
-        border
-        label="smile"
-        title="React with a smile"
-        icon="i-fluent-emoji-flat-smiling-face h-8 w-8"
-        className="relative"
-        onClick={() => {
-          handleReaction('i-fluent-emoji-flat-smiling-face');
-        }}
-      />
-      <Button
-        border
-        label="clap"
-        title="React with clapping hands"
-        icon="i-fluent-emoji-flat-clapping-hands h-8 w-8"
-        className="relative"
-        onClick={() => {
-          handleReaction('i-fluent-emoji-flat-clapping-hands');
-        }}
-      />
-      <Button
-        border
-        label="explode"
-        title="React with a exploding brain"
-        icon="i-fluent-emoji-flat-exploding-head h-8 w-8"
-        className="relative"
-        onClick={() => {
-          handleReaction('i-fluent-emoji-flat-exploding-head');
-        }}
-      />
+      {Array.from(reactionsIconMap.entries()).map(([label, {icon, title}]) => (
+        <Button
+          key={label}
+          border
+          label={label}
+          title={title}
+          icon={clsx(icon, 'h-8 w-8')}
+          className="relative"
+          onClick={() => {
+            handleReaction(label);
+          }}
+        />
+      ))}
     </div>
   );
 }

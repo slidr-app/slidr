@@ -8,6 +8,7 @@ import {
   render,
   findByRole,
   queryByRole,
+  waitForElementToBeRemoved,
 } from '../test/test-utils';
 import Routes from '../Routes';
 import {type PresentationCreate} from '../../functions/src/presentation';
@@ -21,16 +22,6 @@ beforeAll(async () => {
     {method: 'DELETE'},
   );
 
-  await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest',
-    {method: 'DELETE'},
-  );
-
-  await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest/reactions',
-    {method: 'DELETE'},
-  );
-
   // Add a single presentation to firestore
   await setDoc(doc(firestore, 'presentations', 'speakertest'), {
     uid: cred.user.uid,
@@ -41,6 +32,18 @@ beforeAll(async () => {
     title: 'test presentation',
     twitterHandle: '@doesnotexist',
   } satisfies PresentationCreate);
+});
+
+beforeEach(async () => {
+  await fetch(
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest/reactions',
+    {method: 'DELETE'},
+  );
 });
 
 describe('Speaker view', () => {
@@ -174,9 +177,16 @@ describe('Speaker view', () => {
       name: 'love',
     });
 
+    // Depending on the performance of the machine running the test
+    // the removal can happen super fast. Start waiting for it now,
+    // before removing. This makes the test more stable.
+    const removalPromise = waitForElementToBeRemoved(() =>
+      queryByRole(presentation, 'figure', {name: 'love'}),
+    );
+
     const clear = await findByRole(speaker, 'button', {name: 'clear'});
     await userEvent.click(clear);
 
-    expect(queryByRole(presentation, 'figure', {name: 'love'})).toBeNull();
+    await removalPromise;
   });
 });
