@@ -177,6 +177,9 @@ describe('Speaker view', () => {
       name: 'love',
     });
 
+    // Depending on the performance of the machine running the test
+    // the removal can happen super fast. Start waiting for it now,
+    // before removing. This makes the test more stable.
     const removalPromise = waitForElementToBeRemoved(() =>
       queryByRole(presentation, 'figure', {name: 'love'}),
     );
