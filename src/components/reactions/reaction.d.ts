@@ -8,7 +8,6 @@ export type ReactionEntry = [string, ReactionType];
 export type IconReactionEntry = [string, RenderedReaction];
 export type IconReactionMap = Map<string, RenderedReaction>;
 export type ConfettiReactionEntry = [string, ConfettiReaction];
-export type ClearReactionEntry = [string, ClearReactionEntry];
 
 type CommonReactionData = {
   reaction: ReactionType;
