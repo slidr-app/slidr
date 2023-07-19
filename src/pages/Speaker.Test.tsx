@@ -7,8 +7,8 @@ import {
   userEvent,
   render,
   findByRole,
-  queryByRole,
   waitForElementToBeRemoved,
+  within,
 } from '../test/test-utils';
 import Routes from '../Routes';
 import {type PresentationCreate} from '../../functions/src/presentation';
@@ -36,12 +36,12 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest',
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest/reactions',
     {method: 'DELETE'},
   );
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest/reactions',
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest',
     {method: 'DELETE'},
   );
 });
@@ -166,14 +166,14 @@ describe('Speaker view', () => {
     const speaker = await screen.findByTestId('speaker');
     const audience = await screen.findByTestId('audience');
 
-    await findByRole(presentation, 'img', {name: 'Slide page 1'});
-    await findByRole(speaker, 'img', {name: 'Slide page 1'});
-    await findByRole(audience, 'img', {name: 'Slide page 1'});
+    // Wait for all pages to sync
+    await within(presentation).findByRole('img', {name: 'Slide page 1'});
+    await within(speaker).findByRole('img', {name: 'Slide page 1'});
+    await within(audience).findByRole('img', {name: 'Slide page 1'});
 
-    const love = await findByRole(speaker, 'button', {name: 'love'});
+    const love = await within(speaker).findByRole('button', {name: 'love'});
     await userEvent.click(love);
-
-    await findByRole(presentation, 'figure', {
+    await within(presentation).findByRole('figure', {
       name: 'love',
     });
 
@@ -181,12 +181,11 @@ describe('Speaker view', () => {
     // the removal can happen super fast. Start waiting for it now,
     // before removing. This makes the test more stable.
     const removalPromise = waitForElementToBeRemoved(() =>
-      queryByRole(presentation, 'figure', {name: 'love'}),
+      within(presentation).queryByRole('figure', {name: 'love'}),
     );
 
-    const clear = await findByRole(speaker, 'button', {name: 'clear'});
+    const clear = await within(speaker).findByRole('button', {name: 'clear'});
     await userEvent.click(clear);
-
     await removalPromise;
   });
 });
