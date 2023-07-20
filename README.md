@@ -77,7 +77,7 @@ pnpm run emulators
 ```
 
 ```
-pnpm run test:once [args for vitest]
+pnpm run test:start [args for vitest]
 ```
 
 ### Build
