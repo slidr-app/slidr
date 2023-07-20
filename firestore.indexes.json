@@ -12,6 +12,12 @@
       "fieldPath": "ttl",
       "ttl": true,
       "indexes": []
+    },
+    {
+      "collectionGroup": "sessions",
+      "fieldPath": "created",
+      "ttl": true,
+      "indexes": []
     }
   ]
 }
