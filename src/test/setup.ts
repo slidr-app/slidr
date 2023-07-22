@@ -1,6 +1,11 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom';
+// eslint-disable-next-line import/no-unassigned-import
+import 'blob-polyfill';
+// eslint-disable-next-line import/no-unassigned-import
+import 'vitest-canvas-mock';
 // Import '@testing-library/jest-dom/extend-expect';
+
 export async function setup() {
   console.log('clearing database');
   // Clear firestore before we start

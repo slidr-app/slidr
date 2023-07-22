@@ -12,7 +12,7 @@ import {
   useChannelHandlers,
   useCombinedHandlers,
 } from '../components/broadcast/use-channel-handlers';
-import Reactions from '../components/reactions/Reactions';
+import {Reactions} from '../components/reactions/Reactions';
 import useReactions from '../components/reactions/use-reactions';
 import useRemoteReactions from '../components/reactions/use-remote-reactions';
 import Toolbar from '../components/toolbar/Toolbar';

@@ -34,9 +34,12 @@ import {
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext, type UserDoc} from '../components/UserProvider';
 import Loading from '../components/Loading';
+import Pdf from '../components/pdf/Pdf';
 
-const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
+if (!import.meta.env.VITEST) {
+  const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
+  pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
+}
 
 const storage = getStorage(app);
 
@@ -44,7 +47,7 @@ if (import.meta.env.MODE === 'emulator') {
   connectStorageEmulator(storage, '127.0.0.1', 9199);
 }
 
-export default function Export() {
+export default function Upload() {
   useEffect(() => {
     document.title = `Slidr - Upload`;
   }, []);
@@ -84,6 +87,7 @@ export default function Export() {
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
       setFile(acceptedFiles[0]);
+
       const presentationRef = await addDoc(
         collection(firestore, 'presentations'),
         {
@@ -102,9 +106,11 @@ export default function Export() {
         storage,
         `presentations/${presentationRef.id}/${originalName}`,
       );
+
       await uploadBytes(originalRef, acceptedFiles[0], {
         cacheControl: 'public;max-age=604800',
       });
+
       const originalDownloadUrl = await getDownloadURL(originalRef);
       await updateDoc(presentationRef, {
         original: originalDownloadUrl,
@@ -127,10 +133,10 @@ export default function Export() {
 
   const [renderingDone, setRenderingDone] = useState(false);
   const [pageBlob, setPageBlob] = useState<Blob>();
-  function pageRendered() {
+  function pageRendered(canvas: HTMLCanvasElement) {
     // Watermark rendered image
-    const ctx = canvasRef.current?.getContext('2d');
-    if (ctx) {
+    const ctx = canvas.getContext('2d');
+    if (!import.meta.env.VITEST && ctx) {
       const rootStyles = window.getComputedStyle(
         document.querySelector('#root')!,
       );
@@ -161,7 +167,7 @@ export default function Export() {
       ctx.strokeText('slidr.app', x, y);
     }
 
-    canvasRef.current?.toBlob(async (blob) => {
+    canvas.toBlob(async (blob) => {
       if (!blob) {
         throw new Error(`Error rendering page index ${pageIndex}`);
       }
@@ -303,7 +309,7 @@ export default function Export() {
           {!file && (
             <div
               className="btn rounded-md p-8 flex w-full max-w-screen-sm aspect-video gap-4 cursor-pointer mx-6"
-              {...getRootProps()}
+              {...getRootProps({role: 'button'})}
             >
               <label className="flex flex-col items-center justify-center w-full cursor-pointer">
                 {isDragActive ? (
@@ -328,34 +334,24 @@ export default function Export() {
           )}
           {file && (
             <div className="relative flex flex-col w-full max-w-screen-sm">
-              <Document
+              <Pdf
+                pageIndex={pageIndex}
                 file={file}
-                className="w-full aspect-video relative rounded-t-md"
-                onLoadSuccess={(pdf) => {
-                  setPageCount(pdf.numPages);
+                onSetPageCount={(count) => {
+                  setPageCount(count);
                 }}
-              >
-                <Page
-                  pageIndex={pageIndex}
-                  className="w-full aspect-video children:pointer-events-none"
-                  canvasRef={canvasRef}
-                  width={1920}
-                  // We want the exported images to be 1920, irrespective of the pixel ratio
-                  // Fix the ratio to 1
-                  devicePixelRatio={1}
-                  onRenderSuccess={() => {
-                    pageRendered();
-                  }}
-                />
-                <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
-                  <div className={clsx('w-10 h-10', icon)} />
-                  <div>{message}</div>
-                </div>
-                <div
-                  className="absolute bottom-0 h-[6px] bg-teal"
-                  style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
-                />
-              </Document>
+                onPageRendered={(canvas) => {
+                  pageRendered(canvas);
+                }}
+              />
+              <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
+                <div className={clsx('w-10 h-10', icon)} />
+                <div>{message}</div>
+              </div>
+              <div
+                className="absolute bottom-0 h-[6px] bg-teal"
+                style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
+              />
               <div>Rendering slide: {pageIndex + 1}</div>
             </div>
           )}
