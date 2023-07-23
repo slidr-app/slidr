@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom';
-// eslint-disable-next-line import/no-unassigned-import
-import 'blob-polyfill';
+// PDF rendering and the upload page rely heavily on the canvas, it needs to be mocked
 // eslint-disable-next-line import/no-unassigned-import
 import 'vitest-canvas-mock';
 // Import '@testing-library/jest-dom/extend-expect';

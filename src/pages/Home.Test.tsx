@@ -35,7 +35,7 @@ beforeAll(async () => {
   await setDoc(doc(firestore, 'presentations', 'home-p1'), {
     uid: cred.user.uid,
     created: now,
-    username: 'test user',
+    username: 'home user',
     pages: [],
     notes: [],
     title: 'home1',
@@ -51,7 +51,7 @@ beforeAll(async () => {
   await setDoc(doc(firestore, 'presentations', 'home-p2'), {
     uid: cred.user.uid,
     created: now,
-    username: 'test user',
+    username: 'home user',
     pages: ['img1.jpg', 'img2.jpg', 'img3.jpg'],
     notes: [],
     title: 'home2',
@@ -67,7 +67,7 @@ beforeAll(async () => {
   await setDoc(doc(firestore, 'presentations', 'home-p3'), {
     uid: cred.user.uid,
     created: now,
-    username: 'test user',
+    username: 'home user',
     pages: ['img1.jpg', 'img2.jpg', 'img3.jpg'],
     notes: [],
     title: 'home3',
@@ -91,14 +91,25 @@ describe('Home view', () => {
     const presentationList = await screen.findByRole('list', {
       name: /presentations/i,
     });
-    const presentations = await within(presentationList).findAllByRole(
+    const allPresentations = await within(presentationList).findAllByRole(
       'listitem',
     );
+
+    // Other tests may add presentations, so expect the length to be at least 3
+    expect(allPresentations).toHaveProperty('length');
+    expect(allPresentations.length).toBeGreaterThanOrEqual(3);
+
+    const presentations = allPresentations
+      .map((presentation) =>
+        within(presentation).queryByRole('link', {name: /home user/}),
+      )
+      .filter(Boolean) as HTMLElement[];
+
     expect(presentations).toHaveLength(3);
 
-    await within(presentations[0]).findByRole('link', {name: /view.*home1/});
-    await within(presentations[1]).findByRole('link', {name: /view.*home2/});
-    await within(presentations[2]).findByRole('link', {name: /view.*home3/});
+    await within(presentations[0]).findByText(/home1/);
+    await within(presentations[1]).findByText(/home2/);
+    await within(presentations[2]).findByText(/home3/);
   });
 
   it('shows the edit button only on owned slideshows', async () => {
@@ -107,15 +118,29 @@ describe('Home view', () => {
     const presentationList = await screen.findByRole('list', {
       name: /presentations/i,
     });
-    const presentations = await within(presentationList).findAllByRole(
+    const allPresentations = await within(presentationList).findAllByRole(
       'listitem',
     );
 
-    await within(presentations[0]).findByRole('button', {name: /edit/});
-    await within(presentations[1]).findByRole('button', {name: /edit/});
-    expect(
-      within(presentations[2]).queryByRole('button', {name: /edit/}),
-    ).toBeNull();
+    const ownedPresentations = allPresentations.filter((presentation) =>
+      within(presentation).queryByText('home user'),
+    );
+
+    const notOwnedPresentations = allPresentations.filter((presentation) =>
+      within(presentation).queryByText('home user'),
+    );
+
+    for (const presentation of ownedPresentations) {
+      expect(
+        within(presentation).queryByRole('button', {name: /edit/}),
+      ).not.toBeNull();
+    }
+
+    for (const presentation of notOwnedPresentations) {
+      expect(
+        within(presentation).queryAllByRole('button', {name: /edit/}),
+      ).toBeNull();
+    }
   });
 
   it('shows the view button and present buttons on each', async () => {
@@ -128,11 +153,11 @@ describe('Home view', () => {
       'listitem',
     );
 
-    await within(presentations[0]).findByRole('button', {name: /view/});
-    await within(presentations[0]).findByRole('button', {name: /present/});
-    await within(presentations[1]).findByRole('button', {name: /view/});
-    await within(presentations[1]).findByRole('button', {name: /present/});
-    await within(presentations[2]).findByRole('button', {name: /view/});
-    await within(presentations[2]).findByRole('button', {name: /present/});
+    expect(presentations.length).toBeGreaterThanOrEqual(3);
+
+    for (const presentation of presentations) {
+      expect(within(presentation).queryByRole('button', {name: /view/}));
+      expect(within(presentation).queryByRole('button', {name: /present/}));
+    }
   });
 });

@@ -15,6 +15,7 @@ export async function uploadBytes(
   return uploadBytesOriginal(
     ref,
     // Firebase/storage expects a Buffer when running in node (i.e. tests)
+    // It does not seem to work with any other type when running in node
     // If we pass a "MagicFile" automatically convert it to a Buffer
     data instanceof MagicFile ? data.getBuffer() : data,
     metadata,

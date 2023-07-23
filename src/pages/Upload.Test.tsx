@@ -50,7 +50,7 @@ beforeAll(async () => {
 });
 
 describe('Presentation view', () => {
-  it.only('renders and uploads the test presentation', async () => {
+  it('renders and uploads the test presentation', async () => {
     const userContext = {
       user: {email: cred.user.email ?? undefined, uid: cred.user.uid},
       setUser: () => undefined,
@@ -78,70 +78,21 @@ describe('Presentation view', () => {
 
     // The magic file can be transformed to dataURI for react-pdf.Document
     // and a buffer for firebase/storage.uploadBytes (which does not support File objects when running in node)
-    const pdfFile = new MagicFile(await readFile('./test.pdf'), 'test.pdf', {
-      type: 'application/pdf',
+    const pdfFile = new MagicFile(
+      await readFile('./src/test/pdf/test.pdf'),
+      'test.pdf',
+      {
+        type: 'application/pdf',
+      },
+    );
+
+    // Jsdom mocks getComputedStyle, we need to return something so that the watermarking works
+    vi.spyOn(window, 'getComputedStyle').mockImplementation(() => {
+      const styles = new CSSStyleDeclaration();
+      return styles;
     });
 
     await userEvent.upload(uploaderInput!, pdfFile);
     await waitFor(() => screen.getByText(/done/i));
-  });
-
-  it('can navigate to the next slide with toolbar', async () => {
-    renderRoute('/p/presentation-1');
-    await screen.findByRole('img', {name: 'Slide page 1'});
-    const next = screen.getByRole('button', {name: 'next'});
-    await userEvent.click(next);
-    const slide2 = await screen.findByRole('img', {name: 'Slide page 2'});
-    expect(slide2).toHaveAttribute('src', 'img2.jpg');
-  });
-
-  it('can navigate to the last slide with toolbar', async () => {
-    renderRoute('/p/presentation-1');
-    await screen.findByRole('img', {name: 'Slide page 1'});
-    const end = screen.getByRole('button', {name: 'end'});
-    await userEvent.click(end);
-    const slide2 = await screen.findByRole('img', {name: 'Slide page 3'});
-    expect(slide2).toHaveAttribute('src', 'img3.jpg');
-  });
-
-  it('can navigate to the next slide by clicking on the image', async () => {
-    renderRoute('/p/presentation-1');
-    const slide1 = await screen.findByRole('img', {name: 'Slide page 1'});
-    await userEvent.click(slide1);
-    const slide2 = await screen.findByRole('img', {name: 'Slide page 2'});
-    expect(slide2).toHaveAttribute('src', 'img2.jpg');
-  });
-
-  it('can navigate to the last slide with toolbar', async () => {
-    renderRoute('/p/presentation-1');
-    await screen.findByRole('img', {name: 'Slide page 1'});
-    const end = screen.getByRole('button', {name: 'end'});
-    await userEvent.click(end);
-    const slide2 = await screen.findByRole('img', {name: 'Slide page 3'});
-    expect(slide2).toHaveAttribute('src', 'img3.jpg');
-  });
-
-  it('can read the slide index from the search params', async () => {
-    renderRoute('/p/presentation-1?slide=2');
-    const slide2 = await screen.findByRole('img', {name: 'Slide page 2'});
-    expect(slide2).toHaveAttribute('src', 'img2.jpg');
-  });
-
-  it('can navigate to the previous slide with toolbar', async () => {
-    renderRoute('/p/presentation-1?slide=2');
-    await screen.findByRole('img', {name: 'Slide page 2'});
-    const previous = await screen.findByRole('button', {name: 'previous'});
-    await userEvent.click(previous);
-    const slide1 = await screen.findByRole('img', {name: 'Slide page 1'});
-    expect(slide1).toHaveAttribute('src', 'img1.jpg');
-  });
-
-  it('can navigate to the first slide with toolbar', async () => {
-    renderRoute('/p/presentation-1?slide=3');
-    await screen.findByRole('img', {name: 'Slide page 3'});
-    const start = await screen.findByRole('button', {name: 'start'});
-    await userEvent.click(start);
-    const slide1 = await screen.findByRole('img', {name: 'Slide page 1'});
-    expect(slide1).toHaveAttribute('src', 'img1.jpg');
   });
 });

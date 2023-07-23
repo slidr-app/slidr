@@ -36,10 +36,8 @@ import {UserContext, type UserDoc} from '../components/UserProvider';
 import Loading from '../components/Loading';
 import Pdf from '../components/pdf/Pdf';
 
-if (!import.meta.env.VITEST) {
-  const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
-  pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
-}
+const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
+pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 const storage = getStorage(app);
 
@@ -129,20 +127,17 @@ export default function Upload() {
     maxFiles: 1,
   });
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
   const [renderingDone, setRenderingDone] = useState(false);
   const [pageBlob, setPageBlob] = useState<Blob>();
   function pageRendered(canvas: HTMLCanvasElement) {
     // Watermark rendered image
     const ctx = canvas.getContext('2d');
-    if (!import.meta.env.VITEST && ctx) {
+    if (ctx) {
       const rootStyles = window.getComputedStyle(
         document.querySelector('#root')!,
       );
 
       const fontFamily = rootStyles.getPropertyValue('font-family');
-      // Const fontSize = rootStyles.getPropertyValue('font-size');
 
       // The weight should match an already loaded font so that all watermarks have the same dimensions.
       // Otherwise, the first page may not have the correctly scaled font.
@@ -154,12 +149,12 @@ export default function Upload() {
 
       const textMetrics = ctx.measureText('slidr.app');
       const x =
-        canvasRef.current!.width -
+        canvas.width -
         20 -
         textMetrics.actualBoundingBoxLeft -
         textMetrics.actualBoundingBoxRight;
       const y =
-        canvasRef.current!.height -
+        canvas.height -
         0 -
         textMetrics.fontBoundingBoxAscent -
         textMetrics.fontBoundingBoxDescent;
