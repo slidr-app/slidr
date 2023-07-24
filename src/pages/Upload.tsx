@@ -357,12 +357,8 @@ export default function Upload() {
             saveState={savingState}
             notes={notes}
             title={title}
-            setNotes={(updater) => {
-              setNotes(updater);
-            }}
-            setTitle={(nextTitle) => {
-              setTitle(nextTitle);
-            }}
+            setNotes={setNotes}
+            setTitle={setTitle}
             pages={pages}
             onSave={() => {
               void savePreferences();

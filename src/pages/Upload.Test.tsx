@@ -4,9 +4,8 @@ import {Suspense, type PropsWithChildren} from 'react';
 import {vi} from 'vitest';
 import {collection, getDocs, query, where} from 'firebase/firestore';
 import {type FirebaseStorage, getStorage} from 'firebase/storage';
-import {act} from 'react-dom/test-utils';
 import {app, auth, firestore} from '../firebase';
-import {screen, userEvent, renderRoute} from '../test/test-utils';
+import {screen, userEvent, renderRoute, act, cleanup} from '../test/test-utils';
 import {UserContext} from '../components/UserProvider';
 import {MagicFile} from '../test/magic-file';
 // eslint-disable-next-line import/no-unassigned-import
@@ -23,7 +22,7 @@ beforeAll(async () => {
   storage = getStorage(app);
 });
 
-describe('Presentation view', () => {
+describe('Upload page', () => {
   let pdfFile: MagicFile;
   it('renders and uploads the test presentation', async () => {
     const userContext = {
@@ -81,7 +80,6 @@ describe('Presentation view', () => {
     expect(existing.docs).toHaveLength(1);
     const presentationId = existing.docs[0].id;
 
-    // RenderRoute(`/p/${presentationId}`);
     renderRoute(`/p/${presentationId}`, {
       wrapper: ({children}: PropsWithChildren) => (
         // Not sure why, but need suspense here after the previous test
@@ -97,18 +95,16 @@ describe('Presentation view', () => {
     const slide1ImageUrl = slide1ImageElement.getAttribute('src');
     expect(slide1ImageUrl).not.toBeNull();
 
-    let slide1ImageActual;
-    let slide1ImageExpected;
+    // Cleanup now, before reading image data to avoid components changing state while fetching/reading
+    cleanup();
 
     // Things can shift around (the toolbar becomes hidden specifically) while loading the image data
     // Run them inside act to avoid errors
-    await act(async () => {
-      const slide1ImageResponse = await fetch(slide1ImageUrl!);
-      const slide1ImageBuffer = await slide1ImageResponse.arrayBuffer();
-      const slide1ImageFile = await readFile('./src/test/pdf/page1.webp');
-      slide1ImageActual = new Uint8Array(slide1ImageBuffer);
-      slide1ImageExpected = new Uint8Array(slide1ImageFile);
-    });
+    const slide1ImageResponse = await fetch(slide1ImageUrl!);
+    const slide1ImageBuffer = await slide1ImageResponse.arrayBuffer();
+    const slide1ImageFile = await readFile('./src/test/pdf/page1.webp');
+    const slide1ImageActual = new Uint8Array(slide1ImageBuffer);
+    const slide1ImageExpected = new Uint8Array(slide1ImageFile);
 
     expect(slide1ImageActual).toEqual(slide1ImageExpected);
   });
