@@ -19,7 +19,6 @@ function Pdf({
       file={file}
       className="w-full aspect-video relative rounded-t-md"
       onLoadSuccess={(pdf) => {
-        console.log('LOADED!!!');
         onSetPageCount(pdf.numPages);
       }}
     >
@@ -32,7 +31,6 @@ function Pdf({
         // Fix the ratio to 1
         devicePixelRatio={1}
         onRenderSuccess={() => {
-          console.log('RENDERED!!!');
           onPageRendered(canvasRef.current!);
         }}
       />

@@ -1,5 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {vi} from 'vitest';
+import {useCallback, useMemo} from 'react';
 import OriginalPdf from '../Pdf';
 import {type MagicFile} from '../../../test/magic-file';
 
@@ -20,23 +21,27 @@ export default function Pdf({
   onPageRendered: (canvas: HTMLCanvasElement) => void;
   pageIndex: number;
 }) {
+  const dataUri = useMemo(() => (file as MagicFile).getDataUri(), [file]);
+  const onPageRenderedMockedToBlob = useCallback(
+    (canvas: HTMLCanvasElement) => {
+      // The mocked canvas toBlob doesn't do anything by default
+      // In our tests, we will call the callback with pre-rendered page image
+      vi.mocked(canvas.toBlob).mockImplementation((callback: BlobCallback) => {
+        callback(pages[pageIndex] as unknown as Blob);
+      });
+      onPageRendered(canvas);
+    },
+    [onPageRendered, pageIndex],
+  );
+
   return (
     <OriginalPdf
       // Rendering with jsdom seems to only work when using a data URI
       // Convert the uploaded file to a data URI for the test
-      file={(file as MagicFile).getDataUri()}
+      file={dataUri}
       pageIndex={pageIndex}
       onSetPageCount={onSetPageCount}
-      onPageRendered={(canvas) => {
-        // The mocked canvas toBlob doesn't do anything by default
-        // In our tests, we will call the callback with pre-rendered page image
-        vi.mocked(canvas.toBlob).mockImplementation(
-          (callback: BlobCallback) => {
-            callback(pages[pageIndex] as unknown as Blob);
-          },
-        );
-        onPageRendered(canvas);
-      }}
+      onPageRendered={onPageRenderedMockedToBlob}
     />
   );
 }

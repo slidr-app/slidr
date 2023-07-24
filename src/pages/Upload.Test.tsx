@@ -1,16 +1,12 @@
 import {readFile} from 'node:fs/promises';
 import {type UserCredential, signInAnonymously} from 'firebase/auth';
-import {type PropsWithChildren} from 'react';
+import {Suspense, type PropsWithChildren} from 'react';
 import {vi} from 'vitest';
-import {collection, deleteDoc, getDocs, query, where} from 'firebase/firestore';
-import {
-  type FirebaseStorage,
-  deleteObject,
-  getStorage,
-  ref,
-} from 'firebase/storage';
+import {collection, getDocs, query, where} from 'firebase/firestore';
+import {type FirebaseStorage, getStorage} from 'firebase/storage';
+import {act} from 'react-dom/test-utils';
 import {app, auth, firestore} from '../firebase';
-import {screen, userEvent, renderRoute, waitFor} from '../test/test-utils';
+import {screen, userEvent, renderRoute} from '../test/test-utils';
 import {UserContext} from '../components/UserProvider';
 import {MagicFile} from '../test/magic-file';
 // eslint-disable-next-line import/no-unassigned-import
@@ -25,36 +21,20 @@ let storage: FirebaseStorage;
 beforeAll(async () => {
   cred = await signInAnonymously(auth);
   storage = getStorage(app);
-  // Const admin = initializeApp({projectId: 'demo-test'});
-  // const dbAdmin = getFirestore(admin);
-
-  // const existing = await dbAdmin
-  //   .collection('presentations')
-  //   .where('uid', '==', cred.user.uid)
-  //   .get();
-
-  const existing = await getDocs(
-    query(
-      collection(firestore, 'presentations'),
-      where('uid', '==', cred.user.uid),
-    ),
-  );
-
-  // Remove any existing presentations
-  await Promise.all(
-    existing.docs.map(async (snapshot) => {
-      await deleteObject(ref(storage, `presentations/${snapshot.id}`));
-      await deleteDoc(snapshot.ref);
-    }),
-  );
 });
 
 describe('Presentation view', () => {
+  let pdfFile: MagicFile;
   it('renders and uploads the test presentation', async () => {
     const userContext = {
       user: {email: cred.user.email ?? undefined, uid: cred.user.uid},
       setUser: () => undefined,
     };
+
+    vi.spyOn(window, 'getComputedStyle').mockImplementation(() => {
+      const styles = new CSSStyleDeclaration();
+      return styles;
+    });
 
     renderRoute('/upload', {
       wrapper: ({children}: PropsWithChildren) => (
@@ -78,7 +58,7 @@ describe('Presentation view', () => {
 
     // The magic file can be transformed to dataURI for react-pdf.Document
     // and a buffer for firebase/storage.uploadBytes (which does not support File objects when running in node)
-    const pdfFile = new MagicFile(
+    pdfFile = new MagicFile(
       await readFile('./src/test/pdf/test.pdf'),
       'test.pdf',
       {
@@ -87,12 +67,49 @@ describe('Presentation view', () => {
     );
 
     // Jsdom mocks getComputedStyle, we need to return something so that the watermarking works
-    vi.spyOn(window, 'getComputedStyle').mockImplementation(() => {
-      const styles = new CSSStyleDeclaration();
-      return styles;
+    await userEvent.upload(uploaderInput!, pdfFile);
+    await screen.findByText(/done/i);
+  });
+
+  it('renders the uploaded presentation', async () => {
+    const existing = await getDocs(
+      query(
+        collection(firestore, 'presentations'),
+        where('uid', '==', cred.user.uid),
+      ),
+    );
+    expect(existing.docs).toHaveLength(1);
+    const presentationId = existing.docs[0].id;
+
+    // RenderRoute(`/p/${presentationId}`);
+    renderRoute(`/p/${presentationId}`, {
+      wrapper: ({children}: PropsWithChildren) => (
+        // Not sure why, but need suspense here after the previous test
+        <Suspense>{children}</Suspense>
+      ),
     });
 
-    await userEvent.upload(uploaderInput!, pdfFile);
-    await waitFor(() => screen.getByText(/done/i));
+    const slide1ImageElement = await screen.findByRole('img', {
+      name: 'Slide page 1',
+    });
+    expect(slide1ImageElement).toBeInTheDocument();
+
+    const slide1ImageUrl = slide1ImageElement.getAttribute('src');
+    expect(slide1ImageUrl).not.toBeNull();
+
+    let slide1ImageActual;
+    let slide1ImageExpected;
+
+    // Things can shift around (the toolbar becomes hidden specifically) while loading the image data
+    // Run them inside act to avoid errors
+    await act(async () => {
+      const slide1ImageResponse = await fetch(slide1ImageUrl!);
+      const slide1ImageBuffer = await slide1ImageResponse.arrayBuffer();
+      const slide1ImageFile = await readFile('./src/test/pdf/page1.webp');
+      slide1ImageActual = new Uint8Array(slide1ImageBuffer);
+      slide1ImageExpected = new Uint8Array(slide1ImageFile);
+    });
+
+    expect(slide1ImageActual).toEqual(slide1ImageExpected);
   });
 });

@@ -31,7 +31,6 @@ function Presentation() {
     }`;
   }, [presentation]);
 
-  // Const [forward, setForward] = useState<boolean>(true);
   const sessionId = useSearchParametersSessionId(true);
 
   // Sync the slide index with the broadcast channel (speaker view)
@@ -40,7 +39,7 @@ function Presentation() {
     setHandlers: setHandlersBroadcastChannel,
   } = useChannelHandlers();
   const postBroadcastChannel = useBroadcastChannel({
-    channelId: presentation.id ?? 'unknown',
+    sessionId,
     onIncoming: handleIncomingBroadcastChannel,
   });
   const {

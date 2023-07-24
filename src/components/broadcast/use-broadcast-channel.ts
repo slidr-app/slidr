@@ -3,10 +3,10 @@ import {nanoid} from 'nanoid';
 import {type Handler, type Payload} from './use-channel-handlers';
 
 export default function useBroadcastChannel({
-  channelId,
+  sessionId,
   onIncoming,
 }: {
-  channelId: string;
+  sessionId: string;
   onIncoming?: Handler;
 }): Handler {
   const [postMessage, setPostMessage] = useState<() => void>(
@@ -14,10 +14,18 @@ export default function useBroadcastChannel({
   );
 
   useEffect(() => {
-    const channel = new BroadcastChannel(channelId);
+    if (!sessionId) {
+      return;
+    }
+
+    const channel = new BroadcastChannel(sessionId);
     let channelOpen = true;
     const channelMessageHandler = (event: MessageEvent) => {
-      console.log('incoming bc', channelId, event);
+      if (!channelOpen) {
+        return;
+      }
+
+      console.log('incoming bc', sessionId, event);
       if (onIncoming) {
         const incomingPayload = event.data as Payload;
 
@@ -38,7 +46,7 @@ export default function useBroadcastChannel({
 
     channel.addEventListener('message', channelMessageHandler);
     setPostMessage(() => (payload: any) => {
-      console.log('posting bc data', channelId, payload);
+      console.log('posting bc data', sessionId, payload);
       if (channelOpen) {
         channel.postMessage(payload);
       }
@@ -49,7 +57,7 @@ export default function useBroadcastChannel({
       channel.removeEventListener('message', channelMessageHandler);
       channel.close();
     };
-  }, [onIncoming, channelId]);
+  }, [onIncoming, sessionId]);
 
   return postMessage;
 }

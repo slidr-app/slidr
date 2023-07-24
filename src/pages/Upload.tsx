@@ -1,6 +1,5 @@
-import {useCallback, useContext, useEffect, useRef, useState} from 'react';
+import {useCallback, useContext, useEffect, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
-import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
@@ -82,8 +81,21 @@ export default function Upload() {
   const [title, setTitle] = useState('');
   const [savingState, setSavingState] = useState<NotesSaveState>('saved');
 
-  const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
+  const {getRootProps, getInputProps, isDragActive, acceptedFiles} =
+    useDropzone({
+      accept: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'application/pdf': ['.pdf'],
+      },
+      maxFiles: 1,
+    });
+
+  useEffect(() => {
+    async function startRenderingFile() {
+      if (!acceptedFiles[0]) {
+        return;
+      }
+
       setFile(acceptedFiles[0]);
 
       const presentationRef = await addDoc(
@@ -114,22 +126,15 @@ export default function Upload() {
         original: originalDownloadUrl,
       } satisfies PresentationUpdate);
       setRendering(true);
-    },
-    [userData?.username, userData?.twitterHandle],
-  );
+    }
 
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({
-    onDrop,
-    accept: {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      'application/pdf': ['.pdf'],
-    },
-    maxFiles: 1,
-  });
+    void startRenderingFile();
+  }, [acceptedFiles, userData?.twitterHandle, userData?.username]);
 
   const [renderingDone, setRenderingDone] = useState(false);
   const [pageBlob, setPageBlob] = useState<Blob>();
-  function pageRendered(canvas: HTMLCanvasElement) {
+
+  const pageRendered = useCallback((canvas: HTMLCanvasElement) => {
     // Watermark rendered image
     const ctx = canvas.getContext('2d');
     if (ctx) {
@@ -164,12 +169,12 @@ export default function Upload() {
 
     canvas.toBlob(async (blob) => {
       if (!blob) {
-        throw new Error(`Error rendering page index ${pageIndex}`);
+        throw new Error(`Error rendering pdf canvas to image webp blob`);
       }
 
       setPageBlob(blob);
     }, 'image/webp');
-  }
+  }, []);
 
   const [uploadPromises, setUploadPromises] = useState<Array<Promise<string>>>(
     [],
@@ -223,6 +228,8 @@ export default function Upload() {
       }));
 
       setSavingState('saving');
+      setPages(nextPages);
+      setNotes(nextNotes);
 
       await updateDoc(presentationRef, {
         pages: nextPages,
@@ -230,8 +237,6 @@ export default function Upload() {
         title,
         notes: nextNotes,
       } satisfies PresentationUpdate);
-      setPages(nextPages);
-      setNotes(nextNotes);
       setUploadDone(true);
       setSavingState((currentState) =>
         currentState === 'saving' ? 'saved' : currentState,
@@ -329,16 +334,14 @@ export default function Upload() {
           )}
           {file && (
             <div className="relative flex flex-col w-full max-w-screen-sm">
-              <Pdf
-                pageIndex={pageIndex}
-                file={file}
-                onSetPageCount={(count) => {
-                  setPageCount(count);
-                }}
-                onPageRendered={(canvas) => {
-                  pageRendered(canvas);
-                }}
-              />
+              {!renderingDone && (
+                <Pdf
+                  pageIndex={pageIndex}
+                  file={file}
+                  onSetPageCount={setPageCount}
+                  onPageRendered={pageRendered}
+                />
+              )}
               <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
                 <div className={clsx('w-10 h-10', icon)} />
                 <div>{message}</div>
