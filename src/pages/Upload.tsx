@@ -189,15 +189,15 @@ export default function Upload() {
   }, []);
 
   useEffect(() => {
-    async function uploadPage() {
+    async function uploadPage(pageImage: Blob, id: string) {
       const pageStorageRef = storageRef(
         storage,
-        `presentations/${presentationRef!.id}/${pageIndex
+        `presentations/${id}/${pageIndex
           .toString()
           .padStart(3, '0')}_${nanoid()}.webp`,
       );
 
-      await uploadBytes(pageStorageRef, pageBlob!, {
+      await uploadBytes(pageStorageRef, pageImage, {
         cacheControl: 'public, max-age=604800, immutable',
       });
       const pageUrl = await getDownloadURL(pageStorageRef);
@@ -208,7 +208,7 @@ export default function Upload() {
       return;
     }
 
-    const uploadPromise = uploadPage();
+    const uploadPromise = uploadPage(pageBlob, presentationRef.id);
     setUploadPromises((currentPromises) => [...currentPromises, uploadPromise]);
     setPageBlob(undefined);
 
