@@ -21,6 +21,36 @@ beforeAll(async () => {
     {method: 'DELETE'},
   );
 
+  await fetch(
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest1/reactions',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest1',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest2/reactions',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest2',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest3/reactions',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest3',
+    {method: 'DELETE'},
+  );
+
   // Add a single presentation to firestore
   await setDoc(doc(firestore, 'presentations', 'speakertest'), {
     uid: cred.user.uid,
@@ -33,28 +63,18 @@ beforeAll(async () => {
   } satisfies PresentationCreate);
 });
 
-beforeEach(async () => {
-  await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest/reactions',
-    {method: 'DELETE'},
-  );
-
-  await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest',
-    {method: 'DELETE'},
-  );
-});
+beforeEach(async () => {});
 
 describe('Speaker view', () => {
   it('synchronizes the current slide', async () => {
     const presentationRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/p/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/p/speakertest?slide=1&session=speakertest1'],
     });
     const speakerRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/s/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/s/speakertest?slide=1&session=speakertest1'],
     });
     const audienceRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/i/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/i/speakertest?slide=1&session=speakertest1'],
     });
 
     render(
@@ -94,13 +114,13 @@ describe('Speaker view', () => {
 
   it('renders reactions on audience and presentation views', async () => {
     const presentationRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/p/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/p/speakertest?slide=1&session=speakertest2'],
     });
     const speakerRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/s/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/s/speakertest?slide=1&session=speakertest2'],
     });
     const audienceRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/i/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/i/speakertest?slide=1&session=speakertest2'],
     });
 
     render(
@@ -138,13 +158,13 @@ describe('Speaker view', () => {
 
   it('clears reactions on presentation', async () => {
     const presentationRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/p/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/p/speakertest?slide=1&session=speakertest3'],
     });
     const speakerRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/s/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/s/speakertest?slide=1&session=speakertest3'],
     });
     const audienceRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/i/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/i/speakertest?slide=1&session=speakertest3'],
     });
 
     render(
