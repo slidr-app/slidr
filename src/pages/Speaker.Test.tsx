@@ -6,7 +6,6 @@ import {
   screen,
   userEvent,
   render,
-  findByRole,
   waitForElementToBeRemoved,
   within,
 } from '../test/test-utils';
@@ -76,19 +75,19 @@ describe('Speaker view', () => {
     const speaker = await screen.findByTestId('speaker');
     const audience = await screen.findByTestId('audience');
 
-    await findByRole(presentation, 'img', {name: 'Slide page 1'});
-    await findByRole(speaker, 'img', {name: 'Slide page 1'});
-    await findByRole(audience, 'img', {name: 'Slide page 1'});
+    await within(presentation).findByRole('img', {name: 'Slide page 1'});
+    await within(speaker).findByRole('img', {name: 'Slide page 1'});
+    await within(audience).findByRole('img', {name: 'Slide page 1'});
 
-    const next = await findByRole(speaker, 'button', {name: 'next'});
+    const next = await within(speaker).findByRole('button', {name: 'next'});
     await userEvent.click(next);
-    await findByRole(presentation, 'img', {
+    await within(presentation).findByRole('img', {
       name: 'Slide page 2',
     });
-    await findByRole(speaker, 'img', {
+    await within(speaker).findByRole('img', {
       name: 'Slide page 2',
     });
-    await findByRole(audience, 'img', {
+    await within(audience).findByRole('img', {
       name: 'Slide page 2',
     });
   });
@@ -122,17 +121,17 @@ describe('Speaker view', () => {
     const speaker = await screen.findByTestId('speaker');
     const audience = await screen.findByTestId('audience');
 
-    await findByRole(presentation, 'img', {name: 'Slide page 1'});
-    await findByRole(speaker, 'img', {name: 'Slide page 1'});
-    await findByRole(audience, 'img', {name: 'Slide page 1'});
+    await within(presentation).findByRole('img', {name: 'Slide page 1'});
+    await within(speaker).findByRole('img', {name: 'Slide page 1'});
+    await within(audience).findByRole('img', {name: 'Slide page 1'});
 
-    const love = await findByRole(speaker, 'button', {name: 'love'});
+    const love = await within(speaker).findByRole('button', {name: 'love'});
     await userEvent.click(love);
 
-    await findByRole(presentation, 'figure', {
+    await within(presentation).findByRole('figure', {
       name: 'love',
     });
-    await findByRole(audience, 'figure', {
+    await within(audience).findByRole('figure', {
       name: 'love',
     });
   });
