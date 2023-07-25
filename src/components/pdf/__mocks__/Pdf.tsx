@@ -24,11 +24,9 @@ export default function Pdf({
   const dataUri = useMemo(() => (file as MagicFile).getDataUri(), [file]);
   const onPageRenderedMockedToBlob = useCallback(
     (canvas: HTMLCanvasElement) => {
-      console.log('CANVAS MOCK', pageIndex, pages);
       // The mocked canvas toBlob doesn't do anything by default
       // In our tests, we will call the callback with pre-rendered page image
       vi.mocked(canvas.toBlob).mockImplementation((callback: BlobCallback) => {
-        console.log('CANVAS MOCK CALLING CALLBACK', pageIndex, pages);
         callback(pages[pageIndex] as unknown as Blob);
       });
       onPageRendered(canvas);
