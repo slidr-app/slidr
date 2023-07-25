@@ -63,8 +63,6 @@ beforeAll(async () => {
   } satisfies PresentationCreate);
 });
 
-beforeEach(async () => {});
-
 describe('Speaker view', () => {
   it('synchronizes the current slide', async () => {
     const presentationRouter = createMemoryRouter(Routes, {
