@@ -16,7 +16,7 @@
     {
       "collectionGroup": "reactions",
       "fieldPath": "created",
-      "ttl": true,
+      "ttl": false,
       "indexes": []
     }
   ]
