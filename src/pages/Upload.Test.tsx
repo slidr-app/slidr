@@ -12,6 +12,17 @@ import {MagicFile} from '../test/magic-file';
 // eslint-disable-next-line import/no-unassigned-import
 import '../test/pdf.worker.entry';
 
+/* 
+  This is a complicated test due to how presentation pages are rendered using react-pdf
+  in the browser and then the canvas is converted to image files.
+
+  In order for the test to work, we add a mock wrapper over react-pdf to render the pdfs
+  as a data uri. A separate mock of firebase storage ensures that their API will upload
+  the accepted file (firebase/storage only accepts buffers, not File objects, when running in node, i.e.
+  tests with jsdom). Finally, this also relies on having a mocked canvas since the rendering
+  relies heavily on the canvas. vitest-mock-canvas is added in the global test setup.
+*/
+
 vi.mock('../components/pdf/Pdf');
 vi.mock('firebase/storage');
 
