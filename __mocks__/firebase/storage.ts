@@ -12,12 +12,17 @@ export async function uploadBytes(
   data: Blob | Uint8Array | ArrayBuffer,
   metadata?: UploadMetadata | undefined,
 ) {
+  console.log('MOCK STORAGE');
+  const dataForStorage = data instanceof MagicFile ? data.getBuffer() : data;
+  console.log('Is instanceof MagicFile:', data instanceof MagicFile);
+  console.log('Incoming data:', data);
+  console.log('Outgoing data:', dataForStorage);
   return uploadBytesOriginal(
     ref,
     // Firebase/storage expects a Buffer when running in node (i.e. tests)
     // It does not seem to work with any other type when running in node
     // If we pass a "MagicFile" automatically convert it to a Buffer
-    data instanceof MagicFile ? data.getBuffer() : data,
+    dataForStorage,
     metadata,
   );
 }
