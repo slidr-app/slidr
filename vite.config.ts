@@ -100,7 +100,6 @@ export default defineConfig(({command, mode}) => {
         ],
         reporter: ['text', 'html', 'clover', 'json', 'text-summary'],
       },
-      // TestTimeout: 10_000,
       // You might want to disable it, if you don't have tests that rely on CSS
       // since parsing CSS is slow
       // css: true,
