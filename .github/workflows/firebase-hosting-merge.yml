@@ -46,6 +46,9 @@ jobs:
 
       - name: Integration tests
         run: pnpm run test
+        env:
+          VITEST_MAX_THREADS: 1
+          VITEST_MIN_THREADS: 1
 
   deploy:
     if: github.ref_name == 'main' || github.ref_name == 'production'
