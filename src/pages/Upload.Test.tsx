@@ -12,7 +12,7 @@ import {MagicFile} from '../test/magic-file';
 // eslint-disable-next-line import/no-unassigned-import
 import '../test/pdf.worker.entry';
 
-vi.mock('../components/Pdf/Pdf');
+vi.mock('../components/pdf/Pdf');
 vi.mock('firebase/storage');
 
 const adminApp = initializeApp({projectId: 'demo-test'});
