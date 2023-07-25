@@ -27,7 +27,7 @@
   "dependencies": {
     "@unocss/reset": "^0.53.3",
     "clsx": "^1.2.1",
-    "firebase": "^10.0.0",
+    "firebase": "^10.1.0",
     "nanoid": "^4.0.2",
     "pdfjs-dist": "3.6.172",
     "react": "^18.2.0",
@@ -72,7 +72,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
     "firebase-admin": "^11.10.1",
-    "firebase-tools": "^12.4.3",
+    "firebase-tools": "^12.4.5",
     "husky": "^8.0.3",
     "jsdom": "^22.1.0",
     "typescript": "^5.0.2",

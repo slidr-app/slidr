@@ -38,6 +38,15 @@ import Pdf from '../components/pdf/Pdf';
 const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
+type UploadState =
+  | 'fetching user'
+  | 'ready'
+  | 'creating'
+  | 'rendering pages'
+  | 'uploading pages'
+  | 'setting pages'
+  | 'done';
+
 const storage = getStorage(app);
 
 if (import.meta.env.MODE === 'emulator') {
@@ -49,17 +58,33 @@ export default function Upload() {
     document.title = `Slidr - Upload`;
   }, []);
 
-  const {user} = useContext(UserContext);
+  const [uploadState, setUploadState] = useState<UploadState>('fetching user');
   const [userData, setUserData] = useState<UserDoc>();
+  const [file, setFile] = useState<File>();
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+  const [presentationRef, setPresentationRef] = useState<DocumentReference>();
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [title, setTitle] = useState('');
+  const [savingState, setSavingState] = useState<NotesSaveState>('saved');
+  const [pageBlob, setPageBlob] = useState<Blob>();
+  const [uploadPromises, setUploadPromises] = useState<Array<Promise<string>>>(
+    [],
+  );
+  const [pages, setPages] = useState<string[]>([]);
 
+  const {user} = useContext(UserContext);
   useEffect(() => {
     async function getUserDoc() {
+      setUploadState('fetching user');
       if (!user) {
         setUserData(undefined);
         return;
       }
 
       const userSnapshot = await getDoc(doc(firestore, 'users', user.uid));
+      setUploadState('ready');
+
       if (!userSnapshot.exists()) {
         setUserData({});
         return;
@@ -70,16 +95,6 @@ export default function Upload() {
 
     void getUserDoc();
   }, [user]);
-
-  const [file, setFile] = useState<File>();
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
-  const [uploadDone, setUploadDone] = useState(false);
-  const [rendering, setRendering] = useState(false);
-  const [presentationRef, setPresentationRef] = useState<DocumentReference>();
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [title, setTitle] = useState('');
-  const [savingState, setSavingState] = useState<NotesSaveState>('saved');
 
   const {getRootProps, getInputProps, isDragActive, acceptedFiles} =
     useDropzone({
@@ -92,7 +107,7 @@ export default function Upload() {
 
   useEffect(() => {
     async function startRenderingFile() {
-      if (!acceptedFiles[0]) {
+      if (!acceptedFiles[0] || uploadState !== 'ready') {
         return;
       }
 
@@ -125,14 +140,11 @@ export default function Upload() {
       await updateDoc(presentationRef, {
         original: originalDownloadUrl,
       } satisfies PresentationUpdate);
-      setRendering(true);
+      setUploadState('rendering pages');
     }
 
     void startRenderingFile();
-  }, [acceptedFiles, userData?.twitterHandle, userData?.username]);
-
-  const [renderingDone, setRenderingDone] = useState(false);
-  const [pageBlob, setPageBlob] = useState<Blob>();
+  }, [acceptedFiles, uploadState, userData?.twitterHandle, userData?.username]);
 
   const pageRendered = useCallback((canvas: HTMLCanvasElement) => {
     // Watermark rendered image
@@ -176,10 +188,6 @@ export default function Upload() {
     }, 'image/webp');
   }, []);
 
-  const [uploadPromises, setUploadPromises] = useState<Array<Promise<string>>>(
-    [],
-  );
-  const [pages, setPages] = useState<string[]>([]);
   useEffect(() => {
     async function uploadPage() {
       const pageStorageRef = storageRef(
@@ -196,7 +204,7 @@ export default function Upload() {
       return pageUrl;
     }
 
-    if (!rendering || !pageBlob || !presentationRef) {
+    if (uploadState !== 'rendering pages' || !pageBlob || !presentationRef) {
       return;
     }
 
@@ -207,19 +215,16 @@ export default function Upload() {
     if (pageIndex < pageCount - 1) {
       setPageIndex(pageIndex + 1);
     } else {
-      setRenderingDone(true);
+      setUploadState('uploading pages');
+      // SetRenderingDone(true);
     }
-  }, [rendering, pageBlob, pageIndex, presentationRef, pageCount]);
-
-  const [uploading, setUploading] = useState(false);
+  }, [uploadState, pageBlob, pageIndex, presentationRef, pageCount]);
 
   useEffect(() => {
     async function updatePages() {
-      if (!presentationRef || !renderingDone || uploadDone || uploading) {
+      if (!presentationRef || uploadState !== 'uploading pages') {
         return;
       }
-
-      setUploading(true);
 
       const nextPages = await Promise.all(uploadPromises);
       const nextNotes = nextPages.map((_, pageIndex) => ({
@@ -227,50 +232,54 @@ export default function Upload() {
         markdown: '',
       }));
 
-      setSavingState('saving');
       setPages(nextPages);
       setNotes(nextNotes);
 
+      setUploadState('setting pages');
+    }
+
+    void updatePages();
+  }, [uploadState, presentationRef, uploadPromises]);
+
+  useEffect(() => {
+    async function setPages() {
+      if (uploadState !== 'setting pages' || !presentationRef) {
+        return;
+      }
+
+      setSavingState('saving');
       await updateDoc(presentationRef, {
-        pages: nextPages,
+        pages,
         rendered: new Date(),
         title,
-        notes: nextNotes,
+        notes,
       } satisfies PresentationUpdate);
-      setUploadDone(true);
+      setUploadState('done');
       setSavingState((currentState) =>
         currentState === 'saving' ? 'saved' : currentState,
       );
     }
 
-    void updatePages();
-  }, [
-    presentationRef,
-    renderingDone,
-    uploadPromises,
-    title,
-    notes,
-    uploadDone,
-    uploading,
-  ]);
+    void setPages();
+  }, [uploadState, presentationRef, notes, pages, title]);
 
   function getUserFeedback() {
-    if (file && !rendering) {
+    if (uploadState === 'creating') {
       return [
         'Initializing...',
         'i-tabler-loader-3 animate-spin animate-duration-1000',
       ];
     }
 
-    if (file && rendering && !renderingDone) {
+    if (uploadState === 'rendering pages') {
       return ['Rendering...', 'i-tabler-loader-3 animate-spin'];
     }
 
-    if (file && rendering && renderingDone && !uploadDone) {
+    if (uploadState === 'uploading pages' || uploadState === 'setting pages') {
       return ['Uploading...', 'i-tabler-arrow-big-up-lines animate-bounce'];
     }
 
-    if (file && rendering && renderingDone && uploadDone) {
+    if (uploadState === 'done') {
       return ['Done', 'i-tabler-check'];
     }
 
@@ -287,7 +296,7 @@ export default function Upload() {
     // Or do the upload synchronously 🤔
     // if (!uploadDone || !presentationRef) {
     // Update, let them both save, we may lose a note if the uploading save happens after this save, but that seems unlikely
-    if (!uploading || !presentationRef) {
+    if (uploadState !== 'done' || !presentationRef) {
       return;
     }
 
@@ -304,7 +313,11 @@ export default function Upload() {
   return (
     <DefaultLayout title="New Presentation">
       {/* TODO: loading spinner */}
-      {userData ? (
+      {uploadState === 'fetching user' ? (
+        <div className="flex flex-col col-span-2 lt-sm:col-span-1 h-40 items-center justify-center">
+          <Loading />
+        </div>
+      ) : (
         <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">
           {!file && (
             <div
@@ -332,16 +345,24 @@ export default function Upload() {
               </label>
             </div>
           )}
-          {file && (
+          {uploadState !== 'ready' && (
             <div className="relative flex flex-col w-full max-w-screen-sm">
-              {!renderingDone && (
-                <Pdf
-                  pageIndex={pageIndex}
-                  file={file}
-                  onSetPageCount={setPageCount}
-                  onPageRendered={pageRendered}
-                />
-              )}
+              {
+                // Must be a better way in typescript
+                [
+                  'creating',
+                  'rendering pages',
+                  'setting pages',
+                  'uploading pages',
+                ].includes(uploadState) && (
+                  <Pdf
+                    pageIndex={pageIndex}
+                    file={file!}
+                    onSetPageCount={setPageCount}
+                    onPageRendered={pageRendered}
+                  />
+                )
+              }
               <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
                 <div className={clsx('w-10 h-10', icon)} />
                 <div>{message}</div>
@@ -367,10 +388,6 @@ export default function Upload() {
               setSavingState('dirty');
             }}
           />
-        </div>
-      ) : (
-        <div className="flex flex-col col-span-2 lt-sm:col-span-1 h-40 items-center justify-center">
-          <Loading />
         </div>
       )}
     </DefaultLayout>

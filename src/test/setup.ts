@@ -6,10 +6,10 @@ import 'vitest-canvas-mock';
 // Import '@testing-library/jest-dom/extend-expect';
 
 export async function setup() {
-  console.log('clearing database');
+  // Console.log('clearing database');
   // Clear firestore before we start
-  await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents',
-    {method: 'DELETE'},
-  );
+  // await fetch(
+  //   'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents',
+  //   {method: 'DELETE'},
+  // );
 }
