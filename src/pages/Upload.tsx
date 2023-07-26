@@ -35,7 +35,7 @@ import {UserContext, type UserDoc} from '../components/UserProvider';
 import Loading from '../components/Loading';
 import Pdf from '../components/pdf/Pdf';
 
-const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
+const src = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 type UploadState =
