@@ -118,9 +118,6 @@ devDependencies:
   '@vitest/ui':
     specifier: ^0.33.0
     version: 0.33.0(vitest@0.33.0)
-  blob-polyfill:
-    specifier: ^7.0.20220408
-    version: 7.0.20220408
   concurrently:
     specifier: ^8.2.0
     version: 8.2.0
@@ -4658,10 +4655,6 @@ packages:
       buffer: 5.7.1
       inherits: 2.0.4
       readable-stream: 3.6.2
-
-  /blob-polyfill@7.0.20220408:
-    resolution: {integrity: sha512-oD8Ydw+5lNoqq+en24iuPt1QixdPpe/nUF8azTHnviCZYu9zUC+TwdzIp5orpblJosNlgNbVmmAb//c6d6ImUQ==}
-    dev: true
 
   /bluebird@3.7.2:
     resolution: {integrity: sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==}
