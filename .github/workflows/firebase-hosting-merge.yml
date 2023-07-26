@@ -23,8 +23,9 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version-file: .nvmrc
           cache: "pnpm"
+          check-latest: true
 
       - name: Output debugging info
         run: node -v && npm -v && pnpm -v
@@ -46,6 +47,9 @@ jobs:
 
       - name: Integration tests
         run: pnpm run test
+        # env:
+        #   VITEST_MAX_THREADS: 1
+        #   VITEST_MIN_THREADS: 1
 
   deploy:
     if: github.ref_name == 'main' || github.ref_name == 'production'
@@ -63,8 +67,9 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version-file: .nvmrc
           cache: "pnpm"
+          check-latest: true
 
       - name: Output debugging info
         run: node -v && npm -v && pnpm -v

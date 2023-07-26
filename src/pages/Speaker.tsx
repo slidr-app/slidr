@@ -56,7 +56,7 @@ export default function Speaker() {
     setHandlers: setHandlersBroadcastChannel,
   } = useChannelHandlers();
   const postBroadcastChannel = useBroadcastChannel({
-    channelId: presentation.id ?? 'unknown',
+    sessionId,
     onIncoming: handleIncomingBroadcastChannel,
   });
   const {

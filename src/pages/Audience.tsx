@@ -11,7 +11,7 @@ import {
 } from '../components/broadcast/use-channel-handlers';
 import useRemoteReactions from '../components/reactions/use-remote-reactions';
 import useReactions from '../components/reactions/use-reactions';
-import Reactions from '../components/reactions/Reactions';
+import {Reactions} from '../components/reactions/Reactions';
 import ReactionControls from '../components/reactions/ReactionControls';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Slideshow from '../components/slides/Slideshow';

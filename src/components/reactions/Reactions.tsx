@@ -65,7 +65,7 @@ function Reaction({
   );
 }
 
-export default function Reactions({
+export function Reactions({
   reactions,
   removeReaction,
 }: {
