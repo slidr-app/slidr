@@ -228,7 +228,7 @@ export default function Upload() {
 
       console.log('waiting for pages');
       const nextPages = await Promise.all(uploadPromises);
-      console.log('pages done')
+      console.log('pages done');
       const nextNotes = nextPages.map((_, pageIndex) => ({
         pageIndices: [pageIndex] as [number, ...number[]],
         markdown: '',
@@ -249,14 +249,14 @@ export default function Upload() {
       }
 
       setSavingState('saving');
-      console.log('updating doc with pages')
+      console.log('updating doc with pages');
       await updateDoc(presentationRef, {
         pages,
         rendered: new Date(),
         title,
         notes,
       } satisfies PresentationUpdate);
-      console.log('doc update done')
+      console.log('doc update done');
       setUploadState('done');
       setSavingState((currentState) =>
         currentState === 'saving' ? 'saved' : currentState,
