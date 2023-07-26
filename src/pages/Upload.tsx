@@ -35,7 +35,7 @@ import {UserContext, type UserDoc} from '../components/UserProvider';
 import Loading from '../components/Loading';
 import Pdf from '../components/pdf/Pdf';
 
-const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
+const src = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
 
 type UploadState =
@@ -346,31 +346,23 @@ export default function Upload() {
             </div>
           )}
           {uploadState !== 'ready' && (
-            <div className="relative flex flex-col w-full max-w-screen-sm">
-              {
-                // Must be a better way in typescript
-                [
-                  'creating',
-                  'rendering pages',
-                  'setting pages',
-                  'uploading pages',
-                ].includes(uploadState) && (
-                  <Pdf
-                    pageIndex={pageIndex}
-                    file={file!}
-                    onSetPageCount={setPageCount}
-                    onPageRendered={pageRendered}
-                  />
-                )
-              }
-              <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
-                <div className={clsx('w-10 h-10', icon)} />
-                <div>{message}</div>
+            <div className="flex flex-col w-full max-w-screen-sm">
+              <div className="relative w-full">
+                <Pdf
+                  pageIndex={pageIndex}
+                  file={file!}
+                  onSetPageCount={setPageCount}
+                  onPageRendered={pageRendered}
+                />
+                <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
+                  <div className={clsx('w-10 h-10', icon)} />
+                  <div>{message}</div>
+                </div>
+                <div
+                  className="absolute bottom-0 h-[6px] bg-teal"
+                  style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
+                />
               </div>
-              <div
-                className="absolute bottom-0 h-[6px] bg-teal"
-                style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
-              />
               <div>Rendering slide: {pageIndex + 1}</div>
             </div>
           )}
