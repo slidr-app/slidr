@@ -17,7 +17,7 @@ function Pdf({
   return (
     <Document
       file={file}
-      className="w-full aspect-video relative rounded-t-md"
+      className="w-full aspect-video rounded-t-md"
       onLoadSuccess={(pdf) => {
         onSetPageCount(pdf.numPages);
       }}
