@@ -200,7 +200,9 @@ export default function Upload() {
       await uploadBytes(pageStorageRef, pageImage, {
         cacheControl: 'public, max-age=604800, immutable',
       });
+      console.log('upload done', pageIndex);
       const pageUrl = await getDownloadURL(pageStorageRef);
+      console.log('dl url done', pageIndex);
       return pageUrl;
     }
 
