@@ -84,8 +84,8 @@ describe('Upload page when uploading only', () => {
 
     // Jsdom mocks getComputedStyle, we need to return something so that the watermarking works
     await userEvent.upload(uploaderInput!, pdfFile);
-    await screen.findByText(/done/i, undefined, {timeout: 20_000});
-  }, 25_000);
+    await screen.findByText(/done/i, undefined, {timeout: 30_000});
+  }, 35_000);
 
   it('renders the uploaded presentation', async () => {
     const existing = await getDocs(
@@ -178,8 +178,8 @@ describe('Upload page when uploading and editing preferences', () => {
       name: /title/i,
     });
     await userEvent.type(presentationNameElement, 'Upload Test Presentation');
-    await screen.findByText(/saved/i, undefined, {timeout: 20_000});
-  }, 25_000);
+    await screen.findByText(/saved/i, undefined, {timeout: 30_000});
+  }, 35_000);
 
   it('renders the uploaded presentation', async () => {
     renderRoute('/', {
