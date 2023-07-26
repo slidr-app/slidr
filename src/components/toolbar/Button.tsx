@@ -9,19 +9,26 @@ export default function Button({
   disabled,
   border,
   className,
+  submit,
 }: {
-  onClick: MouseEventHandler<HTMLButtonElement>;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
   icon: string;
   label: string;
   title: string;
   disabled?: boolean;
   border?: boolean;
   className?: string;
+  submit?: boolean;
 }) {
+  const optionalProps: {onClick?: MouseEventHandler<HTMLButtonElement>} = {};
+  if (onClick !== undefined) {
+    optionalProps.onClick = onClick;
+  }
+
   return (
     <button
       disabled={Boolean(disabled)}
-      type="button"
+      type={submit ? 'submit' : 'button'}
       title={title}
       className={clsx(
         'flex flex-col justify-center items-center bg-gray-800 bg-opacity-90',
@@ -32,7 +39,7 @@ export default function Button({
           : 'text-teal hover:(bg-gray-700) active:(text-white bg-black)',
         className,
       )}
-      onClick={onClick}
+      {...optionalProps}
     >
       <div className={clsx(icon)} />
       <div
