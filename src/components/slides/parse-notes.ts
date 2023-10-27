@@ -64,7 +64,7 @@ export function importNotes(markdown: string, pageCount: number): Note[] {
     // Grab the next section, but make sure it isn't a magic comment
     if (!magicCommentRegEx.test(noteSections[sectionIndex + 1])) {
       markdown = noteSections[sectionIndex + 1];
-      // Advance the section index for the next interation
+      // Advance the section index for the next iteration
       sectionIndex++;
     }
 
@@ -85,7 +85,7 @@ export function importNotes(markdown: string, pageCount: number): Note[] {
 }
 
 export function exportNotes(notes: Note[]): string {
-  let currentOffset = 0;
+  let previousEndIndex = -1;
   return notes
     .map((note) => {
       // Remove empty notes
@@ -93,9 +93,10 @@ export function exportNotes(notes: Note[]): string {
         return undefined;
       }
 
-      const startIndex = note.pageIndices[0] - currentOffset + 1;
+      const startIndex = note.pageIndices[0] - previousEndIndex;
       const noteLength = note.pageIndices.length;
-      currentOffset += noteLength;
+      // -1 (exported notes are 1 indexed) -1 (lengths are assumed at least 1)
+      previousEndIndex = startIndex + noteLength - 1 - 1;
 
       return `<!-- +${startIndex}+${noteLength} -->\n${note.markdown}\n`;
     })
