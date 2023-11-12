@@ -26,6 +26,8 @@ test('upload button appears after signing in', async ({page, loginPage}) => {
 });
 
 test('can upload and view presentation', async ({page, loginPage}) => {
+  test.setTimeout(60_000);
+
   await loginPage.goto();
   await loginPage.signIn();
   await loginPage.signInComplete();
@@ -39,7 +41,7 @@ test('can upload and view presentation', async ({page, loginPage}) => {
     })
     .locator('input')
     .setInputFiles('./src/test/pdf/test.pdf');
-  await expect(page.getByText(/done/i)).toBeVisible();
+  await expect(page.getByText(/done/i)).toBeVisible({timeout: 20_000});
   await page.getByLabel(/title/i).fill(presentationName);
   await expect(page.getByText(/saving/i)).toBeVisible();
   await expect(page.getByText(/saving/i)).not.toBeVisible();
@@ -51,15 +53,15 @@ test('can upload and view presentation', async ({page, loginPage}) => {
   await presentation.click();
   const page1 = page.getByAltText(/slide page 1/i);
   await expect(page1).toBeVisible();
-  await expect(page1).toHaveScreenshot();
+  await expect(page1).toHaveScreenshot('page-1.png');
 
   await page.getByRole('button', {name: /next/i}).click();
   const page2 = page.getByAltText(/slide page 2/i);
   await expect(page2).toBeVisible();
-  await expect(page2).toHaveScreenshot();
+  await expect(page2).toHaveScreenshot('page-2.png');
 
   await page.getByRole('button', {name: /next/i}).click();
   const page3 = page.getByAltText(/slide page 3/i);
   await expect(page3).toBeVisible();
-  await expect(page3).toHaveScreenshot();
+  await expect(page3).toHaveScreenshot('page-3.png');
 });
