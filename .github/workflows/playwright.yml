@@ -10,20 +10,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
     - name: Setup pnpm
       uses: pnpm/action-setup@v2
       with:
         version: 8
 
-    - uses: actions/setup-node@v3
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v3
       with:
-        node-version: 18
+        node-version-file: .nvmrc
+        cache: "pnpm"
+        check-latest: true
+
+    - name: Output debugging info
+      run: node -v && npm -v && pnpm -v
+
     - name: Install dependencies
       run: pnpm install
+
     - name: Install Playwright Browsers
       run: pnpm exec playwright install --with-deps
+
     - name: Run Playwright tests
       run: pnpm run test:e2e
+
     - uses: actions/upload-artifact@v3
       if: always()
       with:
