@@ -19,7 +19,7 @@
     "test": "pnpm run emulators:exec 'pnpm run test:start'",
     "test:once": "pnpm run emulators:exec 'pnpm run test:start --run'",
     "test:ui": "pnpm run emulators:exec 'pnpm run test:start --ui'",
-    "test:start": "FIRESTORE_EMULATOR_HOST=\"127.0.0.1:8080\" vitest --mode emulator",
+    "test:start": "FIRESTORE_EMULATOR_HOST=\"127.0.0.1:8081\" vitest --mode emulator",
     "coverage": "pnpm run emulators:exec 'pnpm run test:start --run --coverage'",
     "emulators": "firebase emulators:start --project demo-test --only auth,firestore,storage",
     "emulators:exec": "firebase emulators:exec --project demo-test --only auth,firestore,storage",

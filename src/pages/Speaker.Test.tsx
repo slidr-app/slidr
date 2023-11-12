@@ -17,37 +17,37 @@ beforeAll(async () => {
   const cred = await signInAnonymously(auth);
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/speakertest',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/speakertest',
     {method: 'DELETE'},
   );
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest1/reactions',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest1/reactions',
     {method: 'DELETE'},
   );
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest1',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest1',
     {method: 'DELETE'},
   );
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest2/reactions',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest2/reactions',
     {method: 'DELETE'},
   );
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest2',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest2',
     {method: 'DELETE'},
   );
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest3/reactions',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest3/reactions',
     {method: 'DELETE'},
   );
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest3',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest3',
     {method: 'DELETE'},
   );
 

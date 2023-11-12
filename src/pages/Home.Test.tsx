@@ -15,17 +15,17 @@ beforeAll(async () => {
   const cred = await signInAnonymously(auth);
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/home-p1',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/home-p1',
     {method: 'DELETE'},
   );
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/home-p2',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/home-p2',
     {method: 'DELETE'},
   );
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/home-p3',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/home-p3',
     {method: 'DELETE'},
   );
 

@@ -9,7 +9,7 @@ beforeAll(async () => {
   const cred = await signInAnonymously(auth);
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/viewer-1',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/viewer-1',
     {method: 'DELETE'},
   );
 
