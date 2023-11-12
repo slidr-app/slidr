@@ -33,5 +33,5 @@ export const firestore = getFirestore(app);
 if (import.meta.env.MODE === 'emulator') {
   console.log('setting up emulators');
   connectAuthEmulator(auth, 'http://127.0.0.1:9099', {disableWarnings: true});
-  connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
+  connectFirestoreEmulator(firestore, '127.0.0.1', 8081);
 }
