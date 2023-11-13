@@ -11,20 +11,22 @@
     "lint": "xo",
     "preview": "vite preview",
     "prepare": "husky install",
-    "prepush": "concurrently -n lint,build,test -c bgGreen.bold,bgYellow.bold,bgCyan.bold \"pnpm run lint\" \"pnpm run build:all\" \"pnpm run test:once\"",
+    "prepush": "concurrently -n lint,build,test -c bgGreen.bold,bgYellow.bold,bgCyan.bold \"pnpm run lint\" \"pnpm run build:all\" \"pnpm run test:all\"",
     "build:functions": "pnpm --dir functions build",
     "build:all": "pwa-assets-generator && pnpm run build && pnpm run build:functions",
     "deploy": "firebase deploy --only functions:renderForBot,auth,firestore,storage,hosting",
     "generate-pwa-assets": "pwa-assets-generator",
     "test": "pnpm run emulators:exec 'pnpm run test:start'",
+    "test:all": "pnpm run emulators:exec 'pnpm run test:start --run && pnpm run test:e2e:start'",
     "test:once": "pnpm run emulators:exec 'pnpm run test:start --run'",
     "test:ui": "pnpm run emulators:exec 'pnpm run test:start --ui'",
     "test:start": "FIRESTORE_EMULATOR_HOST=\"127.0.0.1:8081\" vitest --mode emulator",
     "coverage": "pnpm run emulators:exec 'pnpm run test:start --run --coverage'",
     "emulators": "firebase emulators:start --project demo-test --only auth,firestore,storage",
     "emulators:exec": "firebase emulators:exec --project demo-test --only auth,firestore,storage",
-    "test:e2e": "pnpm run emulators:exec --import test-data 'pnpm exec playwright test'",
-    "test:e2e:ui": "pnpm run emulators:exec --import test-data 'pnpm exec playwright test --ui'"
+    "test:e2e": "pnpm run emulators:exec --import test-data 'pnpm run test:e2e:start'",
+    "test:e2e:ui": "pnpm run emulators:exec --import test-data 'pnpm run test:e2e:start --ui'",
+    "test:e2e:start": "FIRESTORE_EMULATOR_HOST=\"127.0.0.1:8081\" playwright test"
   },
   "dependencies": {
     "@unocss/reset": "^0.53.3",
@@ -85,7 +87,6 @@
     "vite": "^4.4.7",
     "vite-plugin-pwa": "^0.16.4",
     "vitest": "^0.33.0",
-    "vitest-canvas-mock": "^0.3.2",
     "workbox-window": "^7.0.0",
     "xo": "^0.54.2"
   }

@@ -175,9 +175,6 @@ devDependencies:
   vitest:
     specifier: ^0.33.0
     version: 0.33.0(@vitest/ui@0.33.0)(jsdom@22.1.0)
-  vitest-canvas-mock:
-    specifier: ^0.3.2
-    version: 0.3.2(vitest@0.33.0)
   workbox-window:
     specifier: ^7.0.0
     version: 7.0.0
@@ -5455,10 +5452,6 @@ packages:
     resolution: {integrity: sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==}
     dev: true
 
-  /cssfontparser@1.2.1:
-    resolution: {integrity: sha512-6tun4LoZnj7VN6YeegOVb67KBX/7JJsqvj+pv3ZA7F878/eN33AbGa5b/S/wXxS/tcp8nc40xRUrsPlxIyNUPg==}
-    dev: true
-
   /cssstyle@3.0.0:
     resolution: {integrity: sha512-N4u2ABATi3Qplzf0hWbVCdjenim8F3ojEXpBDF5hBpjzW182MjNGLqfmQ0SkSPeQ+V86ZXgeH8aXj6kayd4jgg==}
     engines: {node: '>=14'}
@@ -8484,13 +8477,6 @@ packages:
       minimatch: 3.1.2
     dev: true
 
-  /jest-canvas-mock@2.4.0:
-    resolution: {integrity: sha512-mmMpZzpmLzn5vepIaHk5HoH3Ka4WykbSoLuG/EKoJd0x0ID/t+INo1l8ByfcUJuDM+RIsL4QDg/gDnBbrj2/IQ==}
-    dependencies:
-      cssfontparser: 1.2.1
-      moo-color: 1.0.3
-    dev: true
-
   /jest-diff@29.6.1:
     resolution: {integrity: sha512-FsNCvinvl8oVxpNLttNQX7FAq7vR+gMDGj90tiP7siWw1UdakWUGqrylpsYrpvj908IYckm5Y0Q7azNAozU1Kg==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -10284,12 +10270,6 @@ packages:
       pathe: 1.1.1
       pkg-types: 1.0.3
       ufo: 1.1.2
-    dev: true
-
-  /moo-color@1.0.3:
-    resolution: {integrity: sha512-i/+ZKXMDf6aqYtBhuOcej71YSlbjT3wCO/4H1j8rPvxDJEifdwgg5MaFyu6iYAT8GBZJg2z0dkgK4YMzvURALQ==}
-    dependencies:
-      color-name: 1.1.4
     dev: true
 
   /morgan@1.10.0:
@@ -13678,15 +13658,6 @@ packages:
       rollup: 3.26.3
     optionalDependencies:
       fsevents: 2.3.2
-    dev: true
-
-  /vitest-canvas-mock@0.3.2(vitest@0.33.0):
-    resolution: {integrity: sha512-lds7MKxvFFPDCGLXsQI2ym1fxvC93DaS0Bb6sdjvylFyL6NYrAAcPb6xZGF2sMOt5fSLHddqAQaujqpbc3p0Zg==}
-    peerDependencies:
-      vitest: '*'
-    dependencies:
-      jest-canvas-mock: 2.4.0
-      vitest: 0.33.0(@vitest/ui@0.33.0)(jsdom@22.1.0)
     dev: true
 
   /vitest@0.33.0(@vitest/ui@0.33.0)(jsdom@22.1.0):
