@@ -7,6 +7,8 @@ https://slidr.app
 
 <br><br>
 
+[![CI/CD](https://github.com/slidr-app/slidr/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/slidr-app/slidr/actions/workflows/ci-cd.yml)
+
 ![Presentation](./example-confetti.gif)
 
 _Main presentation view_
