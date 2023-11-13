@@ -38,6 +38,7 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')`. */
     // eslint-disable-next-line @typescript-eslint/naming-convention
     baseURL: 'http://localhost:5173',
+    // BaseURL: 'http://host.docker.internal:5173',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -53,7 +54,6 @@ export default defineConfig({
       name: 'chromium',
       // Use: {...devices['Desktop Chrome'], storageState: STORAGE_STATE},
       use: {...devices['Desktop Chrome']},
-      // Dependencies: ['setup'],
     },
     // {
     //   name: 'chromium - no sign-in',
