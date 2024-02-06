@@ -95,7 +95,6 @@ export default function Toolbar({
             window.location.search
           }`}
           onClick={(event) => {
-            console.log('hello');
             event.preventDefault();
             window.open(
               `${window.location.origin}/s/${presentation?.id ?? ''}${
@@ -154,7 +153,6 @@ export default function Toolbar({
           label={isFullscreen ? 'window' : 'fullscreen'}
           title="Toggle fullscreen"
           onClick={() => {
-            console.log('go fullscreen');
             if (!document.fullscreenElement) {
               void document.documentElement.requestFullscreen();
             } else if (document.exitFullscreen) {

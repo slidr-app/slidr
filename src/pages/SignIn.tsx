@@ -6,10 +6,12 @@ import {
   sendSignInLinkToEmail,
   signInWithEmailLink,
 } from 'firebase/auth';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link, useLocation, useNavigate} from 'react-router-dom';
 import clsx from 'clsx';
 import {auth} from '../firebase';
 import Loading from '../components/Loading';
+import Button from '../components/toolbar/Button';
+import DefaultLayout from '../layouts/DefaultLayout';
 
 const DevSignIn = lazy(async () => import('../components/DevSignIn'));
 
@@ -36,7 +38,11 @@ export default function SignIn() {
     // dynamicLinkDomain: 'example.page.link',
   };
 
-  const isLink = isSignInWithEmailLink(auth, window.location.href);
+  // Build the current url with react router location, allowing this to be tested
+  const location = useLocation();
+  const currentUrl = `${window.location.origin}${location.pathname}${location.search}`;
+
+  const isLink = isSignInWithEmailLink(auth, currentUrl);
 
   const navigate = useNavigate();
   const [signInError, setSignInError] = useState<Error>();
@@ -51,7 +57,7 @@ export default function SignIn() {
     async (signInEmail: string) => {
       setSigningIn(true);
       try {
-        await signInWithEmailLink(auth, signInEmail, window.location.href);
+        await signInWithEmailLink(auth, signInEmail, currentUrl);
         navigate('/');
       } catch (error) {
         setSignInError(error as Error);
@@ -59,16 +65,16 @@ export default function SignIn() {
         window.localStorage.removeItem('emailForSignIn');
       }
     },
-    [navigate],
+    [navigate, currentUrl],
   );
 
   useEffect(() => {
     const storedEmail = window.localStorage.getItem('emailForSignIn');
-    if (isSignInWithEmailLink(auth, window.location.href) && storedEmail) {
+    if (isSignInWithEmailLink(auth, currentUrl) && storedEmail) {
       console.log('signing in');
       void signInAndRemoveEmail(storedEmail);
     }
-  }, [signInAndRemoveEmail]);
+  }, [signInAndRemoveEmail, currentUrl]);
 
   const [email, setEmail] = useState(
     window.localStorage.getItem('emailForSignIn') ?? '',
@@ -87,79 +93,81 @@ export default function SignIn() {
   const [emailSending, setEmailSending] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
-  if (signingIn) {
-    return (
-      <div className="w-screen h-screen">
-        <Loading message="Signing In..." />
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col items-center gap-4 p-4 w-screen">
-      {user && (
-        <div className="prose">
-          You are already signed as {user.email}. You should probably head{' '}
-          <Link to="/">home</Link>.
+    <DefaultLayout title="Sign In to Slidr">
+      {signingIn ? (
+        <div className="w-screen h-screen">
+          <Loading message="Signing In..." />
         </div>
-      )}
-      <form
-        className="flex flex-row justify-center items-center gap-2 flex-wrap w-full"
-        onSubmit={async (event) => {
-          event.preventDefault();
+      ) : (
+        <div className="flex flex-col items-center gap-4 p-4">
+          {user && (
+            <div className="prose">
+              You are already signed as {user.email}. You should probably head{' '}
+              <Link to="/">home</Link>.
+            </div>
+          )}
+          <form
+            className="flex flex-row justify-center items-stretch gap-2 flex-wrap w-full"
+            onSubmit={async (event) => {
+              event.preventDefault();
+              if (isLink) {
+                void signInAndRemoveEmail(email);
+                return;
+              }
 
-          if (isLink) {
-            void signInAndRemoveEmail(email);
-            return;
-          }
-
-          setEmailSending(true);
-          await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-          window.localStorage.setItem('emailForSignIn', email);
-          setEmailSent(true);
-        }}
-      >
-        <label className="flex flex-row gap-2 items-center">
-          Email:
-          <input
-            className="input w-auto invalid:(border-red-700 shadow-red-700) invalid-focus:(border-red-700 shadow-red-700)"
-            id="email"
-            type="email"
-            placeholder="email address..."
-            value={email}
-            disabled={emailSent}
-            size={30}
-            onChange={(event) => {
-              setEmail(event.target.value);
+              setEmailSending(true);
+              await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+              window.localStorage.setItem('emailForSignIn', email);
+              setEmailSent(true);
             }}
-          />
-        </label>
-        {isLink ? (
-          <button className="btn" type="submit">
-            Verify & Sign In
-          </button>
-        ) : (
-          <button
-            className="btn flex flex-row items-center gap-2"
-            type="submit"
-            disabled={emailSent}
           >
-            <div
-              className={clsx(
-                emailSent ? 'i-tabler-mail-fast' : 'i-tabler-send',
-                !emailSent && emailSending && 'animate-spin',
-              )}
-            />
-            <div>{emailSent ? 'Email Sent' : 'Send Email'}</div>
-          </button>
-        )}
-      </form>
-      {emailSent && (
-        <div>
-          Please click on the link sent in the email. You can close this page.
+            <label className="flex flex-row gap-2 items-stretch">
+              <div className="flex flex-row items-center">Email:</div>
+              <input
+                className="input w-auto invalid:(border-red-700 shadow-red-700) invalid-focus:(border-red-700 shadow-red-700)"
+                id="email"
+                type="email"
+                placeholder="email address..."
+                value={email}
+                disabled={emailSent}
+                size={30}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                }}
+              />
+            </label>
+            {isLink ? (
+              <Button
+                border
+                submit
+                icon="i-tabler-user-check"
+                label="Verify & Sign In"
+                title="Verify & Sign In"
+              />
+            ) : (
+              <Button
+                border
+                submit
+                icon={clsx(
+                  emailSent ? 'i-tabler-mail-fast' : 'i-tabler-send',
+                  !emailSent && emailSending && 'animate-spin',
+                )}
+                label={emailSent ? 'Email Sent' : 'Send Email'}
+                title={emailSent ? 'Email Sent' : 'Send Email'}
+                disabled={emailSent}
+              />
+            )}
+          </form>
+          {emailSent && (
+            <div>
+              Please click on the link sent in the email. You can close this
+              page.
+            </div>
+          )}
+          {import.meta.env.MODE === 'emulator' && <DevSignIn />}
         </div>
       )}
-      {import.meta.env.MODE === 'emulator' && <DevSignIn />}
-    </div>
+    </DefaultLayout>
   );
 }

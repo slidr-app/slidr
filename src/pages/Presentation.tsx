@@ -12,7 +12,7 @@ import {
   useChannelHandlers,
   useCombinedHandlers,
 } from '../components/broadcast/use-channel-handlers';
-import Reactions from '../components/reactions/Reactions';
+import {Reactions} from '../components/reactions/Reactions';
 import useReactions from '../components/reactions/use-reactions';
 import useRemoteReactions from '../components/reactions/use-remote-reactions';
 import Toolbar from '../components/toolbar/Toolbar';
@@ -20,6 +20,7 @@ import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import Slideshow from '../components/slides/Slideshow';
 import usePresentation from '../components/slides/use-presentation';
 import useBroadcastFirebase from '../components/broadcast/use-broadcast-firestore';
+import useClearReactions from '../components/reactions/use-clear-reactions';
 
 function Presentation() {
   const presentation = usePresentation();
@@ -30,7 +31,6 @@ function Presentation() {
     }`;
   }, [presentation]);
 
-  // Const [forward, setForward] = useState<boolean>(true);
   const sessionId = useSearchParametersSessionId(true);
 
   // Sync the slide index with the broadcast channel (speaker view)
@@ -39,7 +39,7 @@ function Presentation() {
     setHandlers: setHandlersBroadcastChannel,
   } = useChannelHandlers();
   const postBroadcastChannel = useBroadcastChannel({
-    channelId: presentation.id ?? 'unknown',
+    sessionId,
     onIncoming: handleIncomingBroadcastChannel,
   });
   const {
@@ -86,39 +86,58 @@ function Presentation() {
 
   const [fire, setFire] = useState<boolean | Record<string, unknown>>(false);
   const [reset, setReset] = useState<boolean | Record<string, unknown>>(false);
-  const throwConfetti = useCallback(() => {
-    setFire({});
-  }, [setFire]);
 
-  const {reactions, removeReaction, addReaction, clearReactions} =
+  const {reactions, removeReaction, addReactions, clearReactions} =
     useReactions();
   const {handlers: handlersReactions} = useRemoteReactions({
-    onReaction: addReaction,
+    onReactions: addReactions,
   });
-  const resetAllReactions = useCallback(() => {
+
+  // Listen, but don't post, confetti to the BroadcastChannel
+  const {
+    handlers: handlersConfettiBroadcastChannel,
+    confettiReactions: confettiReactionsBroadcastChannel,
+  } = useConfetti({});
+
+  const {
+    handlers: handlersConfettiBroadcastSupabase,
+    confettiReactions: confettiReactionsFirebase,
+    postConfetti,
+  } = useConfetti({postMessage: postBroadcastSupabase});
+
+  const throwConfetti = useCallback(() => {
+    setFire({});
+    postConfetti();
+  }, [setFire, postConfetti]);
+
+  const resetConfetti = useCallback(() => {
     setReset({});
-    clearReactions();
-  }, [setReset, clearReactions]);
+  }, [setReset]);
 
-  const {handlers: handlersConfettiBroadcastChannel} = useConfetti({
-    postMessage: postBroadcastChannel,
-    onConfetti: setFire,
-    onReset: resetAllReactions,
-  });
+  const {clearReactions: clearAllReaction, handlers: clearHandlers} =
+    useClearReactions({
+      postMessage: postBroadcastSupabase,
+      setClearConfetti: resetConfetti,
+      setClearIcons: clearReactions,
+    });
 
-  const {handlers: handlersConfettiBroadcastSupabase} = useConfetti({
-    onConfetti: setFire,
-  });
+  const confettiReactions = useMemo(
+    () => [...confettiReactionsBroadcastChannel, ...confettiReactionsFirebase],
+    [confettiReactionsBroadcastChannel, confettiReactionsFirebase],
+  );
 
   useCombinedHandlers(
     setHandlersBroadcastChannel,
     handlersConfettiBroadcastChannel,
     handlersSlideIndexBroadcastChannel,
+    clearHandlers,
   );
   useCombinedHandlers(
     setHandlersBroadcastSupabase,
     handlersConfettiBroadcastSupabase,
     handlersReactions,
+    // Can't clear via firebase, right?
+    // ClearHandlers,
   );
 
   // Swipe and key bindings
@@ -138,10 +157,10 @@ function Presentation() {
         ['ArrowRight', navNext],
         ['Space', navNext],
         ['KeyS', openSpeakerWindow],
-        ['KeyR', resetAllReactions],
+        ['KeyR', clearAllReaction],
         ['KeyC', throwConfetti],
       ]),
-    [openSpeakerWindow, resetAllReactions, throwConfetti, navNext, navPrevious],
+    [openSpeakerWindow, clearAllReaction, throwConfetti, navNext, navPrevious],
   );
   useKeys(keyHandlers);
 
@@ -159,7 +178,11 @@ function Presentation() {
           forward={forward}
         />
       </div>
-      <Confetti fire={fire} reset={reset} />
+      <Confetti
+        confettiReactions={confettiReactions}
+        clear={reset}
+        fire={fire}
+      />
       <Reactions reactions={reactions} removeReaction={removeReaction} />
       {/* Inspired from https://stackoverflow.com/a/44233700 */}
       <div className="pointer-events-none position-fixed top-1rem w-10rem h-[calc(100%_-_10rem_-_2rem)] right-4 animate-longbounce 2xl:w-12rem 2xl:h-[calc(100%_-_12rem_-_2rem)] lt-sm:w-8rem lt-sm:h-[calc(100%_-_8rem_-_2rem)] z-2">

@@ -11,17 +11,7 @@ beforeAll(async () => {
   const cred = await signInAnonymously(auth);
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/presentation-2',
-    {method: 'DELETE'},
-  );
-
-  await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/test',
-    {method: 'DELETE'},
-  );
-
-  await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/test/reactions',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/presentation-2',
     {method: 'DELETE'},
   );
 
@@ -35,6 +25,18 @@ beforeAll(async () => {
     title: 'test presentation',
     twitterHandle: '@doesnotexist',
   } satisfies PresentationCreate);
+});
+
+beforeEach(async () => {
+  await fetch(
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/test',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/test/reactions',
+    {method: 'DELETE'},
+  );
 });
 
 describe('Audience view', () => {

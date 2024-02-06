@@ -6,8 +6,8 @@ import {
   screen,
   userEvent,
   render,
-  findByRole,
-  queryByRole,
+  waitForElementToBeRemoved,
+  within,
 } from '../test/test-utils';
 import Routes from '../Routes';
 import {type PresentationCreate} from '../../functions/src/presentation';
@@ -17,17 +17,37 @@ beforeAll(async () => {
   const cred = await signInAnonymously(auth);
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/speakertest',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/speakertest',
     {method: 'DELETE'},
   );
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest1/reactions',
     {method: 'DELETE'},
   );
 
   await fetch(
-    'http://127.0.0.1:8080/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest/reactions',
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest1',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest2/reactions',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest2',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest3/reactions',
+    {method: 'DELETE'},
+  );
+
+  await fetch(
+    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/sessions/speakertest3',
     {method: 'DELETE'},
   );
 
@@ -46,13 +66,13 @@ beforeAll(async () => {
 describe('Speaker view', () => {
   it('synchronizes the current slide', async () => {
     const presentationRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/p/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/p/speakertest?slide=1&session=speakertest1'],
     });
     const speakerRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/s/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/s/speakertest?slide=1&session=speakertest1'],
     });
     const audienceRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/i/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/i/speakertest?slide=1&session=speakertest1'],
     });
 
     render(
@@ -73,32 +93,32 @@ describe('Speaker view', () => {
     const speaker = await screen.findByTestId('speaker');
     const audience = await screen.findByTestId('audience');
 
-    await findByRole(presentation, 'img', {name: 'Slide page 1'});
-    await findByRole(speaker, 'img', {name: 'Slide page 1'});
-    await findByRole(audience, 'img', {name: 'Slide page 1'});
+    await within(presentation).findByRole('img', {name: 'Slide page 1'});
+    await within(speaker).findByRole('img', {name: 'Slide page 1'});
+    await within(audience).findByRole('img', {name: 'Slide page 1'});
 
-    const next = await findByRole(speaker, 'button', {name: 'next'});
+    const next = await within(speaker).findByRole('button', {name: 'next'});
     await userEvent.click(next);
-    await findByRole(presentation, 'img', {
+    await within(presentation).findByRole('img', {
       name: 'Slide page 2',
     });
-    await findByRole(speaker, 'img', {
+    await within(speaker).findByRole('img', {
       name: 'Slide page 2',
     });
-    await findByRole(audience, 'img', {
+    await within(audience).findByRole('img', {
       name: 'Slide page 2',
     });
   });
 
   it('renders reactions on audience and presentation views', async () => {
     const presentationRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/p/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/p/speakertest?slide=1&session=speakertest2'],
     });
     const speakerRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/s/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/s/speakertest?slide=1&session=speakertest2'],
     });
     const audienceRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/i/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/i/speakertest?slide=1&session=speakertest2'],
     });
 
     render(
@@ -119,30 +139,30 @@ describe('Speaker view', () => {
     const speaker = await screen.findByTestId('speaker');
     const audience = await screen.findByTestId('audience');
 
-    await findByRole(presentation, 'img', {name: 'Slide page 1'});
-    await findByRole(speaker, 'img', {name: 'Slide page 1'});
-    await findByRole(audience, 'img', {name: 'Slide page 1'});
+    await within(presentation).findByRole('img', {name: 'Slide page 1'});
+    await within(speaker).findByRole('img', {name: 'Slide page 1'});
+    await within(audience).findByRole('img', {name: 'Slide page 1'});
 
-    const love = await findByRole(speaker, 'button', {name: 'love'});
+    const love = await within(speaker).findByRole('button', {name: 'love'});
     await userEvent.click(love);
 
-    await findByRole(presentation, 'figure', {
+    await within(presentation).findByRole('figure', {
       name: 'love',
     });
-    await findByRole(audience, 'figure', {
+    await within(audience).findByRole('figure', {
       name: 'love',
     });
   });
 
   it('clears reactions on presentation', async () => {
     const presentationRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/p/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/p/speakertest?slide=1&session=speakertest3'],
     });
     const speakerRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/s/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/s/speakertest?slide=1&session=speakertest3'],
     });
     const audienceRouter = createMemoryRouter(Routes, {
-      initialEntries: ['/i/speakertest?slide=1&session=speakertest'],
+      initialEntries: ['/i/speakertest?slide=1&session=speakertest3'],
     });
 
     render(
@@ -163,20 +183,26 @@ describe('Speaker view', () => {
     const speaker = await screen.findByTestId('speaker');
     const audience = await screen.findByTestId('audience');
 
-    await findByRole(presentation, 'img', {name: 'Slide page 1'});
-    await findByRole(speaker, 'img', {name: 'Slide page 1'});
-    await findByRole(audience, 'img', {name: 'Slide page 1'});
+    // Wait for all pages to sync
+    await within(presentation).findByRole('img', {name: 'Slide page 1'});
+    await within(speaker).findByRole('img', {name: 'Slide page 1'});
+    await within(audience).findByRole('img', {name: 'Slide page 1'});
 
-    const love = await findByRole(speaker, 'button', {name: 'love'});
+    const love = await within(speaker).findByRole('button', {name: 'love'});
     await userEvent.click(love);
-
-    await findByRole(presentation, 'figure', {
+    await within(presentation).findByRole('figure', {
       name: 'love',
     });
 
-    const clear = await findByRole(speaker, 'button', {name: 'clear'});
-    await userEvent.click(clear);
+    // Depending on the performance of the machine running the test
+    // the removal can happen super fast. Start waiting for it now,
+    // before removing. This makes the test more stable.
+    const removalPromise = waitForElementToBeRemoved(() =>
+      within(presentation).queryByRole('figure', {name: 'love'}),
+    );
 
-    expect(queryByRole(presentation, 'figure', {name: 'love'})).toBeNull();
+    const clear = await within(speaker).findByRole('button', {name: 'clear'});
+    await userEvent.click(clear);
+    await removalPromise;
   });
 });

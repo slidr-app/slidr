@@ -39,8 +39,8 @@ service cloud.firestore {
     }
     match /sessions/{sessionId}/reactions/{reactionId} {
     	allow create: if
-      	request.resource.data.keys().hasAll(['reaction', 'ttl'])
-      	&& request.resource.data.keys().hasOnly(['reaction', 'ttl']);
+      	request.resource.data.keys().hasAll(['reaction', 'ttl', 'created'])
+      	&& request.resource.data.keys().hasOnly(['reaction', 'ttl', 'created']);
       allow read: if true;
     }
   }

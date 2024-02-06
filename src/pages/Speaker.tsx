@@ -22,6 +22,7 @@ import Slideshow from '../components/slides/Slideshow';
 import NavButtons from '../components/toolbar/NavButtons';
 import Button from '../components/toolbar/Button';
 import useBroadcastFirebase from '../components/broadcast/use-broadcast-firestore';
+import useClearReactions from '../components/reactions/use-clear-reactions';
 
 const textSizes = [
   'text-xs',
@@ -55,7 +56,7 @@ export default function Speaker() {
     setHandlers: setHandlersBroadcastChannel,
   } = useChannelHandlers();
   const postBroadcastChannel = useBroadcastChannel({
-    channelId: presentation.id ?? 'unknown',
+    sessionId,
     onIncoming: handleIncomingBroadcastChannel,
   });
   const {
@@ -74,10 +75,6 @@ export default function Speaker() {
   );
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
-  // We fire and reset confetti on the broadcast channel (ignoring incoming confetti)
-  const {postConfettiReset: postConfettiResetBroadcastChannel} = useConfetti({
-    postMessage: postBroadcastChannel,
-  });
   const {postMessage: postBroadcastSupabase} = useBroadcastFirebase({
     sessionId,
   });
@@ -88,6 +85,18 @@ export default function Speaker() {
   const {postReaction} = useRemoteReactions({
     postMessage: postBroadcastSupabase,
   });
+
+  const {clearReactions: clearBroadcastChannel} = useClearReactions({
+    postMessage: postBroadcastChannel,
+  });
+  const {clearReactions: clearFirebase} = useClearReactions({
+    postMessage: postBroadcastSupabase,
+  });
+
+  const clear = useCallback(() => {
+    clearBroadcastChannel();
+    clearFirebase();
+  }, [clearBroadcastChannel, clearFirebase]);
 
   // Swipe and key bindings
   const swipeHandlers = useSwipeable({
@@ -200,7 +209,7 @@ export default function Speaker() {
               label="clear"
               title="Clear reactions"
               onClick={() => {
-                postConfettiResetBroadcastChannel();
+                clear();
               }}
             />
           </div>

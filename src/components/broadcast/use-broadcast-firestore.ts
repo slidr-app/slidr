@@ -1,7 +1,18 @@
 import {useCallback, useEffect, useState} from 'react';
-import {onSnapshot, collection, addDoc, setDoc, doc} from 'firebase/firestore';
+import {
+  onSnapshot,
+  collection,
+  addDoc,
+  setDoc,
+  doc,
+  serverTimestamp,
+} from 'firebase/firestore';
 import {firestore as db} from '../../firebase';
-import {type ReactionData} from '../reactions/reaction';
+import {
+  type ReactionEntry,
+  type IncomingReactionData,
+  type ReactionData,
+} from '../reactions/reaction';
 import {type SessionData} from '../slides/sessions';
 import {type Payload, type Handler} from './use-channel-handlers';
 
@@ -27,18 +38,17 @@ export default function useBroadcastFirebase({
       // TTL 1 hour
       const ttl = new Date(Date.now() + 60 * 60 * 1000);
 
-      if (payload.id === 'reaction') {
-        return addDoc(collection(db, 'sessions', sessionId, 'reactions'), {
-          reaction: payload.icon,
-          ttl,
-        } satisfies ReactionData);
-      }
-
-      if (payload.id === 'confetti') {
-        return addDoc(collection(db, 'sessions', sessionId, 'reactions'), {
-          reaction: 'confetti',
-          ttl,
-        } satisfies ReactionData);
+      if (payload.id === 'reactions') {
+        return Promise.all(
+          // Ignore the id when posting, it will get generated
+          payload.reactions.map(async ([, reaction]) => {
+            return addDoc(collection(db, 'sessions', sessionId, 'reactions'), {
+              reaction,
+              ttl,
+              created: serverTimestamp(),
+            } satisfies ReactionData);
+          }),
+        );
       }
 
       if (payload.id === 'slide index') {
@@ -47,10 +57,6 @@ export default function useBroadcastFirebase({
           ttl,
         } satisfies SessionData);
       }
-
-      // Note: we don't handle the 'confetti reset' action as it always happens on the broadcast channel
-
-      console.error(new Error(`bad post payload: ${payload.id}`));
     },
     [sessionId],
   );
@@ -64,10 +70,6 @@ export default function useBroadcastFirebase({
 
     let mounted = true;
 
-    console.log('(re)creating channel');
-
-    let firstSnapshot = true;
-
     const unsubscribeReactions = onSnapshot(
       collection(db, 'sessions', sessionId, 'reactions'),
       (next) => {
@@ -78,36 +80,32 @@ export default function useBroadcastFirebase({
 
         setConnected(true);
 
-        if (firstSnapshot) {
-          // Ignore first snapshot
-          console.log('first snapshot, skipping');
-          firstSnapshot = false;
-          return;
-        }
-
         if (!onIncoming) {
           return;
         }
 
-        for (const change of next.docChanges()) {
-          console.log('change', change);
-          if (change.type === 'added') {
-            const data = change.doc.data();
+        const now = Date.now();
 
-            // Special case for confetti
-            // Note: we don't handle the 'confetti reset' action as it always happens on the broadcast channel
+        const reactions = next.docs
+          .map((snapshot) => {
+            const reactionData = snapshot.data({
+              serverTimestamps: 'estimate',
+            }) as IncomingReactionData;
+            return {
+              id: snapshot.id,
+              reaction: reactionData.reaction,
+              created: reactionData.created.toMillis(),
+            };
+          })
+          // Ignore reactions older than 30 seconds
+          .filter((reactionDoc) => now - reactionDoc.created < 30_000)
+          .sort((a, b) => a.created - b.created)
+          .map(
+            (reactionDoc) =>
+              [reactionDoc.id, reactionDoc.reaction] satisfies ReactionEntry,
+          );
 
-            if (data.reaction === 'confetti') {
-              onIncoming({id: 'confetti'});
-              continue;
-            }
-
-            onIncoming({id: 'reaction', icon: data.reaction as string});
-            continue;
-          }
-
-          console.log('unexpected change', change);
-        }
+        onIncoming({id: 'reactions', reactions});
       },
       (error) => {
         setConnected(false);

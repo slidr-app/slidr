@@ -1,24 +1,18 @@
 import clsx from 'clsx';
 import {useEffect, useMemo, useRef} from 'react';
-import {type Reaction as ReactionType} from './reaction';
+import {type IconReaction, type IconReactionMap} from './reaction';
+import reactionsIconMap from './reaction-icons-map';
 
 // This file is inspired from these 2 articles:
 // https://eng.butter.us/awesome-floating-emoji-reactions-using-framer-motion-styled-components-and-lottie-36b9f479a9f9
 // https://www.daily.co/blog/add-flying-emoji-reactions-to-a-custom-daily-video-call/
 
-const reactionLabels: Record<string, string> = {
-  'i-fluent-emoji-flat-red-heart': 'love',
-  'i-fluent-emoji-flat-smiling-face': 'smile',
-  'i-fluent-emoji-flat-clapping-hands': 'applause',
-  'i-fluent-emoji-flat-exploding-head': 'mind blown',
-};
-
 function Reaction({
   onReactionDone,
-  icon = 'i-fluent-emoji-flat-red-heart',
+  reaction,
 }: {
   onReactionDone: () => void;
-  icon?: string;
+  reaction: IconReaction;
 }) {
   // Keep a ref to the reaction div so we can add the random style vars
   const reactionRef = useRef<HTMLDivElement>(null);
@@ -60,36 +54,38 @@ function Reaction({
   return (
     <div
       ref={reactionRef}
-      aria-label={reactionLabels[icon] ?? 'unknown'}
+      aria-label={reaction}
       role="figure"
       style={{left: `var(--reaction-x-offset)`}}
       className={clsx(
         'animate-emoji absolute bottom--100px bottom--12 leading-none text-size-12 overflow-visible',
-        icon,
+        reactionsIconMap.get(reaction)?.icon,
       )}
     />
   );
 }
 
-export default function Reactions({
+export function Reactions({
   reactions,
   removeReaction,
 }: {
-  reactions: ReactionType[];
-  removeReaction: (reaction: ReactionType) => void;
+  reactions: IconReactionMap;
+  removeReaction: (id: string) => void;
 }) {
   return (
     <div className="fixed top-0 left-0 h-screen w-screen pointer-events-none">
       <div className="relative left-[calc(3rem_+_20px)] h-full w-[calc(calc(100vw_-_6rem)_-_40px)] max-h-screen">
-        {reactions.map((reaction) => (
-          <Reaction
-            key={reaction.id}
-            icon={reaction.icon}
-            onReactionDone={() => {
-              removeReaction(reaction);
-            }}
-          />
-        ))}
+        {Array.from(reactions.entries())
+          .filter(([, renderedReaction]) => !renderedReaction.done)
+          .map(([id, renderedReaction]) => (
+            <Reaction
+              key={id}
+              reaction={renderedReaction.reaction}
+              onReactionDone={() => {
+                removeReaction(id);
+              }}
+            />
+          ))}
       </div>
     </div>
   );

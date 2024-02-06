@@ -12,6 +12,12 @@
       "fieldPath": "ttl",
       "ttl": true,
       "indexes": []
+    },
+    {
+      "collectionGroup": "reactions",
+      "fieldPath": "created",
+      "ttl": false,
+      "indexes": []
     }
   ]
 }

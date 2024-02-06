@@ -132,7 +132,7 @@ export default function DefaultLayout({
         <div>&copy; 2023 Slidr.app</div>
         <div className="prose">
           <a
-            href="https://github.com/codyzu/present/issues/new/choose"
+            href="https://github.com/slidr-app/slidr/issues/new/choose"
             className="vertical-mid"
           >
             Something not right? Have an idea? Let us know on github.{' '}

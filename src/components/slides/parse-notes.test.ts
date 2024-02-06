@@ -31,6 +31,39 @@ describe('parse notes', () => {
     expect(output).toEqual(expectedMarkdown);
   });
 
+  it('parses sequential notes', () => {
+    const input: Note[] = [
+      {pageIndices: [0], markdown: 'abc'},
+      {pageIndices: [1], markdown: 'def'},
+    ];
+    expectedMarkdown = `<!-- +1+1 -->
+abc
+
+<!-- +1+1 -->
+def
+`;
+
+    const output = exportNotes(input);
+    expect(output).toEqual(expectedMarkdown);
+  });
+
+  it('parses sequential notes with empty notes in between', () => {
+    const input: Note[] = [
+      {pageIndices: [0], markdown: ''},
+      {pageIndices: [1], markdown: 'abc'},
+      {pageIndices: [2], markdown: 'def'},
+    ];
+    expectedMarkdown = `<!-- +2+1 -->
+abc
+
+<!-- +1+1 -->
+def
+`;
+
+    const output = exportNotes(input);
+    expect(output).toEqual(expectedMarkdown);
+  });
+
   it('imports notes', async () => {
     const input = expectedMarkdown;
 

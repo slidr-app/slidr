@@ -1,6 +1,5 @@
-import {useCallback, useContext, useEffect, useRef, useState} from 'react';
+import {useCallback, useContext, useEffect, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
-import {Document, Page} from 'react-pdf';
 import * as pdfjs from 'pdfjs-dist';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
@@ -34,9 +33,21 @@ import {
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext, type UserDoc} from '../components/UserProvider';
 import Loading from '../components/Loading';
+import Pdf from '../components/pdf/Pdf';
 
-const src = new URL('pdfjs-dist/build/pdf.worker.js', import.meta.url);
+// TODO: test fails sometimes, done text doesn't show pdf.
+
+const src = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url);
 pdfjs.GlobalWorkerOptions.workerSrc = src.toString();
+
+type UploadState =
+  | 'fetching user'
+  | 'ready'
+  | 'creating'
+  | 'rendering pages'
+  | 'uploading pages'
+  | 'setting pages'
+  | 'done';
 
 const storage = getStorage(app);
 
@@ -44,22 +55,38 @@ if (import.meta.env.MODE === 'emulator') {
   connectStorageEmulator(storage, '127.0.0.1', 9199);
 }
 
-export default function Export() {
+export default function Upload() {
   useEffect(() => {
     document.title = `Slidr - Upload`;
   }, []);
 
-  const {user} = useContext(UserContext);
+  const [uploadState, setUploadState] = useState<UploadState>('fetching user');
   const [userData, setUserData] = useState<UserDoc>();
+  const [file, setFile] = useState<File>();
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+  const [presentationRef, setPresentationRef] = useState<DocumentReference>();
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [title, setTitle] = useState('');
+  const [savingState, setSavingState] = useState<NotesSaveState>('saved');
+  const [pageBlob, setPageBlob] = useState<Blob>();
+  const [uploadPromises, setUploadPromises] = useState<Array<Promise<string>>>(
+    [],
+  );
+  const [pages, setPages] = useState<string[]>([]);
 
+  const {user} = useContext(UserContext);
   useEffect(() => {
     async function getUserDoc() {
+      setUploadState('fetching user');
       if (!user) {
         setUserData(undefined);
         return;
       }
 
       const userSnapshot = await getDoc(doc(firestore, 'users', user.uid));
+      setUploadState('ready');
+
       if (!userSnapshot.exists()) {
         setUserData({});
         return;
@@ -71,19 +98,23 @@ export default function Export() {
     void getUserDoc();
   }, [user]);
 
-  const [file, setFile] = useState<File>();
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
-  const [uploadDone, setUploadDone] = useState(false);
-  const [rendering, setRendering] = useState(false);
-  const [presentationRef, setPresentationRef] = useState<DocumentReference>();
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [title, setTitle] = useState('');
-  const [savingState, setSavingState] = useState<NotesSaveState>('saved');
+  const {getRootProps, getInputProps, isDragActive, acceptedFiles} =
+    useDropzone({
+      accept: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        'application/pdf': ['.pdf'],
+      },
+      maxFiles: 1,
+    });
 
-  const onDrop = useCallback(
-    async (acceptedFiles: File[]) => {
+  useEffect(() => {
+    async function startRenderingFile() {
+      if (!acceptedFiles[0] || uploadState !== 'ready') {
+        return;
+      }
+
       setFile(acceptedFiles[0]);
+
       const presentationRef = await addDoc(
         collection(firestore, 'presentations'),
         {
@@ -102,41 +133,30 @@ export default function Export() {
         storage,
         `presentations/${presentationRef.id}/${originalName}`,
       );
+
       await uploadBytes(originalRef, acceptedFiles[0], {
         cacheControl: 'public;max-age=604800',
       });
+
       const originalDownloadUrl = await getDownloadURL(originalRef);
       await updateDoc(presentationRef, {
         original: originalDownloadUrl,
       } satisfies PresentationUpdate);
-      setRendering(true);
-    },
-    [userData?.username, userData?.twitterHandle],
-  );
+      setUploadState('rendering pages');
+    }
 
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({
-    onDrop,
-    accept: {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      'application/pdf': ['.pdf'],
-    },
-    maxFiles: 1,
-  });
+    void startRenderingFile();
+  }, [acceptedFiles, uploadState, userData?.twitterHandle, userData?.username]);
 
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const [renderingDone, setRenderingDone] = useState(false);
-  const [pageBlob, setPageBlob] = useState<Blob>();
-  function pageRendered() {
+  const pageRendered = useCallback((canvas: HTMLCanvasElement) => {
     // Watermark rendered image
-    const ctx = canvasRef.current?.getContext('2d');
+    const ctx = canvas.getContext('2d');
     if (ctx) {
       const rootStyles = window.getComputedStyle(
         document.querySelector('#root')!,
       );
 
       const fontFamily = rootStyles.getPropertyValue('font-family');
-      // Const fontSize = rootStyles.getPropertyValue('font-size');
 
       // The weight should match an already loaded font so that all watermarks have the same dimensions.
       // Otherwise, the first page may not have the correctly scaled font.
@@ -148,12 +168,12 @@ export default function Export() {
 
       const textMetrics = ctx.measureText('slidr.app');
       const x =
-        canvasRef.current!.width -
+        canvas.width -
         20 -
         textMetrics.actualBoundingBoxLeft -
         textMetrics.actualBoundingBoxRight;
       const y =
-        canvasRef.current!.height -
+        canvas.height -
         0 -
         textMetrics.fontBoundingBoxAscent -
         textMetrics.fontBoundingBoxDescent;
@@ -161,110 +181,112 @@ export default function Export() {
       ctx.strokeText('slidr.app', x, y);
     }
 
-    canvasRef.current?.toBlob(async (blob) => {
+    canvas.toBlob(async (blob) => {
       if (!blob) {
-        throw new Error(`Error rendering page index ${pageIndex}`);
+        throw new Error(`Error rendering pdf canvas to image webp blob`);
       }
 
       setPageBlob(blob);
     }, 'image/webp');
-  }
+  }, []);
 
-  const [uploadPromises, setUploadPromises] = useState<Array<Promise<string>>>(
-    [],
-  );
-  const [pages, setPages] = useState<string[]>([]);
   useEffect(() => {
-    async function uploadPage() {
+    async function uploadPage(pageImage: Blob, id: string) {
       const pageStorageRef = storageRef(
         storage,
-        `presentations/${presentationRef!.id}/${pageIndex
+        `presentations/${id}/${pageIndex
           .toString()
           .padStart(3, '0')}_${nanoid()}.webp`,
       );
 
-      await uploadBytes(pageStorageRef, pageBlob!, {
+      await uploadBytes(pageStorageRef, pageImage, {
         cacheControl: 'public, max-age=604800, immutable',
       });
+      console.log('upload done', pageIndex);
       const pageUrl = await getDownloadURL(pageStorageRef);
+      console.log('dl url done', pageIndex);
       return pageUrl;
     }
 
-    if (!rendering || !pageBlob || !presentationRef) {
+    if (uploadState !== 'rendering pages' || !pageBlob || !presentationRef) {
       return;
     }
 
-    const uploadPromise = uploadPage();
+    const uploadPromise = uploadPage(pageBlob, presentationRef.id);
     setUploadPromises((currentPromises) => [...currentPromises, uploadPromise]);
     setPageBlob(undefined);
 
     if (pageIndex < pageCount - 1) {
       setPageIndex(pageIndex + 1);
     } else {
-      setRenderingDone(true);
+      setUploadState('uploading pages');
+      // SetRenderingDone(true);
     }
-  }, [rendering, pageBlob, pageIndex, presentationRef, pageCount]);
-
-  const [uploading, setUploading] = useState(false);
+  }, [uploadState, pageBlob, pageIndex, presentationRef, pageCount]);
 
   useEffect(() => {
     async function updatePages() {
-      if (!presentationRef || !renderingDone || uploadDone || uploading) {
+      if (!presentationRef || uploadState !== 'uploading pages') {
         return;
       }
 
-      setUploading(true);
-
+      console.log('waiting for pages');
       const nextPages = await Promise.all(uploadPromises);
+      console.log('pages done');
       const nextNotes = nextPages.map((_, pageIndex) => ({
         pageIndices: [pageIndex] as [number, ...number[]],
         markdown: '',
       }));
 
-      setSavingState('saving');
-
-      await updateDoc(presentationRef, {
-        pages: nextPages,
-        rendered: new Date(),
-        title,
-        notes: nextNotes,
-      } satisfies PresentationUpdate);
       setPages(nextPages);
       setNotes(nextNotes);
-      setUploadDone(true);
+      setUploadState('setting pages');
+    }
+
+    void updatePages();
+  }, [uploadState, presentationRef, uploadPromises]);
+
+  useEffect(() => {
+    async function setPages() {
+      if (uploadState !== 'setting pages' || !presentationRef) {
+        return;
+      }
+
+      setSavingState('saving');
+      console.log('updating doc with pages');
+      await updateDoc(presentationRef, {
+        pages,
+        rendered: new Date(),
+        title,
+        notes,
+      } satisfies PresentationUpdate);
+      console.log('doc update done');
+      setUploadState('done');
       setSavingState((currentState) =>
         currentState === 'saving' ? 'saved' : currentState,
       );
     }
 
-    void updatePages();
-  }, [
-    presentationRef,
-    renderingDone,
-    uploadPromises,
-    title,
-    notes,
-    uploadDone,
-    uploading,
-  ]);
+    void setPages();
+  }, [uploadState, presentationRef, notes, pages, title]);
 
   function getUserFeedback() {
-    if (file && !rendering) {
+    if (uploadState === 'creating') {
       return [
         'Initializing...',
         'i-tabler-loader-3 animate-spin animate-duration-1000',
       ];
     }
 
-    if (file && rendering && !renderingDone) {
+    if (uploadState === 'rendering pages') {
       return ['Rendering...', 'i-tabler-loader-3 animate-spin'];
     }
 
-    if (file && rendering && renderingDone && !uploadDone) {
+    if (uploadState === 'uploading pages' || uploadState === 'setting pages') {
       return ['Uploading...', 'i-tabler-arrow-big-up-lines animate-bounce'];
     }
 
-    if (file && rendering && renderingDone && uploadDone) {
+    if (uploadState === 'done') {
       return ['Done', 'i-tabler-check'];
     }
 
@@ -281,7 +303,7 @@ export default function Export() {
     // Or do the upload synchronously 🤔
     // if (!uploadDone || !presentationRef) {
     // Update, let them both save, we may lose a note if the uploading save happens after this save, but that seems unlikely
-    if (!uploading || !presentationRef) {
+    if (uploadState !== 'done' || !presentationRef) {
       return;
     }
 
@@ -298,12 +320,16 @@ export default function Export() {
   return (
     <DefaultLayout title="New Presentation">
       {/* TODO: loading spinner */}
-      {userData ? (
+      {uploadState === 'fetching user' ? (
+        <div className="flex flex-col col-span-2 lt-sm:col-span-1 h-40 items-center justify-center">
+          <Loading />
+        </div>
+      ) : (
         <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">
           {!file && (
             <div
               className="btn rounded-md p-8 flex w-full max-w-screen-sm aspect-video gap-4 cursor-pointer mx-6"
-              {...getRootProps()}
+              {...getRootProps({role: 'button'})}
             >
               <label className="flex flex-col items-center justify-center w-full cursor-pointer">
                 {isDragActive ? (
@@ -326,26 +352,14 @@ export default function Export() {
               </label>
             </div>
           )}
-          {file && (
-            <div className="relative flex flex-col w-full max-w-screen-sm">
-              <Document
-                file={file}
-                className="w-full aspect-video relative rounded-t-md"
-                onLoadSuccess={(pdf) => {
-                  setPageCount(pdf.numPages);
-                }}
-              >
-                <Page
+          {uploadState !== 'ready' && (
+            <div className="flex flex-col w-full max-w-screen-sm">
+              <div className="relative w-full">
+                <Pdf
                   pageIndex={pageIndex}
-                  className="w-full aspect-video children:pointer-events-none"
-                  canvasRef={canvasRef}
-                  width={1920}
-                  // We want the exported images to be 1920, irrespective of the pixel ratio
-                  // Fix the ratio to 1
-                  devicePixelRatio={1}
-                  onRenderSuccess={() => {
-                    pageRendered();
-                  }}
+                  file={file!}
+                  onSetPageCount={setPageCount}
+                  onPageRendered={pageRendered}
                 />
                 <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
                   <div className={clsx('w-10 h-10', icon)} />
@@ -355,7 +369,7 @@ export default function Export() {
                   className="absolute bottom-0 h-[6px] bg-teal"
                   style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
                 />
-              </Document>
+              </div>
               <div>Rendering slide: {pageIndex + 1}</div>
             </div>
           )}
@@ -363,12 +377,8 @@ export default function Export() {
             saveState={savingState}
             notes={notes}
             title={title}
-            setNotes={(updater) => {
-              setNotes(updater);
-            }}
-            setTitle={(nextTitle) => {
-              setTitle(nextTitle);
-            }}
+            setNotes={setNotes}
+            setTitle={setTitle}
             pages={pages}
             onSave={() => {
               void savePreferences();
@@ -377,10 +387,6 @@ export default function Export() {
               setSavingState('dirty');
             }}
           />
-        </div>
-      ) : (
-        <div className="flex flex-col col-span-2 lt-sm:col-span-1 h-40 items-center justify-center">
-          <Loading />
         </div>
       )}
     </DefaultLayout>
