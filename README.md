@@ -5,7 +5,8 @@
 Start using Slidr now:\
 https://slidr.app
 
-<br><br>
+<br>
+<br>
 
 [![CI/CD](https://github.com/slidr-app/slidr/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/slidr-app/slidr/actions/workflows/ci-cd.yml)
 
