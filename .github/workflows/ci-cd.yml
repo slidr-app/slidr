@@ -124,7 +124,7 @@ jobs:
       run: pnpm exec playwright install --with-deps chromium
 
     - name: Run Playwright tests
-      run: pnpm run test:e2e
+      run: pnpm run test:e2e:coverage
 
     - uses: actions/upload-artifact@v3
       if: always()
@@ -132,4 +132,13 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
-      
+
+    - uses: codecov/codecov-action@v4
+      with:
+        # fail_ci_if_error: true # optional (default = false)
+        files: ./coverage/lcov.info # optional
+        # flags: unittests # optional
+        # name: codecov-umbrella # optional
+        token: ${{ secrets.CODECOV_TOKEN }} # required
+        verbose: true # optional (default = false)
+    

@@ -1,20 +1,17 @@
-import {test as base, expect} from '@playwright/test';
+import {test as base, expect} from '../test/coverage-fixture';
 import {type LoginPage, loginPageFactory} from '../test/login-page';
 import {generateId} from '../test/id';
 
 const test = base.extend<{loginPage: LoginPage}>({
-  async loginPage({page}, use) {
+  // @ts-expect-error the fixture isn't used, is there a better way?
+  async loginPage({page, _coveredPage}, use) {
     const loginPage = loginPageFactory(page);
     await use(loginPage);
   },
-
-  // Async page({page}, use) {
-  //   await importFirebaseData(page);
-  //   void use(page);
-  // },
 });
 
 test('upload button appears after signing in', async ({page, loginPage}) => {
+  test.setTimeout(30_000);
   await page.goto('/');
   await expect(page.getByRole('button', {name: /upload/i})).not.toBeVisible();
 
@@ -22,7 +19,9 @@ test('upload button appears after signing in', async ({page, loginPage}) => {
   await loginPage.signIn();
   await loginPage.signInComplete();
   await page.goto('/');
-  await expect(page.getByRole('button', {name: /upload/i})).toBeVisible();
+  await expect(page.getByRole('button', {name: /upload/i})).toBeVisible({
+    timeout: 15_000,
+  });
 });
 
 test('can upload and view presentation', async ({page, loginPage}) => {
