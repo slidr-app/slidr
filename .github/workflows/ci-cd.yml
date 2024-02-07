@@ -124,7 +124,7 @@ jobs:
       run: pnpm exec playwright install --with-deps chromium
 
     - name: Run Playwright tests
-      run: pnpm run test:e2e
+      run: pnpm run test:e2e:coverage
 
     - uses: actions/upload-artifact@v3
       if: always()
