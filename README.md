@@ -5,11 +5,11 @@
 Start using Slidr now:\
 https://slidr.app
 
-<br>
-<br>
+<br><br>
 
 [![CI/CD](https://github.com/slidr-app/slidr/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/slidr-app/slidr/actions/workflows/ci-cd.yml)
-
+[![codecov](https://codecov.io/gh/slidr-app/slidr/graph/badge.svg?token=K02VRLAXYW)](https://codecov.io/gh/slidr-app/slidr)
+      
 ![Presentation](./example-confetti.gif)
 
 _Main presentation view_
