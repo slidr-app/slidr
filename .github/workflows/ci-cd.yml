@@ -46,10 +46,20 @@ jobs:
           key: emulators-${{ runner.os }}
 
       - name: Integration tests
-        run: pnpm run test
+        run: pnpm run coverage
         # env:
         #   VITEST_MAX_THREADS: 1
         #   VITEST_MIN_THREADS: 1
+
+      - uses: codecov/codecov-action@v4
+        with:
+          # fail_ci_if_error: true # optional (default = false)
+          files: ./coverage/lcov.info # optional
+          # flags: unittests # optional
+          # name: codecov-umbrella # optional
+          token: ${{ secrets.CODECOV_TOKEN }} # required
+          verbose: true # optional (default = false)
+  
 
   deploy:
     if: github.ref_name == 'main' || github.ref_name == 'production'

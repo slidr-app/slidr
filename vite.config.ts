@@ -98,7 +98,7 @@ export default defineConfig(({command, mode}) => {
           '**/*.Test.tsx',
           'src/test/**',
         ],
-        reporter: ['text', 'html', 'clover', 'json', 'text-summary'],
+        reporter: ['text', 'text-summary', 'lcov'],
       },
       // You might want to disable it, if you don't have tests that rely on CSS
       // since parsing CSS is slow
