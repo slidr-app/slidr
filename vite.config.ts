@@ -97,6 +97,7 @@ export default defineConfig(({command, mode}) => {
           'src/test/**',
           '**/*.e2e.ts',
           '*.ts',
+          '**/*.d.ts',
         ],
         reporter: ['text', 'text-summary', 'lcov'],
       },
