@@ -9,7 +9,7 @@
 
 import {onRequest} from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
-import isBot from 'isbot';
+import {isbot} from 'isbot';
 import {initializeApp} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
 import {type PresentationData} from './presentation';
@@ -20,11 +20,6 @@ const db = getFirestore();
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info('Hello logs!', {structuredData: true});
-//   response.send('Hello from Firebase!');
-// });
-
 // LinkedIn says descriptions should be at least 100 chars.
 const description = `slidr.app is an always free interactive presentation framework. Why shouldn't presentations be fun for both the speaker and the audience?`;
 
@@ -32,7 +27,7 @@ const description = `slidr.app is an always free interactive presentation framew
 // See the warning here: https://firebase.google.com/docs/functions/locations#http_and_client-callable_functions
 export const renderForBot = onRequest(async (request, response) => {
   // Inspired from https://rodrigo-lajous.medium.com/seo-for-spa-angular-and-firebase-e16d11c20da7
-  if (!isBot(request.get('user-agent'))) {
+  if (!isbot(request.get('user-agent'))) {
     logger.info('not bot');
     response.redirect(`/r${request.url}`);
     return;
