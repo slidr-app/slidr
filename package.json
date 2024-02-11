@@ -27,6 +27,7 @@
     "test:e2e": "pnpm run emulators:exec --import test-data 'pnpm run test:e2e:start'",
     "test:e2e:coverage": "rm -Rf ./coverage && COVERAGE=1 pnpm run emulators:exec --import test-data 'pnpm run test:e2e:start' && pnpm run coverage:report",
     "test:e2e:ui": "pnpm run emulators:exec --import test-data 'pnpm run test:e2e:start --ui'",
+    "test:e2e:snapshots": "pnpm run emulators:exec --import test-data 'pnpm run test:e2e:start --update-snapshots'",
     "test:e2e:start": "FIRESTORE_EMULATOR_HOST=\"127.0.0.1:8081\" playwright test"
   },
   "dependencies": {
