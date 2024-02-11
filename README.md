@@ -82,6 +82,24 @@ pnpm run emulators
 pnpm run test:start [args for vitest]
 ```
 
+#### E2E Tests
+
+```
+pnpm run test:e2e
+```
+
+Snapshots are platform dependent. To update the snapshots with docker (required when developing with mac):
+
+```sh
+docker run --rm --network host -v $(pwd):/work/ -w /work/ -it mcr.microsoft.com/playwright:v1.39.0-jammy /bin/bash
+# host is now at 192.168.5.2 or host.docker.internal
+npm install -g pnpm
+# remove @vite-pwa/assets-generator from package.json
+# or apt install default-jre libvips libvips-dev build-essential
+pnpm install
+pnpm run test:e2e:snapshots
+```
+
 ### Build
 
 Create a production build:
