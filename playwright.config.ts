@@ -55,6 +55,8 @@ export default defineConfig({
       // Use: {...devices['Desktop Chrome'], storageState: STORAGE_STATE},
       use: {
         ...devices['Desktop Chrome'],
+        // https://playwrightsolutions.com/how-do-i-access-the-browser-clipboard-with-playwright/
+        // https://playwright.dev/docs/api/class-browsercontext#browser-context-grant-permissions
         permissions: ['clipboard-read', 'clipboard-write'],
       },
     },
