@@ -68,6 +68,7 @@
     "@unocss/preset-web-fonts": "^0.53.3",
     "@unocss/transformer-directives": "^0.53.3",
     "@unocss/transformer-variant-group": "^0.53.3",
+    "@vite-pwa/assets-generator": "^0.0.3",
     "@vitejs/plugin-react": "^4.0.3",
     "@vitest/coverage-v8": "^0.33.0",
     "@vitest/ui": "^0.33.0",
