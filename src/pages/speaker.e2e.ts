@@ -4,11 +4,6 @@ import {test, expect} from '../test/login-fixture';
 let presentationId: string;
 
 test.beforeAll(async () => {
-  await fetch(
-    'http://127.0.0.1:8081/emulator/v1/projects/demo-test/databases/(default)/documents/presentations/viewer-1',
-    {method: 'DELETE'},
-  );
-
   const presentationsQuerySnapshot = await dbAdmin
     .collection('presentations')
     .where('title', '==', 'A Presentation for Testing')
