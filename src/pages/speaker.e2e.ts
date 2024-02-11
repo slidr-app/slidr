@@ -14,11 +14,11 @@ test.beforeAll(async () => {
 });
 
 test('can change the slide of the presentation', async ({
-  context,
+  coverage,
 }, testInfo) => {
-  const presentationPage = await context.newPage();
-  const speakerPage = await context.newPage();
-  const audienceView = await context.newPage();
+  const presentationPage = await coverage.newPage();
+  const speakerPage = await coverage.newPage();
+  const audienceView = await coverage.newPage();
 
   await presentationPage.goto(
     `/p/${presentationId}?session=${testInfo.testId}`,
@@ -50,10 +50,10 @@ test('can change the slide of the presentation', async ({
   ).toBeVisible();
 });
 
-test('can add and clear reactions', async ({context}) => {
-  const presentationPage = await context.newPage();
-  const speakerPage = await context.newPage();
-  const audienceView = await context.newPage();
+test('can add and clear reactions', async ({coverage}) => {
+  const presentationPage = await coverage.newPage();
+  const speakerPage = await coverage.newPage();
+  const audienceView = await coverage.newPage();
 
   await presentationPage.goto(`/p/${presentationId}?session=speakertest`);
   await speakerPage.goto(`/s/${presentationId}?session=speakertest`);

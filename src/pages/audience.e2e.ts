@@ -13,10 +13,10 @@ test.beforeAll(async () => {
   presentationId = presentationSnapshot.id;
 });
 
-test('synchronizes slide from presentation', async ({context}, testInfo) => {
-  const presentationPage = await context.newPage();
-  const speakerPage = await context.newPage();
-  const audienceView = await context.newPage();
+test('synchronizes slide from presentation', async ({coverage}, testInfo) => {
+  const presentationPage = await coverage.newPage();
+  const speakerPage = await coverage.newPage();
+  const audienceView = await coverage.newPage();
 
   await presentationPage.goto(
     `/p/${presentationId}?session=${testInfo.testId}`,
@@ -48,11 +48,11 @@ test('synchronizes slide from presentation', async ({context}, testInfo) => {
   ).toBeVisible();
 });
 
-test('can add reactions', async ({context}, testInfo) => {
+test('can add reactions', async ({coverage}, testInfo) => {
   test.setTimeout(10_000);
-  const presentationPage = await context.newPage();
-  const speakerPage = await context.newPage();
-  const audienceView = await context.newPage();
+  const presentationPage = await coverage.newPage();
+  const speakerPage = await coverage.newPage();
+  const audienceView = await coverage.newPage();
 
   await presentationPage.goto(
     `/p/${presentationId}?session=${testInfo.testId}`,
