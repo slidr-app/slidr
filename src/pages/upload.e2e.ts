@@ -56,15 +56,18 @@ test('can upload and view presentation', async ({page, loginPage}) => {
   await presentation.getByRole('button', {name: 'view'}).click();
   const page1 = page.getByAltText(/slide page 1/i);
   await expect(page1).toBeVisible();
+  // TODO: instead match just the slide image
   await expect(page1).toHaveScreenshot('page-1.png');
 
   await page.getByRole('button', {name: /next/i}).click();
   const page2 = page.getByAltText(/slide page 2/i);
   await expect(page2).toBeVisible();
+  // TODO: instead match just the slide image
   await expect(page2).toHaveScreenshot('page-2.png');
 
   await page.getByRole('button', {name: /next/i}).click();
   const page3 = page.getByAltText(/slide page 3/i);
   await expect(page3).toBeVisible();
+  // TODO: instead match just the slide image
   await expect(page3).toHaveScreenshot('page-3.png');
 });
