@@ -2,17 +2,8 @@ import {type PresentationUpdate} from '../../functions/src/presentation';
 import {dbAdmin} from '../test/firestore';
 import {test, expect} from '../test/login-fixture';
 
-let presentationId: string;
-
 test.beforeAll(async () => {
-  const presentationsQuerySnapshot = await dbAdmin
-    .collection('presentations')
-    .where('title', '==', 'A Presentation for Testing')
-    .get();
-
-  const presentationSnapshot = presentationsQuerySnapshot.docs[0];
-  presentationId = presentationSnapshot.id;
-
+  await dbAdmin.doc('presentations/home-test').delete();
   await dbAdmin.doc('presentations/home-test').set({
     uid: 'someone-else',
     username: 'e2e test user',

@@ -17,7 +17,7 @@
     "deploy": "firebase deploy --only functions:renderForBot,auth,firestore,storage,hosting",
     "generate-pwa-assets": "pwa-assets-generator",
     "test": "pnpm run emulators:exec 'pnpm run test:start'",
-    "test:all": "pnpm run emulators:exec 'pnpm run test:start --run && pnpm run test:e2e:start'",
+    "test:all": "pnpm run test:once && pnpm run test:e2e",
     "test:once": "pnpm run emulators:exec 'pnpm run test:start --run'",
     "test:ui": "pnpm run emulators:exec 'pnpm run test:start --ui'",
     "test:start": "FIRESTORE_EMULATOR_HOST=\"127.0.0.1:8081\" vitest --mode emulator",
