@@ -1,14 +1,5 @@
-import {test as base, expect} from '../test/coverage-fixture';
-import {type LoginPage, loginPageFactory} from '../test/login-page';
+import {test, expect} from '../test/login-fixture';
 import {generateId} from '../test/id';
-
-const test = base.extend<{loginPage: LoginPage}>({
-  // @ts-expect-error the fixture isn't used, is there a better way?
-  async loginPage({page, _coveredPage}, use) {
-    const loginPage = loginPageFactory(page);
-    await use(loginPage);
-  },
-});
 
 test('upload button appears after signing in', async ({page, loginPage}) => {
   test.setTimeout(30_000);

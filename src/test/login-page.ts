@@ -27,6 +27,8 @@ export function loginPageFactory(page: Page) {
         'http://127.0.0.1:9099/emulator/v1/projects/demo-test/oobCodes',
       );
       const {oobCodes} = (await result.json()) as OobCodesResponse;
+
+      console.log('CODES', oobCodes);
       const oobCode = oobCodes.find((code) => code.email === emailAddress);
 
       expect(oobCode).toBeDefined();
