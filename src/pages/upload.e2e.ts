@@ -46,10 +46,23 @@ test('can upload and view presentation', async ({page, loginPage}) => {
   await expect(page.getByText(/saving/i)).not.toBeVisible();
   await page.getByRole('button', {name: /slidr/i}).click();
 
-  const presentation = page.getByText(presentationName);
+  // Find the presentation in the list
+  const presentation = page
+    .getByRole('list', {
+      name: /presentations/i,
+    })
+    .getByRole('listitem')
+    .filter({
+      has: page.getByText(presentationName),
+    })
+    .first();
   await expect(presentation).toBeVisible();
 
-  await presentation.click();
+  // Can edit my presentation
+  await expect(presentation.getByRole('button', {name: 'edit'})).toBeVisible();
+
+  // View the presentation
+  await presentation.getByRole('button', {name: 'view'}).click();
   const page1 = page.getByAltText(/slide page 1/i);
   await expect(page1).toBeVisible();
   await expect(page1).toHaveScreenshot('page-1.png');
