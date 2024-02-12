@@ -21,18 +21,11 @@ export function loginPageFactory(page: Page) {
       await page.getByLabel(/email:/i).fill(emailAddress);
       await page.getByRole('button', {name: /send email/i}).click();
 
-      // Get the list of Out Of Bound codes waiting to sign in
-      // https://firebase.google.com/docs/reference/rest/auth#section-auth-emulator-oob
-      const result = await fetch(
-        'http://127.0.0.1:9099/emulator/v1/projects/demo-test/oobCodes',
-      );
-      const {oobCodes} = (await result.json()) as OobCodesResponse;
-      const oobCode = oobCodes.find((code) => code.email === emailAddress);
-
+      const oobCode = await getCodeWithRetries(emailAddress);
       expect(oobCode).toBeDefined();
 
       // Follow the link in the code, but don't redirect so we can capture the search params
-      const loginResult = await fetch(oobCode!.oobLink, {redirect: 'manual'});
+      const loginResult = await fetch(oobCode.oobLink, {redirect: 'manual'});
 
       // Parse the search params in the redirect
       const redirectLocationHeader = loginResult.headers.get('location');
@@ -50,3 +43,38 @@ export function loginPageFactory(page: Page) {
 }
 
 export type LoginPage = ReturnType<typeof loginPageFactory>;
+
+// Sometimes getting the oob code doesn't work locally in the prepush githook.
+// Attempt to do some retries to see if it stabilizes this test.
+// Wondering if it is due to a race condition.
+async function getCodeWithRetries(email: string) {
+  async function getCode() {
+    // Get the list of Out Of Bound codes waiting to sign in
+    // https://firebase.google.com/docs/reference/rest/auth#section-auth-emulator-oob
+    const result = await fetch(
+      'http://127.0.0.1:9099/emulator/v1/projects/demo-test/oobCodes',
+    );
+    const {oobCodes} = (await result.json()) as OobCodesResponse;
+    const oobCode = oobCodes.find((code) => code.email === email);
+    return oobCode;
+  }
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    console.log(`oob code login attempt ${attempt + 1} of 3`);
+
+    // eslint-disable-next-line no-await-in-loop
+    const oobCode = await getCode();
+    if (oobCode) {
+      return oobCode;
+    }
+
+    // eslint-disable-next-line no-await-in-loop
+    await new Promise<undefined>((resolve) => {
+      setTimeout(() => {
+        resolve(undefined);
+      }, 500);
+    });
+  }
+
+  throw new Error('Unable to get oob code for firebase login');
+}

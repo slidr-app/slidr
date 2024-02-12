@@ -39,3 +39,4 @@ public/pwa-*.png
 /test-results/
 /playwright-report/
 /playwright/.cache/
+.pnpm-store
