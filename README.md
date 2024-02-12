@@ -91,9 +91,12 @@ pnpm run test:e2e
 Snapshots are platform dependent. To update the snapshots with docker (required when developing with mac):
 
 ```sh
-docker run --rm --network host -v $(pwd):/work/ -w /work/ -it mcr.microsoft.com/playwright:v1.39.0-jammy /bin/bash
+docker run --rm --network host -v $(pwd):/work/ -w /work/ -it mcr.microsoft.com/playwright:jammy /bin/bash
 # host is now at 192.168.5.2 or host.docker.internal
 npm install -g pnpm
+apt update
+apt install default-jre
+# I don't think this is needed with the pnpm.override in the package.json
 # remove @vite-pwa/assets-generator from package.json
 # or apt install default-jre libvips libvips-dev build-essential
 pnpm install
