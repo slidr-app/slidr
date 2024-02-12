@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import Loading from '../Loading';
 
 export default function Slideshow({

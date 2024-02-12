@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {useEffect, useMemo, useRef} from 'react';
 import {type IconReaction, type IconReactionMap} from './reaction';
 import reactionsIconMap from './reaction-icons-map';

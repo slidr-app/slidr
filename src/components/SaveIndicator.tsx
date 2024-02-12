@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {useContext, useEffect} from 'react';
 import {UpdateContext} from './UpdateProvider';
 

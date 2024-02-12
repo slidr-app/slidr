@@ -1,7 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {useMemo, useState, useCallback, useEffect} from 'react';
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {useSwipeable} from 'react-swipeable';
 import {useSlideIndex} from '../components/slides/use-slide-index';
 import useKeys from '../use-keys';

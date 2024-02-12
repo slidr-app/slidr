@@ -7,7 +7,7 @@ import {
   useContext,
 } from 'react';
 import {Link, NavLink} from 'react-router-dom';
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {auth} from '../firebase';
 import {UserContext} from '../components/UserProvider';
 
