@@ -7,12 +7,12 @@ function Pdf({
   onPageRendered,
   pageIndex,
 }: {
-  file: File | string;
-  onSetPageCount: (count: number) => void;
-  onPageRendered: (canvas: HTMLCanvasElement) => void;
-  pageIndex: number;
+  readonly file: File | string;
+  readonly onSetPageCount: (count: number) => void;
+  readonly onPageRendered: (canvas: HTMLCanvasElement) => void;
+  readonly pageIndex: number;
 }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasReference = useRef<HTMLCanvasElement>(null);
 
   return (
     <Document
@@ -25,13 +25,13 @@ function Pdf({
       <Page
         pageIndex={pageIndex}
         className="w-full aspect-video children:pointer-events-none"
-        canvasRef={canvasRef}
+        canvasRef={canvasReference}
         width={1920}
         // We want the exported images to be 1920, irrespective of the pixel ratio
         // Fix the ratio to 1
         devicePixelRatio={1}
         onRenderSuccess={() => {
-          onPageRendered(canvasRef.current!);
+          onPageRendered(canvasReference.current!);
         }}
       />
     </Document>

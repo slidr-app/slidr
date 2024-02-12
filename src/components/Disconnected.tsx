@@ -5,8 +5,8 @@ export default function Disconnected({
   paused,
   unPause,
 }: {
-  paused: boolean;
-  unPause: () => void;
+  readonly paused: boolean;
+  readonly unPause: () => void;
 }) {
   const [spin, setSpin] = useState(false);
 

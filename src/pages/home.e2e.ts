@@ -1,10 +1,10 @@
 import {type PresentationUpdate} from '../../functions/src/presentation';
-import {dbAdmin} from '../test/firestore';
+import {databaseAdmin} from '../test/firestore';
 import {test, expect} from '../test/login-fixture';
 
 test.beforeAll(async () => {
-  await dbAdmin.doc('presentations/home-test').delete();
-  await dbAdmin.doc('presentations/home-test').set({
+  await databaseAdmin.doc('presentations/home-test').delete();
+  await databaseAdmin.doc('presentations/home-test').set({
     uid: 'someone-else',
     username: 'e2e test user',
     notes: [],

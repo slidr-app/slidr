@@ -14,7 +14,7 @@ import {UserContext} from '../components/UserProvider';
 export default function DefaultLayout({
   title,
   children,
-}: PropsWithChildren<{title: ReactNode}>) {
+}: PropsWithChildren<{readonly title: ReactNode}>) {
   const {user, setUser} = useContext(UserContext);
   useEffect(
     () =>
@@ -100,7 +100,7 @@ export default function DefaultLayout({
               <div
                 className={clsx(
                   'absolute flex-col right-0 p-4 pb-2 bg-gray-900 bg-opacity-85 border-primary shadow-primary z-1 mr-4',
-                  showUserMenu ? 'flex' : 'display-none',
+                  showUserMenu ? 'flex' : 'hidden',
                 )}
               >
                 <button

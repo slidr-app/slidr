@@ -19,7 +19,7 @@ import Timer from '../components/Timer';
 import {useSearchParametersSessionId} from '../use-search-parameter-session-id';
 import usePresentation from '../components/slides/use-presentation';
 import Slideshow from '../components/slides/Slideshow';
-import NavButtons from '../components/toolbar/NavButtons';
+import NavigateButtons from '../components/toolbar/NavButtons';
 import Button from '../components/toolbar/Button';
 import useBroadcastFirebase from '../components/broadcast/use-broadcast-firestore';
 import useClearReactions from '../components/reactions/use-clear-reactions';
@@ -62,8 +62,8 @@ export default function Speaker() {
   const {
     slideIndex,
     setSlideIndex,
-    navNext,
-    navPrevious,
+    navigateNext,
+    navigatePrevious,
     handlers: handlersSlideIndexBroadcastChannel,
   } = useSlideIndex({
     postMessage: postBroadcastChannel,
@@ -101,20 +101,20 @@ export default function Speaker() {
   // Swipe and key bindings
   const swipeHandlers = useSwipeable({
     onSwipedRight() {
-      navPrevious();
+      navigatePrevious();
     },
     onSwipedLeft() {
-      navNext();
+      navigateNext();
     },
   });
   const keyHandlers = useMemo(
     () =>
       new Map([
-        ['ArrowLeft', navPrevious],
-        ['ArrowRight', navNext],
-        ['Space', navNext],
+        ['ArrowLeft', navigatePrevious],
+        ['ArrowRight', navigateNext],
+        ['Space', navigateNext],
       ]),
-    [navPrevious, navNext],
+    [navigatePrevious, navigateNext],
   );
   useKeys(keyHandlers);
 
@@ -187,10 +187,10 @@ export default function Speaker() {
           </div>
           <div className="self-center flex flex-col gap-6">
             <div className="grid grid-cols-2 gap-6 first:children:p6">
-              <NavButtons
+              <NavigateButtons
                 border
-                onNext={navNext}
-                onPrevious={navPrevious}
+                onNext={navigateNext}
+                onPrevious={navigatePrevious}
                 onStart={() => {
                   setSlideIndex(0);
                 }}

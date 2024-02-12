@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import {useState} from 'react';
-import {ReactMarkdown} from 'react-markdown/lib/react-markdown';
+import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {useDebouncedCallback} from 'use-debounce';
 
@@ -13,13 +13,13 @@ export default function NoteEditor({
   handleFoldDown,
   pages,
 }: {
-  pageIndices: number[];
-  markdown: string;
-  onMarkdownChange: (markdown: string) => void;
-  onMarkdownDirty: () => void;
-  handleFoldUp: () => void;
-  handleFoldDown: () => void;
-  pages: string[];
+  readonly pageIndices: number[];
+  readonly markdown: string;
+  readonly onMarkdownChange: (markdown: string) => void;
+  readonly onMarkdownDirty: () => void;
+  readonly handleFoldUp: () => void;
+  readonly handleFoldDown: () => void;
+  readonly pages: string[];
 }) {
   const [userMarkdown, setUserMarkdown] = useState(markdown);
   const debouncedMarkdownChange = useDebouncedCallback(
@@ -87,7 +87,7 @@ export default function NoteEditor({
           />
         </div>
         <div className="prose max-w-full font-inter">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
+          <Markdown remarkPlugins={[remarkGfm]}>{markdown}</Markdown>
         </div>
       </div>
     </>

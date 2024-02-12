@@ -108,10 +108,10 @@ export default function PresentationPreferences() {
                 {deleteState === 'saved'
                   ? 'Delete presentation'
                   : deleteState === 'confirm'
-                  ? 'Click to confirm deletion'
-                  : deleteState === 'deleting'
-                  ? 'Deleting...'
-                  : 'Deleted'}
+                    ? 'Click to confirm deletion'
+                    : deleteState === 'deleting'
+                      ? 'Deleting...'
+                      : 'Deleted'}
               </div>
               <div
                 className={clsx(

@@ -10,8 +10,8 @@ export function useSlideIndex({
 }): {
   slideIndex: number;
   setSlideIndex: (index: number) => void;
-  navNext: () => void;
-  navPrevious: () => void;
+  navigateNext: () => void;
+  navigatePrevious: () => void;
   handlers: Handler[];
   forward: boolean;
 } {
@@ -40,12 +40,12 @@ export function useSlideIndex({
     [updateSlideIndex, postMessage],
   );
 
-  const navNext = useCallback(() => {
+  const navigateNext = useCallback(() => {
     setForward(true);
     updateSlideIndexAndPost(nextSlideIndex);
   }, [updateSlideIndexAndPost, nextSlideIndex]);
 
-  const navPrevious = useCallback(() => {
+  const navigatePrevious = useCallback(() => {
     setForward(false);
     updateSlideIndexAndPost(previousSlideIndex);
   }, [updateSlideIndexAndPost, previousSlideIndex]);
@@ -66,8 +66,8 @@ export function useSlideIndex({
     handlers,
     slideIndex,
     setSlideIndex: updateSlideIndexAndPost,
-    navNext,
-    navPrevious,
+    navigateNext,
+    navigatePrevious,
     forward,
   };
 }

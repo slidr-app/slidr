@@ -2,7 +2,7 @@ import {signInWithEmailAndPassword} from 'firebase/auth';
 import {auth} from '../firebase';
 import Button from './toolbar/Button';
 
-export default function DevSignIn() {
+export default function DeveloperSignIn() {
   return (
     <div className="flex flex-col items-center gap-2 mt-8">
       <div className="text-red-600">

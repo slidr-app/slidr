@@ -1,10 +1,10 @@
-import {dbAdmin} from '../test/firestore';
+import {databaseAdmin} from '../test/firestore';
 import {test, expect} from '../test/login-fixture';
 
 let presentationId: string;
 
 test.beforeAll(async () => {
-  const presentationsQuerySnapshot = await dbAdmin
+  const presentationsQuerySnapshot = await databaseAdmin
     .collection('presentations')
     .where('title', '==', 'A Presentation for Testing')
     .get();
@@ -16,29 +16,28 @@ test.beforeAll(async () => {
 test('navigate the presentation', async ({page}) => {
   await page.goto(`/v/${presentationId}`);
 
-  await expect(page.getByRole('img', {name: 'Slide page 1'})).toBeVisible();
-  // TODO: instead match just the slide image
-  await expect(page).toHaveScreenshot('slide-1.png');
+  const slide1 = page.getByRole('img', {name: 'Slide page 1'});
+  const slide2 = page.getByRole('img', {name: 'Slide page 2'});
+  const slide3 = page.getByRole('img', {name: 'Slide page 3'});
+
+  await expect(slide1).toBeVisible();
+  await expect(slide1).toHaveScreenshot('slide-1.png');
 
   await page.getByRole('button', {name: 'next'}).click();
-  await expect(page.getByRole('img', {name: 'Slide page 2'})).toBeVisible();
-  // TODO: instead match just the slide image
-  await expect(page).toHaveScreenshot('slide-2.png');
+  await expect(slide2).toBeVisible();
+  await expect(slide2).toHaveScreenshot('slide-2.png');
 
   await page.getByRole('button', {name: 'previous'}).click();
-  await expect(page.getByRole('img', {name: 'Slide page 1'})).toBeVisible();
-  // TODO: instead match just the slide image
-  await expect(page).toHaveScreenshot('slide-1.png');
+  await expect(slide1).toBeVisible();
+  await expect(slide1).toHaveScreenshot('slide-1.png');
 
   await page.getByRole('button', {name: 'end'}).click();
-  await expect(page.getByRole('img', {name: 'Slide page 3'})).toBeVisible();
-  // TODO: instead match just the slide image
-  await expect(page).toHaveScreenshot('slide-3.png');
+  await expect(slide3).toBeVisible();
+  await expect(slide3).toHaveScreenshot('slide-3.png');
 
   await page.getByRole('button', {name: 'start', exact: true}).click();
-  await expect(page.getByRole('img', {name: 'Slide page 1'})).toBeVisible();
-  // TODO: instead match just the slide image
-  await expect(page).toHaveScreenshot('slide-1.png');
+  await expect(slide1).toBeVisible();
+  await expect(slide1).toHaveScreenshot('slide-1.png');
 });
 
 test('can share with share buttons', async ({page}) => {

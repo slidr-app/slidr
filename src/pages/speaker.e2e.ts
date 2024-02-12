@@ -1,10 +1,10 @@
-import {dbAdmin} from '../test/firestore';
+import {databaseAdmin} from '../test/firestore';
 import {test, expect} from '../test/login-fixture';
 
 let presentationId: string;
 
 test.beforeAll(async () => {
-  const presentationsQuerySnapshot = await dbAdmin
+  const presentationsQuerySnapshot = await databaseAdmin
     .collection('presentations')
     .where('title', '==', 'A Presentation for Testing')
     .get();

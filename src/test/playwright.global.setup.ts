@@ -1,5 +1,5 @@
 import {test as setup} from '@playwright/test';
-import {exportFirebaseDb} from './indexeddb';
+import {exportFirebaseDatabase} from './indexeddb';
 
 setup('do login', async ({page}) => {
   // Await page.getByRole('button', {name: /sign in with test account/i}).click();
@@ -7,7 +7,7 @@ setup('do login', async ({page}) => {
 
   // await login({page});
 
-  await exportFirebaseDb(page);
+  await exportFirebaseDatabase(page);
 
   console.log('signed in!');
 });
