@@ -31,9 +31,12 @@ export function UpdateProvider({children}: PropsWithChildren) {
       console.log('SW Registered:', registration);
 
       if (registration) {
-        setInterval(() => {
-          void registration.update();
-        }, 60 * 60 * 1000);
+        setInterval(
+          () => {
+            void registration.update();
+          },
+          60 * 60 * 1000,
+        );
       }
     },
     onRegisterError(error) {

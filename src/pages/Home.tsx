@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import {collection, orderBy, query, onSnapshot} from 'firebase/firestore';
 import {auth, firestore} from '../firebase.ts';
 import {
-  type PresentationDoc,
+  type PresentationDocument,
   type PresentationData,
 } from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout.tsx';
@@ -14,7 +14,7 @@ export default function Home() {
     document.title = `Slidr - Home`;
   }, []);
 
-  const [presentations, setPresentations] = useState<PresentationDoc[]>();
+  const [presentations, setPresentations] = useState<PresentationDocument[]>();
 
   useEffect(() => {
     return onSnapshot(
@@ -24,10 +24,10 @@ export default function Home() {
       ),
       (querySnapshot) => {
         setPresentations(
-          querySnapshot.docs.map((doc) => {
-            const presentation: PresentationDoc = {
-              id: doc.id,
-              data: doc.data() as PresentationData,
+          querySnapshot.docs.map((document) => {
+            const presentation: PresentationDocument = {
+              id: document.id,
+              data: document.data() as PresentationData,
             };
             return presentation;
           }),

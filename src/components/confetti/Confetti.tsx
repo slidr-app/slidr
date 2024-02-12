@@ -2,7 +2,7 @@ import {useEffect, useRef, useState} from 'react';
 import ReactCanvasConfetti from 'react-canvas-confetti';
 import {type ConfettiReactionEntry} from '../reactions/reaction';
 
-function confettiProps(): confetti.Options {
+function confettiProperties(): confetti.Options {
   return {
     angle: 90,
     colors: [
@@ -35,12 +35,12 @@ export default function Confetti({
   clear,
   fire,
 }: {
-  confettiReactions: ConfettiReactionEntry[];
-  clear?: any;
-  fire?: any;
+  readonly confettiReactions: ConfettiReactionEntry[];
+  readonly clear?: any;
+  readonly fire?: any;
 }) {
   const [doneReactions, setDoneReactions] = useState<string[]>([]);
-  const confettiRef = useRef<confetti.CreateTypes>();
+  const confettiReference = useRef<confetti.CreateTypes>();
   useEffect(() => {
     for (const [id, confettiReaction] of confettiReactions) {
       if (doneReactions.includes(id)) {
@@ -48,7 +48,7 @@ export default function Confetti({
       }
 
       if (confettiReaction === 'confetti') {
-        void confettiRef.current?.(confettiProps());
+        void confettiReference.current?.(confettiProperties());
       }
 
       setDoneReactions((currentDoneReactions) => [...currentDoneReactions, id]);
@@ -58,24 +58,23 @@ export default function Confetti({
   useEffect(() => {
     if (clear) {
       console.log('clearing');
-      confettiRef.current?.reset();
+      confettiReference.current?.reset();
     }
   }, [clear]);
 
   useEffect(() => {
     if (fire) {
-      void confettiRef.current?.(confettiProps());
+      void confettiReference.current?.(confettiProperties());
     }
   }, [fire]);
 
   return (
     <ReactCanvasConfetti
-      resize
-      useWorker
-      refConfetti={(confetti) => {
-        confettiRef.current = confetti ?? undefined;
-      }}
+      globalOptions={{resize: true, useWorker: true}}
       className="position-fixed top-0 left-0 w-screen h-screen pointer-events-none"
+      onInit={(confetti) => {
+        confettiReference.current = confetti?.confetti ?? undefined;
+      }}
     />
   );
 }

@@ -7,8 +7,8 @@ export default function ReactionControls({
   handleConfetti,
   handleReaction,
 }: {
-  handleConfetti: () => void;
-  handleReaction: (reaction: IconReaction) => void;
+  readonly handleConfetti: () => void;
+  readonly handleReaction: (reaction: IconReaction) => void;
 }) {
   return (
     <div className="max-w-lg mx-auto grid grid-cols-[4rem_4rem_4rem_4rem] gap-4 grid-rows-[4rem_4rem]">

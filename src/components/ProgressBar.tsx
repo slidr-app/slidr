@@ -5,9 +5,9 @@ export default function ProgressBar({
   slideCount,
   absolute,
 }: {
-  slideIndex: number;
-  slideCount: number;
-  absolute?: boolean;
+  readonly slideIndex: number;
+  readonly slideCount: number;
+  readonly absolute?: boolean;
 }) {
   const progressPercentage = (slideIndex * 100) / (slideCount - 1);
 
@@ -19,8 +19,8 @@ export default function ProgressBar({
         progressPercentage > 90
           ? 'bg-red'
           : progressPercentage > 75
-          ? 'bg-amber'
-          : 'bg-teal',
+            ? 'bg-amber'
+            : 'bg-teal',
       )}
       style={{width: `${progressPercentage}%`}}
     />

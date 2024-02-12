@@ -15,7 +15,7 @@ import {getFirestore} from 'firebase-admin/firestore';
 import {type PresentationData} from './presentation';
 
 initializeApp();
-const db = getFirestore();
+const database = getFirestore();
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -49,7 +49,7 @@ export const renderForBot = onRequest(async (request, response) => {
     0,
   );
 
-  const presentationSnapshot = await db
+  const presentationSnapshot = await database
     .collection('presentations')
     .doc(presentationId)
     .get();

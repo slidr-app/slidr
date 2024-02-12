@@ -7,7 +7,7 @@ import {
   doc,
   serverTimestamp,
 } from 'firebase/firestore';
-import {firestore as db} from '../../firebase';
+import {firestore as database} from '../../firebase';
 import {
   type ReactionEntry,
   type IncomingReactionData,
@@ -42,17 +42,20 @@ export default function useBroadcastFirebase({
         return Promise.all(
           // Ignore the id when posting, it will get generated
           payload.reactions.map(async ([, reaction]) => {
-            return addDoc(collection(db, 'sessions', sessionId, 'reactions'), {
-              reaction,
-              ttl,
-              created: serverTimestamp(),
-            } satisfies ReactionData);
+            return addDoc(
+              collection(database, 'sessions', sessionId, 'reactions'),
+              {
+                reaction,
+                ttl,
+                created: serverTimestamp(),
+              } satisfies ReactionData,
+            );
           }),
         );
       }
 
       if (payload.id === 'slide index') {
-        return setDoc(doc(db, 'sessions', sessionId), {
+        return setDoc(doc(database, 'sessions', sessionId), {
           slideIndex: payload.index,
           ttl,
         } satisfies SessionData);
@@ -71,7 +74,7 @@ export default function useBroadcastFirebase({
     let mounted = true;
 
     const unsubscribeReactions = onSnapshot(
-      collection(db, 'sessions', sessionId, 'reactions'),
+      collection(database, 'sessions', sessionId, 'reactions'),
       (next) => {
         if (!mounted) {
           console.log('no longer mounted, skipping incoming message');
@@ -98,11 +101,14 @@ export default function useBroadcastFirebase({
             };
           })
           // Ignore reactions older than 30 seconds
-          .filter((reactionDoc) => now - reactionDoc.created < 30_000)
+          .filter((reactionDocument) => now - reactionDocument.created < 30_000)
           .sort((a, b) => a.created - b.created)
           .map(
-            (reactionDoc) =>
-              [reactionDoc.id, reactionDoc.reaction] satisfies ReactionEntry,
+            (reactionDocument) =>
+              [
+                reactionDocument.id,
+                reactionDocument.reaction,
+              ] satisfies ReactionEntry,
           );
 
         onIncoming({id: 'reactions', reactions});
@@ -114,7 +120,7 @@ export default function useBroadcastFirebase({
     );
 
     const unsubscribeIndex = onSnapshot(
-      doc(db, 'sessions', sessionId),
+      doc(database, 'sessions', sessionId),
       (next) => {
         if (!mounted) {
           console.log('no longer mounted, skipping incoming message');

@@ -1,4 +1,4 @@
-export type Doc = {
+export type Document = {
   id: string;
 };
 
@@ -44,7 +44,7 @@ export type PresentationData = PresentationCreate & {
   // TODO: use this in function metadata
   thumbIndex?: number;
 };
-export type PresentationDoc = Doc & {
+export type PresentationDocument = Document & {
   data: PresentationData;
 };
 

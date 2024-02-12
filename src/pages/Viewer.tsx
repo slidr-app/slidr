@@ -8,7 +8,7 @@ import {useSlideIndex} from '../components/slides/use-slide-index';
 import {auth} from '../firebase';
 import ProgressBar from '../components/ProgressBar';
 import Shares from '../components/Shares';
-import NavButtons from '../components/toolbar/NavButtons';
+import NavigateButtons from '../components/toolbar/NavButtons';
 import LinkButton from '../components/toolbar/LinkButton';
 import useKeys from '../use-keys';
 
@@ -21,7 +21,7 @@ export default function Viewer() {
     }`;
   }, [presentation]);
 
-  const {slideIndex, setSlideIndex, navNext, navPrevious, forward} =
+  const {slideIndex, setSlideIndex, navigateNext, navigatePrevious, forward} =
     useSlideIndex({
       slideCount: presentation.data?.pages?.length ?? 0,
     });
@@ -30,11 +30,11 @@ export default function Viewer() {
   const keyHandlers = useMemo(
     () =>
       new Map([
-        ['ArrowLeft', navPrevious],
-        ['ArrowRight', navNext],
-        ['Space', navNext],
+        ['ArrowLeft', navigatePrevious],
+        ['ArrowRight', navigateNext],
+        ['Space', navigateNext],
       ]),
-    [navNext, navPrevious],
+    [navigateNext, navigatePrevious],
   );
   useKeys(keyHandlers);
 
@@ -50,7 +50,7 @@ export default function Viewer() {
       <div className="flex flex-col items-center pb-6">
         <div className="flex flex-col gap-4 items-stretch w-full max-w-screen-lg lt-lg:px-4">
           <div className="flex flex-col w-full rounded-lg overflow-hidden border-primary">
-            <div className="flex" onClick={navNext}>
+            <div className="flex" onClick={navigateNext}>
               <Slideshow
                 pageIndex={slideIndex}
                 pages={presentation.data?.pages ?? []}
@@ -66,9 +66,9 @@ export default function Viewer() {
                 />
               </div>
               <div className="grid grid-cols-4 gap-0.5 flex-grow">
-                <NavButtons
-                  onPrevious={navPrevious}
-                  onNext={navNext}
+                <NavigateButtons
+                  onPrevious={navigatePrevious}
+                  onNext={navigateNext}
                   onStart={() => {
                     setSlideIndex(0);
                   }}

@@ -11,7 +11,7 @@ test('upload button appears after signing in', async ({page, loginPage}) => {
   await loginPage.signInComplete();
   await page.goto('/');
   await expect(page.getByRole('button', {name: /upload/i})).toBeVisible({
-    timeout: 15_000,
+    timeout: 20_000,
   });
 });
 

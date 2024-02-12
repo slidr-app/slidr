@@ -47,7 +47,7 @@ async function saveCoverage(page: Page, testId: string) {
   const coverage = await page.coverage.stopJSCoverage();
 
   // Absolute path to src folder "/Users/.../slidr/src"
-  const srcPath = new URL('..', import.meta.url);
+  const sourcePath = new URL('..', import.meta.url);
 
   const coverageEntries = await Promise.all(
     coverage
@@ -58,13 +58,13 @@ async function saveCoverage(page: Page, testId: string) {
         );
 
         // Determine if the file is in the src folder
-        const isInSrcFolder = coveragePath.pathname.startsWith(
-          srcPath.pathname,
+        const isInSourceFolder = coveragePath.pathname.startsWith(
+          sourcePath.pathname,
         );
         // Determine of the file is a CSS file
         const isCssFile = coveragePath.pathname.endsWith('.css');
 
-        return isInSrcFolder && !isCssFile;
+        return isInSourceFolder && !isCssFile;
       })
       .map(async (entry) => {
         const coveragePath = new URL(

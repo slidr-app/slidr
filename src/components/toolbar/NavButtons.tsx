@@ -1,17 +1,17 @@
 import Button from './Button';
 
-export default function NavButtons({
+export default function NavigateButtons({
   onNext,
   onPrevious,
   onStart,
   onEnd,
   border,
 }: {
-  onNext: () => void;
-  onPrevious: () => void;
-  onStart: () => void;
-  onEnd: () => void;
-  border?: boolean;
+  readonly onNext: () => void;
+  readonly onPrevious: () => void;
+  readonly onStart: () => void;
+  readonly onEnd: () => void;
+  readonly border?: boolean;
 }) {
   return (
     <>
