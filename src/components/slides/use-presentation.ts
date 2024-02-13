@@ -25,7 +25,7 @@ export default function usePresentation(): PresentationAndId {
     return onSnapshot(
       doc(firestore, 'presentations', presentationId),
       (snapshot) => {
-        if (!snapshot.exists) {
+        if (!snapshot.exists()) {
           setPageError(
             new Error(`Presentation '${presentationId}' does not exist`),
           );
