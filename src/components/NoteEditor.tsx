@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {useState} from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';

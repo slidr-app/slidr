@@ -3,7 +3,7 @@ import {useDropzone} from 'react-dropzone';
 import * as pdfjs from 'pdfjs-dist';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {
   type DocumentReference,
   addDoc,

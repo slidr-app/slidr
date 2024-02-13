@@ -7,7 +7,7 @@ import {
   signInWithEmailLink,
 } from 'firebase/auth';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {auth} from '../firebase';
 import Loading from '../components/Loading';
 import Button from '../components/toolbar/Button';

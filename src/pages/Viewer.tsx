@@ -1,5 +1,5 @@
 import {useEffect, useMemo} from 'react';
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import DefaultLayout from '../layouts/DefaultLayout';
 import usePresentation from '../components/slides/use-presentation';
 import Slideshow from '../components/slides/Slideshow';

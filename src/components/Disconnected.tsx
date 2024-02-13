@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {useEffect, useState} from 'react';
 
 export default function Disconnected({

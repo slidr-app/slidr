@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {deleteDoc, doc, updateDoc} from 'firebase/firestore';
 import {ref, deleteObject, listAll, getStorage} from 'firebase/storage';
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import usePresentation from '../components/slides/use-presentation';
 import {
   type PresentationUpdate,

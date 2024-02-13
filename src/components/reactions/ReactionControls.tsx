@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import Button from '../toolbar/Button';
 import {type IconReaction} from './reaction';
 import reactionsIconMap from './reaction-icons-map';
