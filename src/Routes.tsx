@@ -1,7 +1,6 @@
 import {lazy} from 'react';
 import {type RouteObject, redirect} from 'react-router-dom';
 import ErrorPage from './pages/ErrorPage.tsx';
-import Help from './pages/Help.tsx';
 
 const Audience = lazy(async () => import('./pages/Audience.tsx'));
 const Speaker = lazy(async () => import('./pages/Speaker.tsx'));
@@ -14,6 +13,7 @@ const PresentationPreferences = lazy(
 );
 const UserPreferences = lazy(async () => import('./pages/UserPreferences.tsx'));
 const Viewer = lazy(async () => import('./pages/Viewer.tsx'));
+const Help = lazy(async () => import('./pages/Help.tsx'));
 
 const Routes: RouteObject[] = [
   {
