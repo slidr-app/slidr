@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {Link} from 'react-router-dom';
+import {Link, NavLink} from 'react-router-dom';
 import {collection, orderBy, query, onSnapshot} from 'firebase/firestore';
 import {auth, firestore} from '../firebase.ts';
 import {
@@ -57,13 +57,26 @@ export default function Home() {
             Slidr is currently in beta, come back often to see what&apos;s new.
           </div>
         </div>
+        <div className="flex flex-col items-center text-base gap-1">
+          <div>
+            Wondering where to start? Check out the Getting Started guide.
+          </div>
+          <NavLink end to="/help" className="flex flex-row">
+            <button
+              className="btn hover:bg-teal hover:bg-opacity-20"
+              type="button"
+            >
+              Getting Started
+            </button>
+          </NavLink>
+        </div>
         {presentations === undefined ? (
           <div className="flex flex-col col-span-2 w-full h-40 items-center justify-center">
             <Loading />
           </div>
         ) : (
           <ol
-            className="grid grid-cols-2 lt-sm:grid-cols-1 max-w-screen-lg w-full mx-auto gap-8 px-4 justify-center pb-6"
+            className="grid grid-cols-2 lt-sm:grid-cols-1 max-w-screen-lg w-full mx-auto gap-8 px-4 justify-center pb-6 mt-10"
             aria-labelledby="page-title"
           >
             {presentations?.map((presentation) => (
