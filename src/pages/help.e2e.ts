@@ -1,6 +1,10 @@
 import {test, expect} from '../test/coverage-fixture';
 
-test('can navigate to the help page from the nav bar', async ({page}) => {
+test('can navigate to the help page from the nav bar', async ({
+  page,
+  // @ts-expect-error activate coverage
+  coverage,
+}) => {
   await page.goto('/');
 
   const presentationList = page.getByRole('list', {
@@ -18,6 +22,8 @@ test('can navigate to the help page from the nav bar', async ({page}) => {
 
 test('can navigate to the help page the getting started button', async ({
   page,
+  // @ts-expect-error activate coverage
+  coverage,
 }) => {
   await page.goto('/');
 

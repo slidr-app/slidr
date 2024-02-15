@@ -1,5 +1,5 @@
 import {databaseAdmin} from '../test/firestore';
-import {test, expect} from '../test/login-fixture';
+import {test, expect} from '../test/coverage-fixture';
 
 let presentationId: string;
 
@@ -13,7 +13,11 @@ test.beforeAll(async () => {
   presentationId = presentationSnapshot.id;
 });
 
-test('navigate the presentation', async ({page}) => {
+test('navigate the presentation', async ({
+  page,
+  // @ts-expect-error activate coverage
+  coverage,
+}) => {
   await page.goto(`/v/${presentationId}`);
 
   const slide1 = page.getByRole('img', {name: 'Slide page 1'});
@@ -40,7 +44,11 @@ test('navigate the presentation', async ({page}) => {
   await expect(slide1).toHaveScreenshot('slide-1.png');
 });
 
-test('can share with share buttons', async ({page}) => {
+test('can share with share buttons', async ({
+  page,
+  // @ts-expect-error activate coverage
+  coverage,
+}) => {
   await page.goto(`/v/${presentationId}?slide=2`);
 
   // Twitter
