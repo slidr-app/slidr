@@ -2,6 +2,8 @@ import {test, expect} from '../test/coverage-fixture';
 
 test('displays an error when the presentation does not exist', async ({
   page,
+  // @ts-expect-error activate coverage
+  coverage,
 }) => {
   const errorLogs: string[] = [];
   page.on('console', (message) => {

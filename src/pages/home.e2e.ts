@@ -14,7 +14,11 @@ test.beforeAll(async () => {
   } as PresentationUpdate);
 });
 
-test('lists all presentations', async ({page}) => {
+test('lists all presentations', async ({
+  page,
+  // @ts-expect-error activate coverage
+  coverage,
+}) => {
   await page.goto('/');
 
   const presentationList = page.getByRole('list', {

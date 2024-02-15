@@ -61,7 +61,7 @@ export default function DefaultLayout({
               <button
                 className="hover:children:(nav-active) overflow-hidden pb-2"
                 type="button"
-                title="Speaker view"
+                title="Upload a presentation"
               >
                 <div className="flex flex-col items-center nav-inactive">
                   Upload
@@ -69,6 +69,23 @@ export default function DefaultLayout({
               </button>
             </NavLink>
           )}
+          <NavLink
+            end
+            to="/help"
+            className={({isActive}) =>
+              clsx('flex', isActive && 'all-[div]:nav-active')
+            }
+          >
+            <button
+              className="hover:children:(nav-active) overflow-hidden pb-2"
+              type="button"
+              title="Help page"
+            >
+              <div className="flex flex-col items-center nav-inactive">
+                Help
+              </div>
+            </button>
+          </NavLink>
         </div>
         <div className="row-start-1 flex flex-grow flex-shrink" />
         <div className="row-start-2 col-span-full text-3xl flex flex-row items-center justify-center">
