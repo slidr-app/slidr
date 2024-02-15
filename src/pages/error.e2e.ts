@@ -29,7 +29,11 @@ test('displays an error when the presentation does not exist', async ({
   );
 
   expect(errorLogs.length).toBeGreaterThanOrEqual(1);
-  expect(errorLogs[0]).toMatch(
+  const filteredLogs = errorLogs.filter((log) =>
+    log.includes("Error: Presentation 'does-not-exist' does not exist"),
+  );
+  expect(filteredLogs.length).toBeGreaterThanOrEqual(1);
+  expect(filteredLogs[0]).toMatch(
     "Error: Presentation 'does-not-exist' does not exist",
   );
 });

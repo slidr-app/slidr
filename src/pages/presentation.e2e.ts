@@ -128,4 +128,19 @@ test('can add and clear reactions', async ({coverage}, testInfo) => {
   ).toHaveCount(0, {timeout: 500});
 });
 
+test('generates a session id if not set', async ({
+  page,
+  // @ts-expect-error activate coverage
+  coverage,
+}) => {
+  await page.goto(`/p/${presentationId}`);
+
+  await expect(page.getByRole('img', {name: 'Slide page 1'})).toBeVisible();
+
+  const pageUrl = new URL(page.url());
+
+  // Expect at least 1 character for the session id
+  expect(pageUrl.searchParams.get('session')).toMatch(/.+/);
+});
+
 // TODO test confetti, but how?

@@ -30,8 +30,8 @@ export default function NoteEditor({
   );
 
   return (
-    <>
-      <div className="relative not-first:mt-8">
+    <li className="not-first:mt-8">
+      <div className="relative">
         <div className="grid grid-cols-4 lt-sm:grid-cols-2">
           {pageIndices.map((pageIndex, indicesIndex) => (
             <img
@@ -41,6 +41,7 @@ export default function NoteEditor({
                 indicesIndex === 0 && 'grid-col-span-2 grid-row-span-2',
               )}
               src={pages[pageIndex]}
+              alt={`Slide ${pageIndex + 1}`}
             />
           ))}
         </div>
@@ -90,6 +91,6 @@ export default function NoteEditor({
           <Markdown remarkPlugins={[remarkGfm]}>{markdown}</Markdown>
         </div>
       </div>
-    </>
+    </li>
   );
 }
