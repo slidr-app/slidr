@@ -98,7 +98,8 @@ export default function PresentationPreferencesEditor({
           }}
         />
       </div>
-      <div className="flex flex-col w-full">
+      <div id="speaker-notes">Speaker notes:</div>
+      <ul className="flex flex-col w-full" aria-labelledby="speaker-notes">
         {notes.map((note, noteIndex) => (
           <NoteEditor
             key={note.pageIndices.toString()}
@@ -174,7 +175,7 @@ export default function PresentationPreferencesEditor({
             }}
           />
         ))}
-      </div>
+      </ul>
       <SaveIndicator saveState={saveState} />
     </div>
   );

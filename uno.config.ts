@@ -11,6 +11,20 @@ export default defineConfig({
   presets: [
     presetUno(),
     presetIcons({
+      // Normally we don't have to load iconify collections.
+      // However, when running playwright tests from vscode, the icons don't get loaded.
+      // Loading them explicitly seems to fix the problem.
+      collections: {
+        tabler: async () =>
+          import('@iconify-json/tabler/icons.json').then((i) => i.default),
+        // @ts-expect-error the type is being picked up from this json file, maybe it's too large?
+        'fluent-emoji-flat': async () =>
+          import('@iconify-json/fluent-emoji-flat/icons.json').then(
+            (i) => i.default,
+          ),
+        'line-md': async () =>
+          import('@iconify-json/line-md/icons.json').then((i) => i.default),
+      },
       extraProperties: {
         display: 'inline-block',
         'vertical-align': 'middle',

@@ -51,6 +51,9 @@ test('can share with share buttons', async ({
 }) => {
   await page.goto(`/v/${presentationId}?slide=2`);
 
+  // Wait for the presentation to load
+  await expect(page.getByRole('img', {name: 'Slide page 2'})).toBeVisible();
+
   // Twitter
   const tweetButton = page.getByRole('link', {name: 'tweet'});
 
