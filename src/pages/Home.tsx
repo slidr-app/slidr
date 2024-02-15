@@ -53,13 +53,10 @@ export default function Home() {
           <div className="text-2xl text-center">
             Slidr.app: making presentations fun!
           </div>
-          <div className="text-sm text-center">
-            Slidr is currently in beta, come back often to see what&apos;s new.
-          </div>
         </div>
         <div className="flex flex-col items-center text-base gap-1">
           <div>
-            Wondering where to start? Check out the Getting Started guide.
+            Wondering where to start? Check out the Getting Started guide:
           </div>
           <NavLink end to="/help" className="flex flex-row">
             <button

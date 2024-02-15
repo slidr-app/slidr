@@ -80,28 +80,37 @@ export default function Help() {
               </div> */}
             </li>
           </ol>
+          <div className="col-span-full text-sm">
+            P.S. Slidr is currently in beta, come back often to see what&apos;s
+            new.
+          </div>
           <div className="col-span-full text-4xl font-bold text-center mt-20">
             Getting Involved
           </div>
-          <div className="col-span-full justify-self-center inline-block w-25 h-25 i-line-md-github-loop" />
+          <a
+            className="col-span-full justify-self-center"
+            href="https://github.com/slidr-app/slidr"
+          >
+            <div className="text-4rem i-line-md-github-loop text-teal" />
+          </a>
           <div className="col-span-full">
             Slidr is 100% open source software! Come and help make Slidr better.
             We&apos;re building a community around Slidr and it&apos;s a great
             time to get involved. We need folks of all backgrounds and skill
-            level. Head over to the{' '}
+            levels. Head over to the{' '}
             <a
               className="text-teal underline"
               href="https://github.com/slidr-app/slidr"
             >
               Slidr GitHub repository
             </a>{' '}
-            to learn more!
+            to learn more! We&apos;d love to add your photo below!
           </div>
           <div className="col-span-full text-4xl font-bold text-center mt-20">
             Who&apos;s Behind Slidr?
           </div>
           <img
-            className="col-span-full rounded-full overflow-hidden aspect-square justify-self-center max-w-90 border-teal border-3"
+            className="col-span-full rounded-full overflow-hidden aspect-square justify-self-center max-w-90 border-teal border-3 shadow-primary"
             src={cody}
           />
           <div className="col-span-full">
