@@ -13,9 +13,7 @@ test.beforeAll(async () => {
   presentationId = presentationSnapshot.id;
 });
 
-test('can navigate the presentation with the toolbar', async ({
-  coverage,
-}, testInfo) => {
+test('can navigate the presentation', async ({coverage}, testInfo) => {
   const presentationPage = await coverage.newPage();
   const speakerPage = await coverage.newPage();
   const audienceView = await coverage.newPage();
@@ -27,25 +25,37 @@ test('can navigate the presentation with the toolbar', async ({
   await audienceView.goto(`/i/${presentationId}?session=${testInfo.testId}`);
 
   await expect(
-    presentationPage.getByRole('img', {name: 'Slide page 1'}),
+    presentationPage
+      .getByRole('img', {name: 'Slide page 1'})
+      .and(presentationPage.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
   await expect(
-    speakerPage.getByRole('img', {name: 'Slide page 1'}),
+    speakerPage
+      .getByRole('img', {name: 'Slide page 1'})
+      .and(speakerPage.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
   await expect(
-    audienceView.getByRole('img', {name: 'Slide page 1'}),
+    audienceView
+      .getByRole('img', {name: 'Slide page 1'})
+      .and(audienceView.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
 
   const nextButton = presentationPage.getByRole('button', {name: 'next'});
   await nextButton.click();
   await expect(
-    presentationPage.getByRole('img', {name: 'Slide page 2'}),
+    presentationPage
+      .getByRole('img', {name: 'Slide page 2'})
+      .and(presentationPage.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
   await expect(
-    speakerPage.getByRole('img', {name: 'Slide page 2'}),
+    speakerPage
+      .getByRole('img', {name: 'Slide page 2'})
+      .and(speakerPage.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
   await expect(
-    audienceView.getByRole('img', {name: 'Slide page 2'}),
+    audienceView
+      .getByRole('img', {name: 'Slide page 2'})
+      .and(audienceView.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
 
   const previousButton = presentationPage.getByRole('button', {
@@ -53,13 +63,19 @@ test('can navigate the presentation with the toolbar', async ({
   });
   await previousButton.click();
   await expect(
-    presentationPage.getByRole('img', {name: 'Slide page 1'}),
+    presentationPage
+      .getByRole('img', {name: 'Slide page 1'})
+      .and(presentationPage.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
   await expect(
-    speakerPage.getByRole('img', {name: 'Slide page 1'}),
+    speakerPage
+      .getByRole('img', {name: 'Slide page 1'})
+      .and(speakerPage.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
   await expect(
-    audienceView.getByRole('img', {name: 'Slide page 1'}),
+    audienceView
+      .getByRole('img', {name: 'Slide page 1'})
+      .and(audienceView.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
 
   const endButton = presentationPage.getByRole('button', {
@@ -67,13 +83,19 @@ test('can navigate the presentation with the toolbar', async ({
   });
   await endButton.click();
   await expect(
-    presentationPage.getByRole('img', {name: 'Slide page 3'}),
+    presentationPage
+      .getByRole('img', {name: 'Slide page 3'})
+      .and(presentationPage.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
   await expect(
-    speakerPage.getByRole('img', {name: 'Slide page 3'}),
+    speakerPage
+      .getByRole('img', {name: 'Slide page 3'})
+      .and(speakerPage.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
   await expect(
-    audienceView.getByRole('img', {name: 'Slide page 3'}),
+    audienceView
+      .getByRole('img', {name: 'Slide page 3'})
+      .and(audienceView.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
 
   const startButton = presentationPage.getByRole('button', {
@@ -81,13 +103,70 @@ test('can navigate the presentation with the toolbar', async ({
   });
   await startButton.click();
   await expect(
-    presentationPage.getByRole('img', {name: 'Slide page 1'}),
+    presentationPage
+      .getByRole('img', {name: 'Slide page 1'})
+      .and(presentationPage.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
   await expect(
-    speakerPage.getByRole('img', {name: 'Slide page 1'}),
+    speakerPage
+      .getByRole('img', {name: 'Slide page 1'})
+      .and(speakerPage.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
   await expect(
-    audienceView.getByRole('img', {name: 'Slide page 1'}),
+    audienceView
+      .getByRole('img', {name: 'Slide page 1'})
+      .and(audienceView.locator(':not([aria-hidden=true])')),
+  ).toBeVisible();
+
+  await presentationPage.keyboard.press('ArrowRight');
+  await expect(
+    presentationPage
+      .getByRole('img', {name: 'Slide page 2'})
+      .and(presentationPage.locator(':not([aria-hidden=true])')),
+  ).toBeVisible();
+  await expect(
+    speakerPage
+      .getByRole('img', {name: 'Slide page 2'})
+      .and(speakerPage.locator(':not([aria-hidden=true])')),
+  ).toBeVisible();
+  await expect(
+    audienceView
+      .getByRole('img', {name: 'Slide page 2'})
+      .and(audienceView.locator(':not([aria-hidden=true])')),
+  ).toBeVisible();
+
+  await presentationPage.keyboard.press('Space');
+  await expect(
+    presentationPage
+      .getByRole('img', {name: 'Slide page 3'})
+      .and(presentationPage.locator(':not([aria-hidden=true])')),
+  ).toBeVisible();
+  await expect(
+    speakerPage
+      .getByRole('img', {name: 'Slide page 3'})
+      .and(speakerPage.locator(':not([aria-hidden=true])')),
+  ).toBeVisible();
+  await expect(
+    audienceView
+      .getByRole('img', {name: 'Slide page 3'})
+      .and(audienceView.locator(':not([aria-hidden=true])')),
+  ).toBeVisible();
+
+  await presentationPage.keyboard.press('ArrowLeft');
+  await expect(
+    presentationPage
+      .getByRole('img', {name: 'Slide page 2'})
+      .and(presentationPage.locator(':not([aria-hidden=true])')),
+  ).toBeVisible();
+  await expect(
+    speakerPage
+      .getByRole('img', {name: 'Slide page 2'})
+      .and(speakerPage.locator(':not([aria-hidden=true])')),
+  ).toBeVisible();
+  await expect(
+    audienceView
+      .getByRole('img', {name: 'Slide page 2'})
+      .and(audienceView.locator(':not([aria-hidden=true])')),
   ).toBeVisible();
 });
 
