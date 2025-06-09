@@ -54,6 +54,55 @@ export default function Home() {
             Slidr.app: making presentations fun!
           </div>
         </div>
+        <div className="flex flex-col w-full max-w-screen-lg rounded-xl p-x-12 p-y-18 bg-gray-800 gap-y-8">
+          <h2 className="text-3xl font-bold">Present better. Connect more.</h2>
+          <p>
+            Slidr turns your static slides into a dynamic, audience-driven
+            experience. Upload your PDF, add notes, and go live with interactive
+            features like:
+          </p>
+          <ul className="list-disc list-inside">
+            <li>Real-time emoji reactions</li>
+            <li>QR code audience join-in</li>
+            <li>Slide-sync across devices</li>
+            <li>Social sharing on the fly</li>
+          </ul>
+          <p className="italic">
+            It’s like your favorite slide deck meets live streaming, with
+            audience energy baked in.
+          </p>
+          <button
+            type="button"
+            className="btn self-start text-lg font-semibold hover:bg-teal hover:bg-opacity-20"
+          >
+            Upgrade to Slidr Pro →
+          </button>
+          <p className="text-sm text-gray-400 mt-2">
+            Slidr Pro is available starting at just $5/month. Cancel anytime.
+          </p>
+        </div>
+        <div className="max-w-screen-md w-full mt-8 flex flex-col gap-4 items-center">
+          <span className="text-lg font-semibold">Compare Free and Pro</span>
+          <div className="grid grid-cols-2 gap-6 w-full text-base text-left">
+            <div className="flex flex-col gap-2">
+              <span className="font-semibold text-center text-teal">Free</span>
+              <div>✅ Upload PDFs and add speaker notes</div>
+              <div>✅ Live presentation mode with QR code sync</div>
+              <div>✅ Real-time emoji reactions</div>
+              <div>🚫 No watermark-free presentations</div>
+              <div>🚫 No server-side rendering</div>
+              <div>🚫 Limited file size (coming soon)</div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="font-semibold text-center text-teal">Pro</span>
+              <div>✅ Everything in Free</div>
+              <div>✅ Watermark-free presentations</div>
+              <div>✅ Server-side rendering for higher quality</div>
+              <div>✅ Increased file size and upload limits</div>
+              <div>✅ Priority performance</div>
+            </div>
+          </div>
+        </div>
         <div className="flex flex-col items-center text-base gap-1">
           <div>
             Wondering where to start? Check out the Getting Started guide:

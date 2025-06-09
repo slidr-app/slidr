@@ -32,7 +32,7 @@ export default function DefaultLayout({
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="header flex flex-row mx-4 px-4 mb-6 lt-sm:(grid grid-cols-2 gap-y-2 px-2)">
+      <header className="header flex flex-row mx-4 px-4 mb-6 lt-sm:(grid grid-cols-2 gap-y-2 px-2)">
         <div className="row-start-1 col-start-1 flex flex-row justify-start items-center relative gap-4 pt-2 mb--2">
           <NavLink
             to="/"
@@ -143,20 +143,28 @@ export default function DefaultLayout({
             </Link>
           )}
         </div>
-      </div>
+      </header>
       {children}
-      <div className="my-6 text-sm flex flex-col items-center text-center">
+      <footer className="my-6 text-sm flex flex-col items-center text-center">
         <div>&copy; 2023 Slidr.app</div>
         <div className="prose">
-          <a
-            href="https://github.com/slidr-app/slidr/issues/new/choose"
-            className="vertical-mid"
-          >
-            Something not right? Have an idea? Let us know on github.{' '}
-            <div className="inline-block w-1.25rem h-1.25rem i-line-md-github-loop" />
-          </a>
+          <div>
+            <a
+              href="https://github.com/slidr-app/slidr/issues/new/choose"
+              className="vertical-mid"
+            >
+              Something not right? Have an idea? Let us know on GitHub.{' '}
+              <div className="inline-block w-1.25rem h-1.25rem i-line-md-github-loop" />
+            </a>
+          </div>
+          <div>
+            📩 Contact us at{' '}
+            <a href="mailto:hello@slidr.app" className="underline">
+              hello@slidr.app
+            </a>
+          </div>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }
