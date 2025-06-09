@@ -146,7 +146,7 @@ export default function DefaultLayout({
       </header>
       {children}
       <footer className="my-6 text-sm flex flex-col items-center text-center">
-        <div>&copy; 2023 Slidr.app</div>
+        <div>&copy; {new Date().getFullYear()} Slidr.app</div>
         <div className="prose">
           <div>
             <a
@@ -161,6 +161,15 @@ export default function DefaultLayout({
             📩 Contact us at{' '}
             <a href="mailto:hello@slidr.app" className="underline">
               hello@slidr.app
+            </a>
+          </div>
+          <div className="mt-2">
+            <a href="/terms" className="underline">
+              Terms of Service
+            </a>{' '}
+            |{' '}
+            <a href="/privacy" className="underline">
+              Privacy Policy
             </a>
           </div>
         </div>
