@@ -99,6 +99,15 @@ export default function Home() {
               <div>✅ Server-side rendering for higher quality</div>
               <div>✅ Increased file size and upload limits</div>
               <div>✅ Priority performance</div>
+              <div>
+                ✅ Support an{' '}
+                <a
+                  className="underline hover:text-teal"
+                  href="https://github.com/slidr-app/slidr"
+                >
+                  Open Source project
+                </a>
+              </div>
             </div>
           </div>
         </div>
