@@ -145,7 +145,7 @@ export default function DefaultLayout({
         </div>
       </header>
       {children}
-      <footer className="my-6 text-sm flex flex-col items-center text-center">
+      <footer className="my-12 text-sm flex flex-col items-center text-center">
         <div>&copy; {new Date().getFullYear()} Slidr.app</div>
         <div className="prose">
           <div>
