@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {useEffect, useMemo, useRef} from 'react';
 import {type IconReaction, type IconReactionMap} from './reaction';
 import reactionsIconMap from './reaction-icons-map';
@@ -11,11 +11,11 @@ function Reaction({
   onReactionDone,
   reaction,
 }: {
-  onReactionDone: () => void;
-  reaction: IconReaction;
+  readonly onReactionDone: () => void;
+  readonly reaction: IconReaction;
 }) {
   // Keep a ref to the reaction div so we can add the random style vars
-  const reactionRef = useRef<HTMLDivElement>(null);
+  const reactionReference = useRef<HTMLDivElement>(null);
 
   // Define the random style vars (only once per mount!)
   // Maybe one day css can do random natively???
@@ -26,23 +26,29 @@ function Reaction({
   const bounceDistanceRandom = useMemo(() => `${Math.random() * 15 + 5}px`, []);
 
   useEffect(() => {
-    if (reactionRef.current) {
+    if (reactionReference.current) {
       // Set the random style vars
-      reactionRef.current.style.setProperty('--reaction-x-offset', xRandom);
-      reactionRef.current.style.setProperty(
+      reactionReference.current.style.setProperty(
+        '--reaction-x-offset',
+        xRandom,
+      );
+      reactionReference.current.style.setProperty(
         '--reaction-duration',
         durationRandom,
       );
-      reactionRef.current.style.setProperty(
+      reactionReference.current.style.setProperty(
         '--reaction-bounce-distance',
         bounceDistanceRandom,
       );
 
       // Add a handler to remove ourselves when the animation is done
-      reactionRef.current.addEventListener('animationend', onReactionDone);
+      reactionReference.current.addEventListener(
+        'animationend',
+        onReactionDone,
+      );
     }
 
-    const reactionDiv = reactionRef.current;
+    const reactionDiv = reactionReference.current;
 
     return () => {
       if (reactionDiv) {
@@ -53,7 +59,7 @@ function Reaction({
 
   return (
     <div
-      ref={reactionRef}
+      ref={reactionReference}
       aria-label={reaction}
       role="figure"
       style={{left: `var(--reaction-x-offset)`}}
@@ -69,8 +75,8 @@ export function Reactions({
   reactions,
   removeReaction,
 }: {
-  reactions: IconReactionMap;
-  removeReaction: (id: string) => void;
+  readonly reactions: IconReactionMap;
+  readonly removeReaction: (id: string) => void;
 }) {
   return (
     <div className="fixed top-0 left-0 h-screen w-screen pointer-events-none">

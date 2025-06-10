@@ -1,14 +1,13 @@
 # Slidr
-
+[![CI/CD](https://github.com/slidr-app/slidr/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/slidr-app/slidr/actions/workflows/ci-cd.yml)
+[![codecov](https://codecov.io/gh/slidr-app/slidr/graph/badge.svg?token=K02VRLAXYW)](https://codecov.io/gh/slidr-app/slidr)
+      
 ## *Crazy interactive presentation framework 🎉*
 
 Start using Slidr now:\
 https://slidr.app
 
-<br>
-<br>
-
-[![CI/CD](https://github.com/slidr-app/slidr/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/slidr-app/slidr/actions/workflows/ci-cd.yml)
+<br><br>
 
 ![Presentation](./example-confetti.gif)
 
@@ -81,6 +80,27 @@ pnpm run emulators
 
 ```
 pnpm run test:start [args for vitest]
+```
+
+#### E2E Tests
+
+```
+pnpm run test:e2e
+```
+
+Snapshots are platform dependent. To update the snapshots with docker (required when developing with mac):
+
+```sh
+docker run --rm --network host -v $(pwd):/work/ -w /work/ -it mcr.microsoft.com/playwright:jammy /bin/bash
+# host is now at 192.168.5.2 or host.docker.internal
+npm install -g pnpm
+apt update
+apt install default-jre
+# I don't think this is needed with the pnpm.override in the package.json
+# remove @vite-pwa/assets-generator from package.json
+# or apt install default-jre libvips libvips-dev build-essential
+pnpm install
+pnpm run test:e2e:snapshots
 ```
 
 ### Build

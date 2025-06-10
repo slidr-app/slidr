@@ -1,9 +1,9 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {useEffect, useState} from 'react';
 import {type PresentationAndId} from '../../../functions/src/presentation';
 import {auth} from '../../firebase';
 import Button from './Button';
-import NavButtons from './NavButtons';
+import NavigateButtons from './NavButtons';
 import LinkButton from './LinkButton';
 
 export default function Toolbar({
@@ -13,11 +13,11 @@ export default function Toolbar({
   onEnd,
   presentation,
 }: {
-  onPrevious: () => void;
-  onNext: () => void;
-  onStart: () => void;
-  onEnd: () => void;
-  presentation: PresentationAndId;
+  readonly onPrevious: () => void;
+  readonly onNext: () => void;
+  readonly onStart: () => void;
+  readonly onEnd: () => void;
+  readonly presentation: PresentationAndId;
 }) {
   // Force the toolbar to be shown for a short time
   const [forceToolbar, setForceToolbar] = useState(false);
@@ -81,7 +81,7 @@ export default function Toolbar({
           event.stopPropagation();
         }}
       >
-        <NavButtons
+        <NavigateButtons
           onPrevious={onPrevious}
           onNext={onNext}
           onStart={onStart}

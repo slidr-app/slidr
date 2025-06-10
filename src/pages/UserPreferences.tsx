@@ -11,14 +11,14 @@ import {
 } from 'firebase/firestore';
 import {useDebouncedCallback} from 'use-debounce';
 import DefaultLayout from '../layouts/DefaultLayout';
-import {UserContext, type UserDoc} from '../components/UserProvider';
+import {UserContext, type UserDocument} from '../components/UserProvider';
 import {firestore} from '../firebase';
 import SaveIndicator from '../components/SaveIndicator';
 import {type PresentationUpdate} from '../../functions/src/presentation';
 
 export default function UserPreferences() {
   const {user} = useContext(UserContext);
-  const [userData, setUserData] = useState<UserDoc>({});
+  const [userData, setUserData] = useState<UserDocument>({});
 
   useEffect(() => {
     if (!user) {
@@ -31,7 +31,7 @@ export default function UserPreferences() {
         return;
       }
 
-      const snaphshotData = snapshot.data() as UserDoc;
+      const snaphshotData = snapshot.data() as UserDocument;
 
       setUserData({
         username: snaphshotData.username,

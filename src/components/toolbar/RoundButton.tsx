@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {type MouseEventHandler} from 'react';
 
 export default function RoundButton({
@@ -9,17 +9,17 @@ export default function RoundButton({
   to,
   newTab,
 }: {
-  onClick?: MouseEventHandler<HTMLAnchorElement>;
-  to: string;
-  icon: string;
-  label: string;
-  title: string;
-  newTab?: boolean;
+  readonly onClick?: MouseEventHandler<HTMLAnchorElement>;
+  readonly to: string;
+  readonly icon: string;
+  readonly label: string;
+  readonly title: string;
+  readonly newTab?: boolean;
 }) {
-  const anchorProps: {target?: string; rel?: string} = {};
+  const anchorProperties: {target?: string; rel?: string} = {};
   if (newTab) {
-    anchorProps.target = '_blank';
-    anchorProps.rel = 'noreferrer';
+    anchorProperties.target = '_blank';
+    anchorProperties.rel = 'noreferrer';
   }
 
   return (
@@ -29,7 +29,7 @@ export default function RoundButton({
       href={to}
       className="flex flex-col items-center all-[button]:hover:(bg-gray-700) text-teal all-[button]:active:(text-white bg-black)"
       onClick={onClick}
-      {...anchorProps}
+      {...anchorProperties}
     >
       <button
         type="button"

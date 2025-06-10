@@ -45,8 +45,8 @@ function Presentation() {
   const {
     slideIndex,
     setSlideIndex,
-    navNext,
-    navPrevious,
+    navigateNext,
+    navigatePrevious,
     handlers: handlersSlideIndexBroadcastChannel,
     forward,
   } = useSlideIndex({
@@ -143,24 +143,30 @@ function Presentation() {
   // Swipe and key bindings
   const swipeHandlers = useSwipeable({
     onSwipedRight() {
-      navPrevious();
+      navigatePrevious();
     },
     onSwipedLeft() {
-      navNext();
+      navigateNext();
     },
   });
 
   const keyHandlers = useMemo(
     () =>
       new Map([
-        ['ArrowLeft', navPrevious],
-        ['ArrowRight', navNext],
-        ['Space', navNext],
+        ['ArrowLeft', navigatePrevious],
+        ['ArrowRight', navigateNext],
+        ['Space', navigateNext],
         ['KeyS', openSpeakerWindow],
         ['KeyR', clearAllReaction],
         ['KeyC', throwConfetti],
       ]),
-    [openSpeakerWindow, clearAllReaction, throwConfetti, navNext, navPrevious],
+    [
+      openSpeakerWindow,
+      clearAllReaction,
+      throwConfetti,
+      navigateNext,
+      navigatePrevious,
+    ],
   );
   useKeys(keyHandlers);
 
@@ -168,7 +174,7 @@ function Presentation() {
     <div
       className="h-screen flex flex-col items-center justify-center overflow-hidden position-relative select-none"
       onClick={() => {
-        navNext();
+        navigateNext();
       }}
     >
       <div className="w-full max-w-[calc(100vh_*_(16/9))] aspect-video">
@@ -207,8 +213,8 @@ function Presentation() {
       {presentation && (
         <Toolbar
           presentation={presentation}
-          onNext={navNext}
-          onPrevious={navPrevious}
+          onNext={navigateNext}
+          onPrevious={navigatePrevious}
           onStart={() => {
             setSlideIndex(0);
           }}

@@ -6,8 +6,8 @@ export default function Shares({
   presentation,
   slideIndex,
 }: {
-  presentation: PresentationAndId;
-  slideIndex: number;
+  readonly presentation: PresentationAndId;
+  readonly slideIndex: number;
 }) {
   // TODO: should this parse window.location for the host?
   const shareUrl = `https://slidr.app/v/${presentation?.id ?? ''}?slide=${

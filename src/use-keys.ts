@@ -6,6 +6,7 @@ export default function useKeys(keyHandlers: Map<string, () => void>) {
       console.log(event.code);
       const handler = keyHandlers.get(event.code);
       if (handler) {
+        event.preventDefault(); // Prevent default action if needed
         handler();
       }
     }

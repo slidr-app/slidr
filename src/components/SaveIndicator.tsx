@@ -1,11 +1,11 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {useContext, useEffect} from 'react';
 import {UpdateContext} from './UpdateProvider';
 
 export default function SaveIndicator({
   saveState,
 }: {
-  saveState: 'saved' | 'saving' | 'dirty';
+  readonly saveState: 'saved' | 'saving' | 'dirty';
 }) {
   const {
     needRefresh,

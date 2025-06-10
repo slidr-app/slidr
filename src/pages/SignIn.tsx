@@ -7,13 +7,13 @@ import {
   signInWithEmailLink,
 } from 'firebase/auth';
 import {Link, useLocation, useNavigate} from 'react-router-dom';
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {auth} from '../firebase';
 import Loading from '../components/Loading';
 import Button from '../components/toolbar/Button';
 import DefaultLayout from '../layouts/DefaultLayout';
 
-const DevSignIn = lazy(async () => import('../components/DevSignIn'));
+const DeveloperSignIn = lazy(async () => import('../components/DevSignIn'));
 
 export default function SignIn() {
   useEffect(() => {
@@ -165,7 +165,7 @@ export default function SignIn() {
               page.
             </div>
           )}
-          {import.meta.env.MODE === 'emulator' && <DevSignIn />}
+          {import.meta.env.MODE === 'emulator' && <DeveloperSignIn />}
         </div>
       )}
     </DefaultLayout>

@@ -18,20 +18,20 @@ export default function PresentationPreferencesEditor({
   onDirty,
   pages,
 }: {
-  saveState: NotesSaveState;
-  onSave: () => void;
-  notes: Note[];
-  title: string;
-  setTitle: (nextTitle: string) => void;
-  setNotes: (updateNotes: (currentNotes: Note[]) => Note[]) => void;
-  onDirty: () => void;
-  pages: string[];
+  readonly saveState: NotesSaveState;
+  readonly onSave: () => void;
+  readonly notes: Note[];
+  readonly title: string;
+  readonly setTitle: (nextTitle: string) => void;
+  readonly setNotes: (updateNotes: (currentNotes: Note[]) => Note[]) => void;
+  readonly onDirty: () => void;
+  readonly pages: string[];
 }) {
   const debouncedSaveNotes = useDebouncedCallback(() => {
     onSave();
   }, 3000);
 
-  const fileRef = useRef<HTMLInputElement>(null);
+  const fileReference = useRef<HTMLInputElement>(null);
 
   return (
     <div className="w-full max-w-screen-md mx-auto flex flex-col text-base gap-4">
@@ -55,11 +55,11 @@ export default function PresentationPreferencesEditor({
           label="import"
           title="Import notes"
           onClick={() => {
-            fileRef.current?.click?.();
+            fileReference.current?.click?.();
           }}
         />
         <input
-          ref={fileRef}
+          ref={fileReference}
           type="file"
           className="hidden"
           accept="text/markdown,.md"
@@ -98,7 +98,8 @@ export default function PresentationPreferencesEditor({
           }}
         />
       </div>
-      <div className="flex flex-col w-full">
+      <div id="speaker-notes">Speaker notes:</div>
+      <ul className="flex flex-col w-full" aria-labelledby="speaker-notes">
         {notes.map((note, noteIndex) => (
           <NoteEditor
             key={note.pageIndices.toString()}
@@ -174,7 +175,7 @@ export default function PresentationPreferencesEditor({
             }}
           />
         ))}
-      </div>
+      </ul>
       <SaveIndicator saveState={saveState} />
     </div>
   );

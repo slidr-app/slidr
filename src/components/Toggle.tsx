@@ -1,11 +1,11 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 
 export default function Toggle({
   checked,
   onCheckChange,
 }: {
-  checked: boolean;
-  onCheckChange: () => void;
+  readonly checked: boolean;
+  readonly onCheckChange: () => void;
 }) {
   // Inspired from https://codepen.io/lhermann/pen/EBGZRZ
   return (

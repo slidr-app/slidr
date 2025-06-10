@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {type MouseEventHandler} from 'react';
 
 export default function Button({
@@ -11,18 +11,19 @@ export default function Button({
   className,
   submit,
 }: {
-  onClick?: MouseEventHandler<HTMLButtonElement>;
-  icon: string;
-  label: string;
-  title: string;
-  disabled?: boolean;
-  border?: boolean;
-  className?: string;
-  submit?: boolean;
+  readonly onClick?: MouseEventHandler<HTMLButtonElement>;
+  readonly icon: string;
+  readonly label: string;
+  readonly title: string;
+  readonly disabled?: boolean;
+  readonly border?: boolean;
+  readonly className?: string;
+  readonly submit?: boolean;
 }) {
-  const optionalProps: {onClick?: MouseEventHandler<HTMLButtonElement>} = {};
+  const optionalProperties: {onClick?: MouseEventHandler<HTMLButtonElement>} =
+    {};
   if (onClick !== undefined) {
-    optionalProps.onClick = onClick;
+    optionalProperties.onClick = onClick;
   }
 
   return (
@@ -39,7 +40,7 @@ export default function Button({
           : 'text-teal hover:(bg-gray-700) active:(text-white bg-black)',
         className,
       )}
-      {...optionalProps}
+      {...optionalProperties}
     >
       <div className={clsx(icon)} />
       <div

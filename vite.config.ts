@@ -83,6 +83,7 @@ export default defineConfig(({command, mode}) => {
     ],
     test: {
       globals: true,
+      // TODO probably don't need jsdom nor the setup now that there are no DOM based tests?
       environment: 'jsdom',
       setupFiles: './src/test/setup.ts',
       include: ['src/**/*.[Tt]est.ts?(x)'],
@@ -91,14 +92,15 @@ export default defineConfig(({command, mode}) => {
         all: true,
         exclude: [
           '.xo-config.cjs',
-          'pwa-assets.config.ts',
-          'uno.config.ts',
           'functions/**',
           'tests',
           '**/*.Test.tsx',
           'src/test/**',
+          '**/*.e2e.ts',
+          '*.ts',
+          '**/*.d.ts',
         ],
-        reporter: ['text', 'html', 'clover', 'json', 'text-summary'],
+        reporter: ['text', 'text-summary', 'lcov'],
       },
       // You might want to disable it, if you don't have tests that rely on CSS
       // since parsing CSS is slow

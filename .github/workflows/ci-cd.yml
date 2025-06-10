@@ -13,15 +13,12 @@ jobs:
   build_and_test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - run: corepack enable
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: "pnpm"
@@ -39,17 +36,21 @@ jobs:
       - name: Build
         run: pnpm run build:all
 
-      - name: Setup emulator cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/firebase/emulators
-          key: emulators-${{ runner.os }}
-
       - name: Integration tests
-        run: pnpm run test
+        run: pnpm run coverage
         # env:
         #   VITEST_MAX_THREADS: 1
         #   VITEST_MIN_THREADS: 1
+
+      - uses: codecov/codecov-action@v4
+        with:
+          # fail_ci_if_error: true # optional (default = false)
+          files: ./coverage/lcov.info # optional
+          # flags: unittests # optional
+          # name: codecov-umbrella # optional
+          token: ${{ secrets.CODECOV_TOKEN }} # required
+          verbose: true # optional (default = false)
+  
 
   deploy:
     if: github.ref_name == 'main' || github.ref_name == 'production'
@@ -57,15 +58,12 @@ jobs:
     needs: [build_and_test, e2e_test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - run: corepack enable
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: "pnpm"
@@ -100,15 +98,12 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    - name: Setup pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 8
+    - run: corepack enable
 
     - name: Setup Node.js environment
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version-file: .nvmrc
         cache: "pnpm"
@@ -123,13 +118,28 @@ jobs:
     - name: Install Playwright Browsers
       run: pnpm exec playwright install --with-deps chromium
 
-    - name: Run Playwright tests
-      run: pnpm run test:e2e
+    - name: Setup emulator cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/firebase/emulators
+        key: emulators-${{ runner.os }}
 
-    - uses: actions/upload-artifact@v3
+    - name: Run Playwright tests
+      run: pnpm run test:e2e:coverage
+
+    - uses: actions/upload-artifact@v4
       if: always()
       with:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
-      
+
+    - uses: codecov/codecov-action@v4
+      with:
+        # fail_ci_if_error: true # optional (default = false)
+        files: ./coverage/lcov.info # optional
+        # flags: unittests # optional
+        # name: codecov-umbrella # optional
+        token: ${{ secrets.CODECOV_TOKEN }} # required
+        verbose: true # optional (default = false)
+    

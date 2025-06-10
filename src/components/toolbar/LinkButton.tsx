@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {type MouseEventHandler} from 'react';
 import {Link} from 'react-router-dom';
 
@@ -12,16 +12,16 @@ export default function LinkButton({
   newTab,
   clientRoute,
 }: {
-  onClick?: MouseEventHandler<HTMLAnchorElement>;
-  icon: string;
-  label: string;
-  title: string;
-  to: string;
-  disabled?: never;
-  newTab?: boolean;
-  clientRoute?: boolean;
+  readonly onClick?: MouseEventHandler<HTMLAnchorElement>;
+  readonly icon: string;
+  readonly label: string;
+  readonly title: string;
+  readonly to: string;
+  readonly disabled?: never;
+  readonly newTab?: boolean;
+  readonly clientRoute?: boolean;
 }) {
-  const linkProps: {
+  const linkProperties: {
     target?: string;
     rel?: string;
     onClick?: MouseEventHandler<HTMLAnchorElement>;
@@ -37,12 +37,12 @@ export default function LinkButton({
   // TODO: fix click anywhere makes icon white!
 
   if (!clientRoute && newTab) {
-    linkProps.target = '_blank';
-    linkProps.rel = 'noreferrer';
+    linkProperties.target = '_blank';
+    linkProperties.rel = 'noreferrer';
   }
 
   if (onClick) {
-    linkProps.onClick = onClick;
+    linkProperties.onClick = onClick;
   }
 
   const ButtonContent = (
@@ -66,7 +66,7 @@ export default function LinkButton({
 
   if (clientRoute) {
     return (
-      <Link to={to} className={linkClasses} {...linkProps}>
+      <Link to={to} className={linkClasses} {...linkProperties}>
         {ButtonContent}
       </Link>
     );
@@ -75,7 +75,7 @@ export default function LinkButton({
   return (
     // The following error is handled with the newTab property
     // eslint-disable-next-line react/jsx-no-target-blank
-    <a href={to} className={linkClasses} {...linkProps}>
+    <a href={to} className={linkClasses} {...linkProperties}>
       {ButtonContent}
     </a>
   );

@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import Loading from '../Loading';
 
 export default function Slideshow({
@@ -7,10 +7,10 @@ export default function Slideshow({
   forward,
   onClick,
 }: {
-  pageIndex: number;
-  pages: string[];
-  forward?: boolean;
-  onClick?: () => void;
+  readonly pageIndex: number;
+  readonly pages: string[];
+  readonly forward?: boolean;
+  readonly onClick?: () => void;
 }) {
   if (pages.length === 0) {
     return (

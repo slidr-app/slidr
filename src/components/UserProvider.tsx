@@ -11,7 +11,7 @@ export type User = {
   uid: string;
 };
 
-export type UserDoc = {
+export type UserDocument = {
   username?: string;
   twitterHandle?: string;
 };

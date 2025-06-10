@@ -42,6 +42,9 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+
+    // Screenshot on failed test
+    screenshot: 'only-on-failure',
   },
 
   /* Configure projects for major browsers */
@@ -53,7 +56,12 @@ export default defineConfig({
     {
       name: 'chromium',
       // Use: {...devices['Desktop Chrome'], storageState: STORAGE_STATE},
-      use: {...devices['Desktop Chrome']},
+      use: {
+        ...devices['Desktop Chrome'],
+        // https://playwrightsolutions.com/how-do-i-access-the-browser-clipboard-with-playwright/
+        // https://playwright.dev/docs/api/class-browsercontext#browser-context-grant-permissions
+        permissions: ['clipboard-read', 'clipboard-write'],
+      },
     },
     // {
     //   name: 'chromium - no sign-in',

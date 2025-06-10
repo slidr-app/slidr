@@ -13,6 +13,9 @@ const PresentationPreferences = lazy(
 );
 const UserPreferences = lazy(async () => import('./pages/UserPreferences.tsx'));
 const Viewer = lazy(async () => import('./pages/Viewer.tsx'));
+const Help = lazy(async () => import('./pages/Help.tsx'));
+const Terms = lazy(async () => import('./pages/Terms.tsx'));
+const Privacy = lazy(async () => import('./pages/Privacy.tsx'));
 
 const Routes: RouteObject[] = [
   {
@@ -91,6 +94,21 @@ const Routes: RouteObject[] = [
   {
     path: '/e/:presentationId',
     element: <PresentationPreferences />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/help',
+    element: <Help />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/terms',
+    element: <Terms />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/privacy',
+    element: <Privacy />,
     errorElement: <ErrorPage />,
   },
   {

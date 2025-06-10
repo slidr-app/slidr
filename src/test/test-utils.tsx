@@ -1,7 +1,8 @@
 // eslint-disable-line unicorn/filename-case
 import {cleanup, render} from '@testing-library/react';
-import {createMemoryRouter, RouterProvider} from 'react-router-dom';
-import Routes from '../Routes';
+// Import {createMemoryRouter, RouterProvider} from 'react-router-dom';
+import {afterEach} from 'vitest';
+// Import Routes from '../Routes';
 
 afterEach(() => {
   cleanup();
@@ -15,10 +16,10 @@ function customRender(ui: React.ReactElement, options = {}) {
   });
 }
 
-export function renderRoute(route: string, options = {}) {
-  const router = createMemoryRouter(Routes, {initialEntries: [route]});
-  return customRender(<RouterProvider router={router} />, options);
-}
+// Export function renderRoute(route: string, options = {}) {
+//   const router = createMemoryRouter(Routes, {initialEntries: [route]});
+//   return customRender(<RouterProvider router={router} />, options);
+// }
 
 export * from '@testing-library/react';
 export {default as userEvent} from '@testing-library/user-event';

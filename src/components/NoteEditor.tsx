@@ -1,6 +1,6 @@
-import clsx from 'clsx';
+import clsx from 'clsx/lite';
 import {useState} from 'react';
-import {ReactMarkdown} from 'react-markdown/lib/react-markdown';
+import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {useDebouncedCallback} from 'use-debounce';
 
@@ -13,13 +13,13 @@ export default function NoteEditor({
   handleFoldDown,
   pages,
 }: {
-  pageIndices: number[];
-  markdown: string;
-  onMarkdownChange: (markdown: string) => void;
-  onMarkdownDirty: () => void;
-  handleFoldUp: () => void;
-  handleFoldDown: () => void;
-  pages: string[];
+  readonly pageIndices: number[];
+  readonly markdown: string;
+  readonly onMarkdownChange: (markdown: string) => void;
+  readonly onMarkdownDirty: () => void;
+  readonly handleFoldUp: () => void;
+  readonly handleFoldDown: () => void;
+  readonly pages: string[];
 }) {
   const [userMarkdown, setUserMarkdown] = useState(markdown);
   const debouncedMarkdownChange = useDebouncedCallback(
@@ -30,8 +30,8 @@ export default function NoteEditor({
   );
 
   return (
-    <>
-      <div className="relative not-first:mt-8">
+    <li className="not-first:mt-8">
+      <div className="relative">
         <div className="grid grid-cols-4 lt-sm:grid-cols-2">
           {pageIndices.map((pageIndex, indicesIndex) => (
             <img
@@ -41,6 +41,7 @@ export default function NoteEditor({
                 indicesIndex === 0 && 'grid-col-span-2 grid-row-span-2',
               )}
               src={pages[pageIndex]}
+              alt={`Slide ${pageIndex + 1}`}
             />
           ))}
         </div>
@@ -87,9 +88,9 @@ export default function NoteEditor({
           />
         </div>
         <div className="prose max-w-full font-inter">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
+          <Markdown remarkPlugins={[remarkGfm]}>{markdown}</Markdown>
         </div>
       </div>
-    </>
+    </li>
   );
 }
