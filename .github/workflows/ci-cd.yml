@@ -115,6 +115,9 @@ jobs:
     - name: Install dependencies
       run: pnpm install && pnpm --dir functions install
 
+    - name: Build functions
+      run: pnpm run build:functions
+
     - name: Install Playwright Browsers
       run: pnpm exec playwright install --with-deps chromium
 
