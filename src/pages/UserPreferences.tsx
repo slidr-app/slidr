@@ -69,6 +69,24 @@ export default function UserPreferences() {
   return (
     <DefaultLayout title="User Preferences">
       <div className="max-w-screen-sm mx-auto grid grid-cols-[auto_1fr] gap-4 w-full">
+        <div className="grid-col-span-2 flex flex-row gap-2 justify-center items-center">
+          {/*
+            If isPro is not yet set (still loading), render nothing.
+            This facilitates UI test by allowing waiting for something to be rendered.
+          */}
+          {user?.isPro === undefined ? null : user.isPro ? (
+            <>
+              <div className="i-tabler-user-star w-8 h-8" />
+              <div>
+                <span className="font-semibold">Slidr Pro</span> - Thank you for
+                your support!
+              </div>
+              <div className="i-tabler-confetti w-8 h-8" />
+            </>
+          ) : (
+            <div>Go Pro to support Slidr!</div>
+          )}
+        </div>
         <div className="flex items-center justify-end">Email:</div>
         <div className="">{user?.email ?? ''}</div>
         <label

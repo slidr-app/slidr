@@ -2,7 +2,11 @@ import {signInWithEmailAndPassword} from 'firebase/auth';
 import {auth} from '../firebase';
 import Button from './toolbar/Button';
 
-export default function DeveloperSignIn() {
+export default function DeveloperSignIn({
+  onSignInSuccess,
+}: {
+  readonly onSignInSuccess: () => void;
+}) {
   return (
     <div className="flex flex-col items-center gap-2 mt-8">
       <div className="text-red-600">
@@ -13,12 +17,13 @@ export default function DeveloperSignIn() {
         label="Sign In with Test Account"
         title="Sign In with Test Account"
         icon="i-tabler-bug"
-        onClick={() => {
-          void signInWithEmailAndPassword(
+        onClick={async () => {
+          await signInWithEmailAndPassword(
             auth,
             'test@doesnotexist.com',
             '123456',
           );
+          onSignInSuccess();
         }}
       />
     </div>

@@ -1,5 +1,5 @@
-import {useEffect, useState} from 'react';
-import {Link, NavLink} from 'react-router-dom';
+import {useContext, useEffect, useState} from 'react';
+import {Link, NavLink, useNavigate} from 'react-router-dom';
 import {collection, orderBy, query, onSnapshot} from 'firebase/firestore';
 import {auth, firestore} from '../firebase.ts';
 import {
@@ -8,8 +8,11 @@ import {
 } from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout.tsx';
 import Loading from '../components/Loading.tsx';
+import {UserContext} from '../components/UserProvider.tsx';
 
 export default function Home() {
+  const navigate = useNavigate();
+  const {user} = useContext(UserContext);
   useEffect(() => {
     document.title = `Slidr - Home`;
   }, []);
@@ -72,6 +75,19 @@ export default function Home() {
           <button
             type="button"
             className="btn flex flex-row gap-2 self-start text-lg font-semibold hover:bg-teal hover:bg-opacity-20 items-center"
+            onClick={async () => {
+              // First sign in if the user is not signed in
+              if (!user) {
+                navigate('/signin?redirect=/user');
+                return;
+              }
+
+              // If signed-in, navigate to the user page
+              await new Promise((resolve) => {
+                setTimeout(resolve, 500);
+              });
+              navigate('/user');
+            }}
           >
             <div>Upgrade to Slidr Pro</div>
             <div className="i-tabler-arrow-right w-6 h-6" />
