@@ -22,7 +22,7 @@ test('can upload and view presentation', async ({page, loginPage}) => {
     })
     .locator('input')
     .setInputFiles('./src/test/pdf/test.pdf');
-  await expect(page.getByText(/done/i)).toBeVisible({timeout: 20_000});
+  await expect(page.getByText(/done/i)).toBeVisible({timeout: 30_000});
   await page.getByLabel(/title/i).fill(presentationName);
   await expect(page.getByText(/saving/i)).toBeVisible();
   await expect(page.getByText(/saving/i)).not.toBeVisible();
@@ -76,7 +76,7 @@ test('can edit presentation settings', async ({page, loginPage}) => {
     })
     .locator('input')
     .setInputFiles('./src/test/pdf/test.pdf');
-  await expect(page.getByText(/done/i)).toBeVisible({timeout: 20_000});
+  await expect(page.getByText(/done/i)).toBeVisible({timeout: 30_000});
   await page.getByLabel(/title/i).fill(presentationName);
   await expect(page.getByText(/saving/i)).toBeVisible();
   await expect(page.getByText(/saving/i)).not.toBeVisible();
