@@ -60,7 +60,7 @@ async function getCodeWithRetries(email: string) {
   }
 
   for (let attempt = 0; attempt < 3; attempt++) {
-    console.log(`oob code login attempt ${attempt + 1} of 3`);
+    console.log(`oob code login ${email} attempt ${attempt + 1} of 3`);
 
     // eslint-disable-next-line no-await-in-loop
     const oobCode = await getCode();
