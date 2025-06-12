@@ -36,7 +36,7 @@ export function UserProvider({children}: PropsWithChildren) {
 
         if (
           currentUser?.uid === newUser?.uid &&
-          currentUser?.uid === newUser?.uid &&
+          currentUser?.email === newUser?.email &&
           currentUser?.isPro === newUser?.isPro
         ) {
           return currentUser;
