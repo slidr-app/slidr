@@ -8,26 +8,40 @@ import {
 } from 'react';
 import {Link, NavLink} from 'react-router-dom';
 import clsx from 'clsx/lite';
-import {auth} from '../firebase';
-import {UserContext} from '../components/UserProvider';
+import {doc, onSnapshot} from 'firebase/firestore';
+import {auth, firestore} from '../firebase';
+import {UserContext, type UserDocument} from '../components/UserProvider';
 
 export default function DefaultLayout({
   title,
   children,
 }: PropsWithChildren<{readonly title: ReactNode}>) {
-  const {user, setUser} = useContext(UserContext);
-  useEffect(
-    () =>
-      onAuthStateChanged(auth, (nextUser) => {
-        if (!nextUser) {
-          setUser(undefined);
-          return;
-        }
+  const {user, setUser, setIsPro} = useContext(UserContext);
+  useEffect(() => {
+    return onAuthStateChanged(auth, (nextUser) => {
+      if (!nextUser) {
+        setUser(undefined);
+        return;
+      }
 
-        setUser({uid: nextUser.uid, email: nextUser.email ?? undefined});
-      }),
-    [setUser],
-  );
+      setUser({uid: nextUser.uid, email: nextUser.email ?? undefined});
+    });
+  }, [setUser]);
+
+  useEffect(() => {
+    if (user === undefined) {
+      return;
+    }
+
+    return onSnapshot(doc(firestore, `users/${user.uid}`), (snapshot) => {
+      // Default to false if the user document does not exist
+      const isPro =
+        (snapshot.data() as UserDocument | undefined)?.isPro ?? false;
+
+      setIsPro(isPro);
+    });
+  }, [user, setIsPro]);
+
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   return (
@@ -120,6 +134,19 @@ export default function DefaultLayout({
                   showUserMenu ? 'flex' : 'hidden',
                 )}
               >
+                {user.isPro ? (
+                  <div className="flex flex-row items-center gap-2 mb-2">
+                    <div className="i-tabler-user-star w-6 h-6 text-yellow-400" />
+                    <div className="text-sm">Slidr Pro</div>
+                  </div>
+                ) : (
+                  <Link
+                    to="/pro"
+                    className="text-base hover:children:(nav-active mb-0) overflow-hidden pb-2"
+                  >
+                    <div className="mb-2px">Go Slidr Pro!</div>
+                  </Link>
+                )}
                 <button
                   className="text-base hover:children:(nav-active mb-0) overflow-hidden pb-2"
                   type="button"

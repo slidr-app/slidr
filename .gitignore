@@ -40,3 +40,7 @@ public/pwa-*.png
 /playwright-report/
 /playwright/.cache/
 .pnpm-store
+
+# Some tooling makes this temp file which can cause xo to fail if it's deleted during linting
+# See if this can be removed when updating vite or xo
+vite.config.ts.timestamp*

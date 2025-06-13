@@ -9,35 +9,67 @@ import {
 export type User = {
   email?: string;
   uid: string;
+  isPro?: boolean;
 };
 
 export type UserDocument = {
   username?: string;
   twitterHandle?: string;
+  isPro?: boolean;
 };
 
 export const UserContext = createContext<{
   user: User | undefined;
   setUser: (nextUser: User | undefined) => void;
-}>({user: undefined, setUser: () => undefined});
+  setIsPro: (isPro: boolean) => void;
+}>({user: undefined, setUser: () => undefined, setIsPro: () => undefined});
 
 export function UserProvider({children}: PropsWithChildren) {
   const [user, setUser] = useState<User>();
 
   const updateUser = useCallback(
     (newUser: User | undefined) => {
-      // Don't update if nothing has changed to avoid rerenders
-      if (user?.email === newUser?.email && user?.uid === newUser?.uid) {
-        return;
-      }
+      setUser((currentUser) => {
+        if (currentUser === undefined && newUser === undefined) {
+          return currentUser;
+        }
 
-      setUser(newUser);
+        if (
+          currentUser?.uid === newUser?.uid &&
+          currentUser?.email === newUser?.email &&
+          currentUser?.isPro === newUser?.isPro
+        ) {
+          return currentUser;
+        }
+
+        // Only update if something changed
+        return newUser;
+      });
     },
-    [user],
+    [setUser],
   );
+
+  const setIsPro = useCallback(
+    (isPro: boolean) => {
+      setUser((user) => {
+        if (!user) {
+          return user;
+        }
+
+        if (user.isPro === isPro) {
+          return user;
+        }
+
+        // Only update if pro status changed
+        return {...user, isPro};
+      });
+    },
+    [setUser],
+  );
+
   const userContext = useMemo(
-    () => ({user, setUser: updateUser}),
-    [user, updateUser],
+    () => ({user, setUser: updateUser, setIsPro}),
+    [user, updateUser, setIsPro],
   );
   return (
     <UserContext.Provider value={userContext}>{children}</UserContext.Provider>

@@ -20,11 +20,21 @@ export default function SignIn() {
     document.title = `Slidr - Sign In`;
   }, []);
 
+  // Build the current url with react router location, allowing this to be tested
+  const location = useLocation();
+  const currentUrl = `${window.location.origin}${location.pathname}${location.search}`;
+  const searchParameters = new URLSearchParams(location.search);
+  const redirectTo = searchParameters.get('redirect') ?? '/';
+  const navigate = useNavigate();
+  const redirect = useCallback(() => {
+    navigate(redirectTo);
+  }, [navigate, redirectTo]);
+
   const actionCodeSettings = {
     // URL you want to redirect back to. The domain (www.example.com) for this
     // URL must be in the authorized domains list in the Firebase Console.
     // url: 'https://www.example.com/finishSignUp?cartId=1234',
-    url: `${window.location.origin}/signin`,
+    url: `${window.location.origin}/signin/?redirect=${redirectTo}`,
     // This must be true.
     handleCodeInApp: true,
     // IOS: {
@@ -38,13 +48,8 @@ export default function SignIn() {
     // dynamicLinkDomain: 'example.page.link',
   };
 
-  // Build the current url with react router location, allowing this to be tested
-  const location = useLocation();
-  const currentUrl = `${window.location.origin}${location.pathname}${location.search}`;
-
   const isLink = isSignInWithEmailLink(auth, currentUrl);
 
-  const navigate = useNavigate();
   const [signInError, setSignInError] = useState<Error>();
 
   if (signInError) {
@@ -58,14 +63,14 @@ export default function SignIn() {
       setSigningIn(true);
       try {
         await signInWithEmailLink(auth, signInEmail, currentUrl);
-        navigate('/');
+        redirect();
       } catch (error) {
         setSignInError(error as Error);
       } finally {
         window.localStorage.removeItem('emailForSignIn');
       }
     },
-    [navigate, currentUrl],
+    [redirect, currentUrl],
   );
 
   useEffect(() => {
@@ -165,7 +170,9 @@ export default function SignIn() {
               page.
             </div>
           )}
-          {import.meta.env.MODE === 'emulator' && <DeveloperSignIn />}
+          {import.meta.env.MODE === 'emulator' && (
+            <DeveloperSignIn onSignInSuccess={redirect} />
+          )}
         </div>
       )}
     </DefaultLayout>

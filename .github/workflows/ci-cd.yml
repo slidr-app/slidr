@@ -113,7 +113,10 @@ jobs:
       run: node -v && npm -v && pnpm -v
 
     - name: Install dependencies
-      run: pnpm install
+      run: pnpm install && pnpm --dir functions install
+
+    - name: Build functions
+      run: pnpm run build:functions
 
     - name: Install Playwright Browsers
       run: pnpm exec playwright install --with-deps chromium
