@@ -20,6 +20,10 @@
         "function": "renderForBot"
       },
       {
+        "source": "/api/lemon-squeezy-webhook",
+        "function": "lemonSqueezyWebhook"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
