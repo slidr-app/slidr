@@ -3,6 +3,9 @@ import process from 'node:process';
 import {test, expect} from '../test/login-fixture';
 import {createMockLemonServer} from '../test/lemon-squeezy-api';
 
+const lemonSqueezyWebhookFunctionUrl =
+  'http://127.0.0.1:5001/demo-test/us-central1/lemonSqueezyWebhook';
+
 test('can upgrade and downgrade Slidr Pro', async ({
   page,
   loginPage,
@@ -22,7 +25,12 @@ test('can upgrade and downgrade Slidr Pro', async ({
   await goProButton.click();
   await page.waitForURL('/user');
 
-  const secret = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET ?? 'does not exist';
+  const secret = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET;
+  if (!secret) {
+    throw new Error(
+      'LEMON_SQUEEZY_WEBHOOK_SECRET environment variable is not set',
+    );
+  }
 
   const subscriptionCreatedPayload = {
     meta: {
@@ -43,17 +51,14 @@ test('can upgrade and downgrade Slidr Pro', async ({
     .update(subscriptionCreatedBody)
     .digest('hex');
 
-  await fetch(
-    'http://127.0.0.1:5001/demo-test/us-central1/lemonSqueezyWebhook',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Signature': subscriptionCreatedSignature,
-      },
-      body: subscriptionCreatedBody,
+  await fetch(lemonSqueezyWebhookFunctionUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Signature': subscriptionCreatedSignature,
     },
-  );
+    body: subscriptionCreatedBody,
+  });
 
   await expect(
     page.getByText('Slidr Pro - Thank you for your support!'),
@@ -80,20 +85,20 @@ test('can upgrade and downgrade Slidr Pro', async ({
     .update(subscriptionCancelledBody)
     .digest('hex');
 
-  await fetch(
-    'http://127.0.0.1:5001/demo-test/us-central1/lemonSqueezyWebhook',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Signature': subscriptionCancelledSignature,
-      },
-      body: subscriptionCancelledBody,
+  await fetch(lemonSqueezyWebhookFunctionUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Signature': subscriptionCancelledSignature,
     },
-  );
+    body: subscriptionCancelledBody,
+  });
 
   await expect(page.getByText('Go Pro to support Slidr!')).toBeVisible();
 });
+
+const lemonSqueezySyncFunctionUrl =
+  'http://127.0.0.1:5001/demo-test/us-central1/syncProUsers';
 
 test('subscriptions can be synced', async ({page, loginPage}) => {
   const mockLemonServer = createMockLemonServer({port: 3001});
@@ -120,7 +125,7 @@ test('subscriptions can be synced', async ({page, loginPage}) => {
         },
       },
     ]);
-    await fetch('http://127.0.0.1:5001/demo-test/us-central1/syncProUsers', {
+    await fetch(lemonSqueezySyncFunctionUrl, {
       method: 'GET',
     });
     await expect(
@@ -139,7 +144,7 @@ test('subscriptions can be synced', async ({page, loginPage}) => {
         },
       },
     ]);
-    await fetch('http://127.0.0.1:5001/demo-test/us-central1/syncProUsers', {
+    await fetch(lemonSqueezySyncFunctionUrl, {
       method: 'GET',
     });
     await expect(page.getByText('Go Pro to support Slidr!')).toBeVisible();

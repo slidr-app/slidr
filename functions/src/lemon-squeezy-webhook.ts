@@ -30,10 +30,9 @@ export const lemonSqueezyWebhook = onRequest(
       logger.info('Received webhook event:', request.body);
 
       const signature = request.header('X-Signature');
-      const rawBody = JSON.stringify(request.body);
 
       const hmac = createHmac('sha256', lemonSqueezyWebhookSecret.value());
-      const digest = hmac.update(rawBody).digest('hex');
+      const digest = hmac.update(request.rawBody).digest('hex');
 
       if (!signature || digest !== signature) {
         logger.error('Invalid signature');
