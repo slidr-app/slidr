@@ -11,7 +11,7 @@
     "lint": "xo",
     "preview": "vite preview",
     "prepare": "husky",
-    "prepush": "concurrently -n lint,build,test -c bgGreen.bold,bgYellow.bold,bgCyan.bold \"pnpm run lint\" \"pnpm run build:all\" \"pnpm run test:all\"",
+    "prepush": "PLAYWRIGHT_HTML_OPEN=never concurrently -n lint,build,test -c bgGreen.bold,bgYellow.bold,bgCyan.bold \"pnpm run lint\" \"pnpm run build:all\" \"pnpm run test:all\"",
     "build:functions": "pnpm --dir functions build",
     "build:all": "pwa-assets-generator && pnpm run build && pnpm run build:functions",
     "deploy": "firebase deploy --only functions:renderForBot,functions:lemonSqueezyWebhook,auth,firestore,storage,hosting",
