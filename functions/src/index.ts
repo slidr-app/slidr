@@ -17,3 +17,4 @@ initializeApp();
 // Re-export cloud functions
 export {renderForBot} from './render-for-bot';
 export {lemonSqueezyWebhook} from './lemon-squeezy-webhook';
+export {syncProUsers} from './sync-pro-users';

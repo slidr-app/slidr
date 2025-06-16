@@ -127,6 +127,10 @@ jobs:
         path: ~/.cache/firebase/emulators
         key: emulators-${{ runner.os }}
 
+    - name: Set functions secrets
+      run: |
+        echo "LEMON_SQUEEZY_WEBHOOK_SECRET=notverysecret" >> functions/.secret.local
+        echo "LEMON_SQUEEZY_API_KEY=doesnotexist" >> functions/.secret.local
     - name: Run Playwright tests
       run: pnpm run test:e2e:coverage
 
