@@ -5,7 +5,7 @@ import * as logger from 'firebase-functions/logger';
 import {defineSecret} from 'firebase-functions/params';
 import {z} from 'zod';
 import {onRequest} from 'firebase-functions/v2/https';
-import {type UserData} from './types';
+import {type UserData} from './types.js';
 
 const lemonSqueezyApiKey = defineSecret('LEMON_SQUEEZY_API_KEY');
 

@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+import process from 'node:process';
 import {type Page, expect} from '@playwright/test';
 import {generateId} from './id';
 
@@ -9,6 +11,9 @@ type OobCode = {
 type OobCodesResponse = {
   oobCodes: OobCode[];
 };
+
+const lemonSqueezyWebhookFunctionUrl =
+  'http://127.0.0.1:5001/demo-test/us-central1/lemonSqueezyWebhook';
 
 export function loginPageFactory(page: Page) {
   const emailAddress = `${generateId()}@test.com`;
@@ -38,6 +43,22 @@ export function loginPageFactory(page: Page) {
     },
     async signInComplete() {
       await expect(page.getByRole('button', {name: /account/i})).toBeVisible();
+    },
+    async goPro() {
+      await page.goto('/');
+
+      const goProButton = page.getByRole('button', {
+        name: 'Upgrade to Slidr Pro',
+      });
+      await goProButton.click();
+      await page.waitForURL('/user');
+      await simulateLemonSqueezyWebhook(emailAddress);
+    },
+    async goProComplete() {
+      await page.goto('/user');
+      await expect(
+        page.getByText('Slidr Pro - Thank you for your support!'),
+      ).toBeVisible();
     },
   };
 }
@@ -77,4 +98,41 @@ async function getCodeWithRetries(email: string) {
   }
 
   throw new Error('Unable to get oob code for firebase login');
+}
+
+async function simulateLemonSqueezyWebhook(email: string) {
+  const secret = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET;
+  if (!secret) {
+    throw new Error(
+      'LEMON_SQUEEZY_WEBHOOK_SECRET environment variable is not set',
+    );
+  }
+
+  const subscriptionCreatedPayload = {
+    meta: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      event_name: 'subscription_created',
+    },
+    data: {
+      attributes: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        user_email: email,
+      },
+    },
+  };
+
+  const subscriptionCreatedBody = JSON.stringify(subscriptionCreatedPayload);
+  const subscriptionCreatedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(subscriptionCreatedBody)
+    .digest('hex');
+
+  await fetch(lemonSqueezyWebhookFunctionUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Signature': subscriptionCreatedSignature,
+    },
+    body: subscriptionCreatedBody,
+  });
 }

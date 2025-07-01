@@ -2,7 +2,7 @@ import {onRequest} from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
 import {isbot} from 'isbot';
 import {getFirestore} from 'firebase-admin/firestore';
-import {type PresentationData} from './presentation';
+import {type PresentationData} from './presentation.js';
 
 // LinkedIn says descriptions should be at least 100 chars.
 const description = `slidr.app is an always free interactive presentation framework. Why shouldn't presentations be fun for both the speaker and the audience?`;

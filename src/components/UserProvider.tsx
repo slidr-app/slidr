@@ -5,24 +5,19 @@ import {
   createContext,
   useCallback,
 } from 'react';
+import type {UserDocument} from '../user-schema';
 
 export type User = {
   email?: string;
   uid: string;
-  isPro?: boolean;
-};
-
-export type UserDocument = {
-  username?: string;
-  twitterHandle?: string;
-  isPro?: boolean;
+  data?: UserDocument;
 };
 
 export const UserContext = createContext<{
   user: User | undefined;
   setUser: (nextUser: User | undefined) => void;
-  setIsPro: (isPro: boolean) => void;
-}>({user: undefined, setUser: () => undefined, setIsPro: () => undefined});
+  setUserData: (data: UserDocument) => void;
+}>({user: undefined, setUser: () => undefined, setUserData: () => undefined});
 
 export function UserProvider({children}: PropsWithChildren) {
   const [user, setUser] = useState<User>();
@@ -30,14 +25,12 @@ export function UserProvider({children}: PropsWithChildren) {
   const updateUser = useCallback(
     (newUser: User | undefined) => {
       setUser((currentUser) => {
-        if (currentUser === undefined && newUser === undefined) {
-          return currentUser;
-        }
-
         if (
           currentUser?.uid === newUser?.uid &&
           currentUser?.email === newUser?.email &&
-          currentUser?.isPro === newUser?.isPro
+          currentUser?.data?.isPro === newUser?.data?.isPro &&
+          currentUser?.data?.twitterHandle === newUser?.data?.twitterHandle &&
+          currentUser?.data?.username === newUser?.data?.username
         ) {
           return currentUser;
         }
@@ -49,28 +42,35 @@ export function UserProvider({children}: PropsWithChildren) {
     [setUser],
   );
 
-  const setIsPro = useCallback(
-    (isPro: boolean) => {
+  const setUserData = useCallback(
+    (data: UserDocument) => {
       setUser((user) => {
         if (!user) {
           return user;
         }
 
-        if (user.isPro === isPro) {
+        // TODO: is there a fancier way to check? Maybe compare Object.entries?
+        if (
+          user.data !== undefined &&
+          user.data?.isPro === data?.isPro &&
+          user.data?.twitterHandle === data?.twitterHandle &&
+          user.data?.username === data?.username
+        ) {
           return user;
         }
 
-        // Only update if pro status changed
-        return {...user, isPro};
+        // Only update if details changed
+        return {...user, data};
       });
     },
     [setUser],
   );
 
   const userContext = useMemo(
-    () => ({user, setUser: updateUser, setIsPro}),
-    [user, updateUser, setIsPro],
+    () => ({user, setUser: updateUser, setUserData}),
+    [user, updateUser, setUserData],
   );
+
   return (
     <UserContext.Provider value={userContext}>{children}</UserContext.Provider>
   );

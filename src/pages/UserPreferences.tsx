@@ -11,10 +11,11 @@ import {
 } from 'firebase/firestore';
 import {useDebouncedCallback} from 'use-debounce';
 import DefaultLayout from '../layouts/DefaultLayout';
-import {UserContext, type UserDocument} from '../components/UserProvider';
+import {UserContext} from '../components/UserProvider';
 import {firestore} from '../firebase';
 import SaveIndicator from '../components/SaveIndicator';
 import {type PresentationUpdate} from '../../functions/src/presentation';
+import {type UserDocument, userDocumentConverter} from '../user-schema';
 
 export default function UserPreferences() {
   const {user} = useContext(UserContext);
@@ -25,19 +26,18 @@ export default function UserPreferences() {
       return;
     }
 
-    return onSnapshot(doc(firestore, `users/${user.uid}`), (snapshot) => {
-      if (!snapshot.exists()) {
-        setUserData({});
-        return;
-      }
+    return onSnapshot(
+      doc(firestore, `users/${user.uid}`).withConverter(userDocumentConverter),
+      (snapshot) => {
+        if (!snapshot.exists()) {
+          setUserData({});
+          return;
+        }
 
-      const snaphshotData = snapshot.data() as UserDocument;
-
-      setUserData({
-        username: snaphshotData.username,
-        twitterHandle: snaphshotData.twitterHandle,
-      });
-    });
+        const snapshotData = snapshot.data();
+        setUserData(snapshotData);
+      },
+    );
   }, [user]);
 
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'dirty'>(
@@ -71,10 +71,10 @@ export default function UserPreferences() {
       <div className="max-w-screen-sm mx-auto grid grid-cols-[auto_1fr] gap-4 w-full">
         <div className="grid-col-span-2 flex flex-row gap-2 justify-center items-center">
           {/*
-            If isPro is not yet set (still loading), render nothing.
+            If data is not yet set (still loading), render nothing.
             This facilitates UI test by allowing waiting for something to be rendered.
           */}
-          {user?.isPro === undefined ? null : user.isPro ? (
+          {user?.data === undefined ? null : user.data.isPro ? (
             <>
               <div className="i-tabler-user-star w-8 h-8" />
               <div>

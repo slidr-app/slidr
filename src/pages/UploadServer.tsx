@@ -1,14 +1,12 @@
-import {useCallback, useContext, useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
-import * as pdfjs from 'pdfjs-dist';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
 import clsx from 'clsx/lite';
 import {
   type DocumentReference,
   addDoc,
   collection,
-  updateDoc,
+  onSnapshot,
+  setDoc,
 } from 'firebase/firestore';
 import {
   ref as storageReference,
@@ -18,33 +16,29 @@ import {
   connectStorageEmulator,
 } from 'firebase/storage';
 import {nanoid} from 'nanoid';
-import {auth, firestore, app} from '../firebase';
+import {firestore, app} from '../firebase';
 import '../components/pdf/pdf.css';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
 import {
-  type PresentationCreate,
+  // Type PresentationCreate,
   type Note,
-  type PresentationUpdate,
 } from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext} from '../components/UserProvider';
 import Loading from '../components/Loading';
-import Pdf from '../components/pdf/Pdf';
-
-// TODO: test fails sometimes, done text doesn't show pdf.
-
-const source = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerSrc = source.toString();
+import {
+  fromFirestore,
+  toFirestore,
+  type Presentation,
+} from '../../functions/src/presentation-schema';
 
 type UploadState =
   | 'fetching user'
   | 'ready'
-  | 'creating'
-  | 'rendering pages'
-  | 'uploading pages'
-  | 'setting pages'
+  | 'uploading'
+  | 'processing'
   | 'done';
 
 const storage = getStorage(app);
@@ -53,6 +47,11 @@ if (import.meta.env.MODE === 'emulator') {
   connectStorageEmulator(storage, '127.0.0.1', 9199);
 }
 
+const presentationConverter = {
+  toFirestore,
+  fromFirestore,
+};
+
 export default function Upload() {
   useEffect(() => {
     document.title = `Slidr - Upload`;
@@ -60,17 +59,11 @@ export default function Upload() {
 
   const [uploadState, setUploadState] = useState<UploadState>('fetching user');
   const [file, setFile] = useState<File>();
-  const [pageIndex, setPageIndex] = useState(0);
-  const [pageCount, setPageCount] = useState(0);
   const [presentationReference, setPresentationReference] =
-    useState<DocumentReference>();
+    useState<DocumentReference<Presentation>>();
   const [notes, setNotes] = useState<Note[]>([]);
   const [title, setTitle] = useState('');
   const [savingState, setSavingState] = useState<NotesSaveState>('saved');
-  const [pageBlob, setPageBlob] = useState<Blob>();
-  const [uploadPromises, setUploadPromises] = useState<Array<Promise<string>>>(
-    [],
-  );
   const [pages, setPages] = useState<string[]>([]);
 
   const {user} = useContext(UserContext);
@@ -99,16 +92,21 @@ export default function Upload() {
       setFile(acceptedFiles[0]);
 
       const presentationReference_ = await addDoc(
-        collection(firestore, 'presentations'),
+        collection(firestore, 'presentations').withConverter(
+          presentationConverter,
+        ),
         {
           created: new Date(),
-          uid: auth.currentUser!.uid,
+          uid: user?.uid ?? '',
           username: user?.data?.username ?? '',
           twitterHandle: user?.data?.twitterHandle ?? '',
           pages: [],
           notes: [],
           title: '',
-        } satisfies PresentationCreate,
+          status: 'uploading',
+          original: '',
+          rendered: new Date(),
+        } satisfies Presentation,
       );
       setPresentationReference(presentationReference_);
       const originalName = `${nanoid()}.pdf`;
@@ -122,159 +120,84 @@ export default function Upload() {
       });
 
       const originalDownloadUrl = await getDownloadURL(originalReference);
-      await updateDoc(presentationReference_, {
-        original: originalDownloadUrl,
-      } satisfies PresentationUpdate);
-      setUploadState('rendering pages');
+      await setDoc(
+        presentationReference_,
+        {
+          original: originalDownloadUrl,
+          status: 'created',
+        },
+        {
+          merge: true,
+        },
+      );
+      setUploadState('processing');
     }
 
     void startRenderingFile();
   }, [
     acceptedFiles,
     uploadState,
+    user?.uid,
     user?.data?.twitterHandle,
     user?.data?.username,
   ]);
 
-  const pageRendered = useCallback((canvas: HTMLCanvasElement) => {
-    // Watermark rendered image
-    const context = canvas.getContext('2d');
-    if (context) {
-      const rootStyles = window.getComputedStyle(
-        document.querySelector('#root')!,
-      );
-
-      const fontFamily = rootStyles.getPropertyValue('font-family');
-
-      // The weight should match an already loaded font so that all watermarks have the same dimensions.
-      // Otherwise, the first page may not have the correctly scaled font.
-      const fontStyle = `500 16px ${fontFamily}`;
-
-      context.font = fontStyle;
-      context.fillStyle = 'rgba(255,255,255,0.75)';
-      context.strokeStyle = 'rgba(0,0,0,0.45)';
-
-      const textMetrics = context.measureText('slidr.app');
-      const x =
-        canvas.width -
-        20 -
-        textMetrics.actualBoundingBoxLeft -
-        textMetrics.actualBoundingBoxRight;
-      const y =
-        canvas.height -
-        0 -
-        textMetrics.fontBoundingBoxAscent -
-        textMetrics.fontBoundingBoxDescent;
-      context.fillText('slidr.app', x, y);
-      context.strokeText('slidr.app', x, y);
-    }
-
-    canvas.toBlob(async (blob) => {
-      if (!blob) {
-        throw new Error(`Error rendering pdf canvas to image webp blob`);
-      }
-
-      setPageBlob(blob);
-    }, 'image/webp');
-  }, []);
-
   useEffect(() => {
-    async function uploadPage(pageImage: Blob, id: string) {
-      const pageStorageReference = storageReference(
-        storage,
-        `presentations/${id}/${pageIndex
-          .toString()
-          .padStart(3, '0')}_${nanoid()}.webp`,
-      );
-
-      await uploadBytes(pageStorageReference, pageImage, {
-        cacheControl: 'public, max-age=604800, immutable',
-      });
-      console.log('upload done', pageIndex);
-      const pageUrl = await getDownloadURL(pageStorageReference);
-      console.log('dl url done', pageIndex);
-      return pageUrl;
-    }
-
-    if (
-      uploadState !== 'rendering pages' ||
-      !pageBlob ||
-      !presentationReference
-    ) {
+    if (!presentationReference) {
       return;
     }
 
-    const uploadPromise = uploadPage(pageBlob, presentationReference.id);
-    setUploadPromises((currentPromises) => [...currentPromises, uploadPromise]);
-    setPageBlob(undefined);
-
-    if (pageIndex < pageCount - 1) {
-      setPageIndex(pageIndex + 1);
-    } else {
-      setUploadState('uploading pages');
-      // SetRenderingDone(true);
+    // Only start listening for changes if we are processing the upload
+    if (uploadState !== 'processing') {
+      return;
     }
-  }, [uploadState, pageBlob, pageIndex, presentationReference, pageCount]);
 
-  useEffect(() => {
-    async function updatePages() {
-      if (!presentationReference || uploadState !== 'uploading pages') {
+    return onSnapshot(presentationReference, async (snapshot) => {
+      if (!snapshot.exists()) {
         return;
       }
 
-      console.log('waiting for pages');
-      const nextPages = await Promise.all(uploadPromises);
-      console.log('pages done');
-      const nextNotes = nextPages.map((_, pageIndex) => ({
-        pageIndices: [pageIndex] as [number, ...number[]],
-        markdown: '',
-      }));
+      const data = snapshot.data();
 
-      setPages(nextPages);
-      setNotes(nextNotes);
-      setUploadState('setting pages');
-    }
-
-    void updatePages();
-  }, [uploadState, presentationReference, uploadPromises]);
-
-  useEffect(() => {
-    async function setPages() {
-      if (uploadState !== 'setting pages' || !presentationReference) {
-        return;
+      if (data.status === 'rendered') {
+        setUploadState('done');
+        await setDoc(
+          presentationReference,
+          {
+            // TODO: the function updates the notes. How do we handle this?
+            // notes,
+            title,
+          },
+          {
+            merge: true,
+          },
+        );
+        setPages(data.pages);
       }
+    });
+  }, [uploadState, presentationReference, notes, title]);
 
-      setSavingState('saving');
-      console.log('updating doc with pages');
-      await updateDoc(presentationReference, {
-        pages,
-        rendered: new Date(),
-        title,
-        notes,
-      } satisfies PresentationUpdate);
-      console.log('doc update done');
-      setUploadState('done');
-      setSavingState((currentState) =>
-        currentState === 'saving' ? 'saved' : currentState,
-      );
-    }
+  // UseEffect(() => {
+  //   async function updatePresentation() {
+  //     if (uploadState !== 'done' || !presentationReference) {
+  //       return;
+  //     }
 
-    void setPages();
-  }, [uploadState, presentationReference, notes, pages, title]);
+  //     await updateDoc(presentationReference, {
+  //       notes,
+  //       title,
+  //     });
+  //   }
+
+  //   void updatePresentation();
+  // }, [uploadState, presentationReference, notes, title]);
 
   function getUserFeedback() {
-    if (uploadState === 'creating') {
-      return [
-        'Initializing...',
-        'i-tabler-loader-3 animate-spin animate-duration-1000',
-      ];
+    if (uploadState === 'processing') {
+      return ['Processing...', 'i-tabler-loader-3 animate-spin'];
     }
 
-    if (uploadState === 'rendering pages') {
-      return ['Rendering...', 'i-tabler-loader-3 animate-spin'];
-    }
-
-    if (uploadState === 'uploading pages' || uploadState === 'setting pages') {
+    if (uploadState === 'uploading') {
       return ['Uploading...', 'i-tabler-arrow-big-up-lines animate-bounce'];
     }
 
@@ -300,10 +223,16 @@ export default function Upload() {
     }
 
     setSavingState('saving');
-    await updateDoc(presentationReference, {
-      notes,
-      title,
-    } satisfies PresentationUpdate);
+    await setDoc(
+      presentationReference,
+      {
+        notes,
+        title,
+      },
+      {
+        merge: true,
+      },
+    );
     setSavingState((currentState) =>
       currentState === 'saving' ? 'saved' : currentState,
     );
@@ -347,22 +276,11 @@ export default function Upload() {
           {uploadState !== 'ready' && (
             <div className="flex flex-col w-full max-w-screen-sm">
               <div className="relative w-full">
-                <Pdf
-                  pageIndex={pageIndex}
-                  file={file!}
-                  onSetPageCount={setPageCount}
-                  onPageRendered={pageRendered}
-                />
                 <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
                   <div className={clsx('w-10 h-10', icon)} />
                   <div>{message}</div>
                 </div>
-                <div
-                  className="absolute bottom-0 h-[6px] bg-teal"
-                  style={{width: `${((pageIndex + 1) * 100) / pageCount}%`}}
-                />
               </div>
-              <div>Rendering slide: {pageIndex + 1}</div>
             </div>
           )}
           <PresentationPreferencesEditor
