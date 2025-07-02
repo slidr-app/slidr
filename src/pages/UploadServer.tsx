@@ -69,10 +69,10 @@ export default function Upload() {
   const {user} = useContext(UserContext);
 
   useEffect(() => {
-    if (user?.data !== undefined) {
+    if (uploadState === 'fetching user' && user?.data !== undefined) {
       setUploadState('ready');
     }
-  }, [user?.data]);
+  }, [uploadState, user?.data]);
 
   const {getRootProps, getInputProps, isDragActive, acceptedFiles} =
     useDropzone({
@@ -233,9 +233,10 @@ export default function Upload() {
         merge: true,
       },
     );
-    setSavingState((currentState) =>
-      currentState === 'saving' ? 'saved' : currentState,
-    );
+    setSavingState((currentState) => {
+      const nextState = currentState === 'saving' ? 'saved' : currentState;
+      return nextState;
+    });
   }
 
   return (

@@ -50,7 +50,7 @@ export default function PresentationPreferencesEditor({
           />
         </label>
         <Button
-          border
+          isBorderEnabled
           icon="i-tabler-package-import"
           label="import"
           title="Import notes"
@@ -82,7 +82,7 @@ export default function PresentationPreferencesEditor({
           }}
         />
         <Button
-          border
+          isBorderEnabled
           icon="i-tabler-package-export"
           label="export"
           title="Export notes"
@@ -164,7 +164,7 @@ export default function PresentationPreferencesEditor({
             onMarkdownChange={(markdown) => {
               onDirty();
               setNotes((currentNotes) => {
-                const nextNotes = Array.from(currentNotes);
+                const nextNotes = [...currentNotes];
                 nextNotes[noteIndex] = {...currentNotes[noteIndex], markdown};
                 return nextNotes;
               });

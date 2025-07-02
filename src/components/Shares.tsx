@@ -53,7 +53,7 @@ export default function Shares({
   return (
     <div className="flex flex-row justify-center gap-4 relative flex-wrap">
       <RoundButton
-        newTab
+        isNewTab
         to={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
           tweetText,
         )}`}
@@ -62,7 +62,7 @@ export default function Shares({
         title="Tweet this slide"
       />
       <RoundButton
-        newTab
+        isNewTab
         to={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
           shareUrl,
         )}`}
@@ -77,7 +77,7 @@ export default function Shares({
         title="Copy link to slide"
         onClick={(event) => {
           event.preventDefault();
-          void window.navigator.clipboard.writeText(shareUrl);
+          void globalThis.navigator.clipboard.writeText(shareUrl);
           setCopied(true);
         }}
       />

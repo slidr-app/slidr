@@ -188,7 +188,7 @@ export default function Speaker() {
           <div className="self-center flex flex-col gap-6">
             <div className="grid grid-cols-2 gap-6 first:children:p6">
               <NavigateButtons
-                border
+                isBorder
                 onNext={navigateNext}
                 onPrevious={navigatePrevious}
                 onStart={() => {
@@ -204,7 +204,7 @@ export default function Speaker() {
               handleReaction={postReaction}
             />
             <Button
-              border
+              isBorderEnabled
               icon="i-tabler-circle-off"
               label="clear"
               title="Clear reactions"
@@ -222,7 +222,7 @@ export default function Speaker() {
           </div>
           <div className="self-center flex flex-row gap-4 flex-wrap">
             <Button
-              border
+              isBorderEnabled
               icon="i-tabler-zoom-in"
               label="in"
               title="Zoom in"
@@ -235,7 +235,7 @@ export default function Speaker() {
               <div>{textSize.replace('text-', '')}</div>
             </div>
             <Button
-              border
+              isBorderEnabled
               icon="i-tabler-zoom-out"
               label="out"
               title="Zoom out"

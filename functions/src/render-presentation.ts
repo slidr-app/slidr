@@ -1,11 +1,10 @@
-import { onDocumentUpdated } from 'firebase-functions/v2/firestore';
-import { logger } from 'firebase-functions/v2';
-import { getFirestore } from 'firebase-admin/firestore';
-import { pdfDataToPngData } from './pdf-to-png.js';
-import { presentationConverter } from './presentation-schema.js';
-import { getBucket } from './storage-bucket.js';
-import { nanoid } from 'nanoid';
-
+import {onDocumentUpdated} from 'firebase-functions/v2/firestore';
+import {logger} from 'firebase-functions/v2';
+import {getFirestore} from 'firebase-admin/firestore';
+import {nanoid} from 'nanoid';
+import {pdfDataToPngData} from './pdf-to-png.js';
+import {presentationConverter} from './presentation-schema.js';
+import {getBucket} from './storage-bucket.js';
 
 export const renderPresentation = onDocumentUpdated(
   '/presentations/{presentationId}',
@@ -16,7 +15,9 @@ export const renderPresentation = onDocumentUpdated(
       throw new Error('Missing document data');
     }
 
-    const presentationRef = event.data?.after.ref.withConverter(presentationConverter);
+    const presentationRef = event.data?.after.ref.withConverter(
+      presentationConverter,
+    );
     if (!presentationRef) {
       throw new Error('Presentation reference not found');
     }
@@ -30,10 +31,15 @@ export const renderPresentation = onDocumentUpdated(
     logger.info('After data', {data: afterData});
 
     // Use the new document data for processing
-    const { uid, original: filePath } = afterData;
+    const {uid, original: filePath} = afterData as {
+      uid?: string;
+      original?: string;
+    };
+
     if (!uid) {
       throw new Error('Missing userId');
     }
+
     if (!filePath) {
       throw new Error('Missing original file path');
     }
@@ -49,7 +55,9 @@ export const renderPresentation = onDocumentUpdated(
     }
 
     // Set the presentation status to rendering atomically
-    const transactionRef = getFirestore().doc(event.document).withConverter(presentationConverter);
+    const transactionRef = getFirestore()
+      .doc(event.document)
+      .withConverter(presentationConverter);
     await getFirestore().runTransaction(async (transaction) => {
       const docSnapshot = await transaction.get(transactionRef);
       if (!docSnapshot.exists) {
@@ -58,17 +66,23 @@ export const renderPresentation = onDocumentUpdated(
 
       const currentData = docSnapshot.data();
       if (currentData?.status !== 'created') {
-        throw new Error(`Expected status 'created' but got '${currentData?.status}'`);
+        throw new Error(
+          `Expected status 'created' but got '${currentData?.status}'`,
+        );
       }
 
-      transaction.set(transactionRef, {
-        status: 'rendering',
-        rendered: new Date(),
-      }, { merge: true });
+      transaction.set(
+        transactionRef,
+        {
+          status: 'rendering',
+          rendered: new Date(),
+        },
+        {merge: true},
+      );
     });
 
     const bucket = getBucket();
-    // const file = bucket.file(filePath);
+    // Const file = bucket.file(filePath);
 
     try {
       // TODO: do we need this? Should it happen on the client or here?
@@ -76,10 +90,13 @@ export const renderPresentation = onDocumentUpdated(
 
       const downloadResponse = await fetch(filePath);
       if (!downloadResponse.ok) {
-        throw new Error(`Failed to download PDF: ${downloadResponse.statusText}`);
+        throw new Error(
+          `Failed to download PDF: ${downloadResponse.statusText}`,
+        );
       }
+
       const data = await downloadResponse.arrayBuffer();
-      // const download = await file.download();
+      // Const download = await file.download();
       // const data = Uint8Array.from(download[0]);
       logger.info('pdf downloaded', {
         filePath,
@@ -87,36 +104,41 @@ export const renderPresentation = onDocumentUpdated(
       });
 
       const pageImages = await pdfDataToPngData(new Uint8Array(data));
-      logger.info('pdf indexed', { pages: pageImages.length });
+      logger.info('pdf indexed', {pages: pageImages.length});
 
       const results = await Promise.allSettled(
         pageImages.map(async (imageData, index) => {
           const imagePath = `${filePath}_page_${index.toString().padStart(3, '0')}_${nanoid()}.webp`;
           const imageStorageFile = bucket.file(imagePath);
           await imageStorageFile.save(imageData, {
-            metadata: { cacheControl: 'public, max-age=604800, immutable' },
+            metadata: {cacheControl: 'public, max-age=604800, immutable'},
           });
-          const pageUrl = await imageStorageFile.publicUrl();
+          const pageUrl = imageStorageFile.publicUrl();
           return pageUrl;
         }),
       );
 
       // Check for any failures uploading the images
-      const rejected = results.map((result, index) => ({
-        pageIndex: index,
-        result,
-      })).filter((resultWithIndex) => resultWithIndex.result.status === 'rejected');
+      const rejected = results
+        .map((result, index) => ({
+          pageIndex: index,
+          result,
+        }))
+        .filter(
+          (resultWithIndex) => resultWithIndex.result.status === 'rejected',
+        );
 
       if (rejected.length > 0) {
-        logger.error('Some page images failed to save', { rejected });
+        logger.error('Some page images failed to save', {rejected});
         throw new Error('Failed to save some page images');
       }
 
       const pageUrls = results.map((result) =>
-        result.status === 'fulfilled' ? result.value : ''
+        result.status === 'fulfilled' ? result.value : '',
       );
 
-      await presentationRef.set({
+      await presentationRef.set(
+        {
           status: 'rendered',
           pages: pageUrls,
           notes: pageUrls.map((_, index) => ({
@@ -124,14 +146,18 @@ export const renderPresentation = onDocumentUpdated(
             markdown: '',
           })),
           rendered: new Date(),
-        }, {merge: true});
+        },
+        {merge: true},
+      );
     } catch (error) {
       logger.error('indexing error', error);
-      await presentationRef
-        .set({
+      await presentationRef.set(
+        {
           isError: true,
           errorReason: (error as Error).message,
-        },{ merge: true });
+        },
+        {merge: true},
+      );
     }
   },
 );

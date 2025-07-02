@@ -50,7 +50,8 @@ export const renderForBot = onRequest(async (request, response) => {
   const shareUrl = `https://slidr.app/v/${presentationId}${
     request.query.slide === undefined
       ? ''
-      : '?slide=' + String(request.query.slide)
+      : // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        '?slide=' + String(request.query.slide)
   }`;
 
   const title = `${presentationData.title}${

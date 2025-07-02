@@ -1,10 +1,11 @@
 import process from 'node:process';
 import {onSchedule} from 'firebase-functions/v2/scheduler';
-import * as admin from 'firebase-admin';
 import * as logger from 'firebase-functions/logger';
 import {defineSecret} from 'firebase-functions/params';
 import {z} from 'zod';
 import {onRequest} from 'firebase-functions/v2/https';
+import {getFirestore} from 'firebase-admin/firestore';
+import {getAuth} from 'firebase-admin/auth';
 import {type UserData} from './types.js';
 
 const lemonSqueezyApiKey = defineSecret('LEMON_SQUEEZY_API_KEY');
@@ -47,7 +48,7 @@ async function fetchProUsersFromLemonSqueezy(): Promise<string[]> {
     throw new Error(`Failed to fetch subscriptions: ${response.statusText}`);
   }
 
-  const jsonResponse = (await response.json()) as unknown;
+  const jsonResponse = await response.json();
   const parsedResponse = lemonSqueezyResponseSchema.parse(jsonResponse);
 
   // Extract active subscribers' emails
@@ -65,7 +66,7 @@ async function syncLemonSqueezyProUsers() {
     // Step 1: Build a Set of Active Emails
     const activeEmails = new Set(await fetchProUsersFromLemonSqueezy());
 
-    const firestore = admin.firestore();
+    const firestore = getFirestore();
 
     // Step 2: Query Only Users with pro.lemon == true
     const existingProUsersSnapshot = await firestore
@@ -103,7 +104,7 @@ async function syncLemonSqueezyProUsers() {
     // Step 4: Upgrade Users if Active but Not Marked as Pro
     const upgradePromises = [...activeEmails].map(async (email) => {
       try {
-        const user = await admin.auth().getUserByEmail(email);
+        const user = await getAuth().getUserByEmail(email);
         const userDocumentReference = firestore
           .collection('users')
           .doc(user.uid);

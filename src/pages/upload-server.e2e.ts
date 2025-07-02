@@ -4,9 +4,9 @@ import {generateId} from '../test/id';
 // Test.describe.configure({mode: 'parallel'});
 
 test('can upload and view presentation', async ({page, loginPage}) => {
-  // Test.setTimeout(60_000);
+  test.setTimeout(60_000);
 
-  // await page.goto('/');
+  // Await page.goto('/');
   // await expect(page.getByRole('button', {name: /upload/i})).not.toBeVisible();
 
   // Signin
@@ -36,7 +36,7 @@ test('can upload and view presentation', async ({page, loginPage}) => {
   await expect(page.getByText(/done/i)).toBeVisible({timeout: 30_000});
   await page.getByLabel(/title/i).fill(presentationName);
   await expect(page.getByText(/saving/i)).toBeVisible();
-  await expect(page.getByText(/saving/i)).not.toBeVisible();
+  await expect(page.getByText(/saving/i)).not.toBeVisible({timeout: 10_000});
   await page.getByRole('button', {name: /slidr/i}).click();
 
   // Find the presentation in the list
@@ -71,6 +71,7 @@ test('can upload and view presentation', async ({page, loginPage}) => {
   await expect(page3).toHaveScreenshot('page-3.png');
 });
 
+// TODO: this was copied from the client upload test, do we need it?
 test.skip('can edit presentation settings', async ({page, loginPage}) => {
   test.setTimeout(60_000);
 

@@ -67,7 +67,7 @@ export default function DefaultLayout({
               </div>
             </button>
           </NavLink>
-          {user && (
+          {user ? (
             <NavLink
               end
               to="/upload"
@@ -85,7 +85,7 @@ export default function DefaultLayout({
                 </div>
               </button>
             </NavLink>
-          )}
+          ) : null}
           <NavLink
             end
             to="/help"

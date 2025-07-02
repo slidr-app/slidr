@@ -3,7 +3,7 @@ import {type Handler, type Payload} from '../broadcast/use-channel-handlers';
 import {type IconReaction, type IconReactionEntry} from './reaction';
 import reactionsIconMap from './reaction-icons-map';
 
-const reactionTypes = new Set(Array.from(reactionsIconMap.keys()));
+const reactionTypes = new Set(reactionsIconMap.keys());
 
 export default function useRemoteReactions({
   postMessage,

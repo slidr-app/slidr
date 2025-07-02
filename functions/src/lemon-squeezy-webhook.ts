@@ -3,9 +3,9 @@ import {onRequest} from 'firebase-functions/v2/https';
 import {z} from 'zod';
 import * as logger from 'firebase-functions/logger';
 import {defineSecret} from 'firebase-functions/params';
+import {getFirestore} from 'firebase-admin/firestore';
+import {getAuth} from 'firebase-admin/auth';
 import type {UserData} from './types.js';
-import { getFirestore } from 'firebase-admin/firestore';
-import { getAuth } from 'firebase-admin/auth';
 
 const lemonSqueezyWebhookSecret = defineSecret('LEMON_SQUEEZY_WEBHOOK_SECRET');
 

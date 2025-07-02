@@ -8,7 +8,7 @@ import {
   type DocumentReference,
   addDoc,
   collection,
-  updateDoc,
+  setDoc,
 } from 'firebase/firestore';
 import {
   ref as storageReference,
@@ -23,15 +23,15 @@ import '../components/pdf/pdf.css';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
-import {
-  type PresentationCreate,
-  type Note,
-  type PresentationUpdate,
-} from '../../functions/src/presentation';
+import {type Note} from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext} from '../components/UserProvider';
 import Loading from '../components/Loading';
 import Pdf from '../components/pdf/Pdf';
+import {
+  type Presentation,
+  presentationConverter,
+} from '../../functions/src/presentation-schema';
 
 // TODO: test fails sometimes, done text doesn't show pdf.
 
@@ -63,7 +63,7 @@ export default function Upload() {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [presentationReference, setPresentationReference] =
-    useState<DocumentReference>();
+    useState<DocumentReference<Presentation>>();
   const [notes, setNotes] = useState<Note[]>([]);
   const [title, setTitle] = useState('');
   const [savingState, setSavingState] = useState<NotesSaveState>('saved');
@@ -99,7 +99,9 @@ export default function Upload() {
       setFile(acceptedFiles[0]);
 
       const presentationReference_ = await addDoc(
-        collection(firestore, 'presentations'),
+        collection(firestore, 'presentations').withConverter(
+          presentationConverter,
+        ),
         {
           created: new Date(),
           uid: auth.currentUser!.uid,
@@ -108,7 +110,10 @@ export default function Upload() {
           pages: [],
           notes: [],
           title: '',
-        } satisfies PresentationCreate,
+          status: 'uploading',
+          original: '',
+          rendered: new Date(),
+        },
       );
       setPresentationReference(presentationReference_);
       const originalName = `${nanoid()}.pdf`;
@@ -122,9 +127,13 @@ export default function Upload() {
       });
 
       const originalDownloadUrl = await getDownloadURL(originalReference);
-      await updateDoc(presentationReference_, {
-        original: originalDownloadUrl,
-      } satisfies PresentationUpdate);
+      await setDoc(
+        presentationReference_,
+        {
+          original: originalDownloadUrl,
+        },
+        {merge: true},
+      );
       setUploadState('rendering pages');
     }
 
@@ -140,7 +149,7 @@ export default function Upload() {
     // Watermark rendered image
     const context = canvas.getContext('2d');
     if (context) {
-      const rootStyles = window.getComputedStyle(
+      const rootStyles = globalThis.getComputedStyle(
         document.querySelector('#root')!,
       );
 
@@ -161,6 +170,7 @@ export default function Upload() {
         textMetrics.actualBoundingBoxLeft -
         textMetrics.actualBoundingBoxRight;
       const y =
+        // eslint-disable-next-line no-implicit-coercion
         canvas.height -
         0 -
         textMetrics.fontBoundingBoxAscent -
@@ -246,12 +256,16 @@ export default function Upload() {
 
       setSavingState('saving');
       console.log('updating doc with pages');
-      await updateDoc(presentationReference, {
-        pages,
-        rendered: new Date(),
-        title,
-        notes,
-      } satisfies PresentationUpdate);
+      await setDoc(
+        presentationReference,
+        {
+          pages,
+          rendered: new Date(),
+          title,
+          notes,
+        },
+        {merge: true},
+      );
       console.log('doc update done');
       setUploadState('done');
       setSavingState((currentState) =>
@@ -300,10 +314,14 @@ export default function Upload() {
     }
 
     setSavingState('saving');
-    await updateDoc(presentationReference, {
-      notes,
-      title,
-    } satisfies PresentationUpdate);
+    await setDoc(
+      presentationReference,
+      {
+        notes,
+        title,
+      },
+      {merge: true},
+    );
     setSavingState((currentState) =>
       currentState === 'saving' ? 'saved' : currentState,
     );

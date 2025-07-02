@@ -75,8 +75,8 @@ function Presentation() {
   const openSpeakerWindow = useCallback(
     () =>
       window.open(
-        `${window.location.origin}/s/${presentation?.id ?? ''}${
-          window.location.search
+        `${globalThis.location.origin}/s/${presentation?.id ?? ''}${
+          globalThis.location.search
         }`,
         undefined,
         'popup',
@@ -181,7 +181,7 @@ function Presentation() {
         <Slideshow
           pageIndex={slideIndex}
           pages={presentation.data?.pages ?? []}
-          forward={forward}
+          isForward={forward}
         />
       </div>
       <Confetti
@@ -194,8 +194,8 @@ function Presentation() {
       <div className="pointer-events-none position-fixed top-1rem w-10rem h-[calc(100%_-_10rem_-_2rem)] right-4 animate-longbounce 2xl:w-12rem 2xl:h-[calc(100%_-_12rem_-_2rem)] lt-sm:w-8rem lt-sm:h-[calc(100%_-_8rem_-_2rem)] z-2">
         <div className=" bg-white p-2 w-10rem h-10rem 2xl:w-12rem 2xl:h-12rem lt-sm:w-8rem lt-sm:h-8rem">
           <QRCode
-            value={`${window.location.origin}/i/${presentation?.id ?? ''}${
-              window.location.search
+            value={`${globalThis.location.origin}/i/${presentation?.id ?? ''}${
+              globalThis.location.search
             }`}
             className="w-full h-full"
             style={{width: '100%', height: 'auto', maxWidth: '100%'}}
@@ -210,7 +210,7 @@ function Presentation() {
         className="position-absolute top-0 left-0 h-full w-full pointer-events-none"
         {...swipeHandlers}
       />
-      {presentation && (
+      {presentation ? (
         <Toolbar
           presentation={presentation}
           onNext={navigateNext}
@@ -222,7 +222,7 @@ function Presentation() {
             setSlideIndex((presentation.data?.pages?.length ?? 1) - 1);
           }}
         />
-      )}
+      ) : null}
     </div>
   );
 }

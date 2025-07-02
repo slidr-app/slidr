@@ -9,9 +9,9 @@ export default function ErrorPage() {
       <div className="prose">
         Something is not right. Try{' '}
         <a
-          href={window.location.href}
+          href={globalThis.location.href}
           onClick={() => {
-            window.location.reload();
+            globalThis.location.reload();
           }}
         >
           refreshing

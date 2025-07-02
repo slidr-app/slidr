@@ -54,13 +54,13 @@ export default function Viewer() {
               <Slideshow
                 pageIndex={slideIndex}
                 pages={presentation.data?.pages ?? []}
-                forward={forward}
+                isForward={forward}
               />
             </div>
             <div className="flex flex-row flex-wrap w-full justify-between shadow-lg gap-0.5 bg-black items-stretch relative pt-1">
               <div className="h-1 content-empty w-full absolute top-0 left-0">
                 <ProgressBar
-                  absolute
+                  isAbsolute
                   slideCount={presentation.data?.pages?.length ?? 0}
                   slideIndex={slideIndex}
                 />
@@ -83,24 +83,24 @@ export default function Viewer() {
                   isOwner ? 'grid-cols-3' : 'grid-cols-2',
                 )}
               >
-                {isOwner && (
+                {isOwner ? (
                   <LinkButton
-                    clientRoute
+                    isClientRoute
                     icon="i-tabler-pencil"
                     label="edit"
                     title="Edit presentation"
                     to={`/e/${presentation.id ?? ''}`}
                   />
-                )}
+                ) : null}
                 <LinkButton
-                  clientRoute
+                  isClientRoute
                   icon="i-tabler-presentation"
                   label="present"
                   title="Present from current slide"
                   to={`/p/${presentation.id ?? ''}${document.location.search}`}
                 />
                 <LinkButton
-                  clientRoute
+                  isClientRoute
                   icon="i-tabler-rotate rotate-180"
                   label="present start"
                   title="Present from start"
@@ -113,14 +113,14 @@ export default function Viewer() {
           </div>
           <div className="flex flex-col">
             <div>{presentation.data?.title ?? ''}</div>
-            {presentation.data?.username && (
+            {presentation.data?.username ? (
               <div className="text-base">
                 by{' '}
                 {presentation.data.username.length > 0
                   ? presentation.data.username
                   : 'Anonymous User'}
               </div>
-            )}
+            ) : null}
           </div>
           <div className="flex self-start">
             <Shares presentation={presentation} slideIndex={slideIndex} />

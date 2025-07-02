@@ -94,7 +94,7 @@ export default function Audience() {
         <Slideshow
           pageIndex={slideIndex}
           pages={presentation.data?.pages ?? []}
-          forward={forward}
+          isForward={forward}
         />
       </div>
 

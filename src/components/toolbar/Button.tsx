@@ -6,19 +6,19 @@ export default function Button({
   icon,
   label,
   title,
-  disabled,
-  border,
+  isDisabled,
+  isBorderEnabled,
   className,
-  submit,
+  isSubmit,
 }: {
   readonly onClick?: MouseEventHandler<HTMLButtonElement>;
   readonly icon: string;
   readonly label: string;
   readonly title: string;
-  readonly disabled?: boolean;
-  readonly border?: boolean;
+  readonly isDisabled?: boolean;
+  readonly isBorderEnabled?: boolean;
   readonly className?: string;
-  readonly submit?: boolean;
+  readonly isSubmit?: boolean;
 }) {
   const optionalProperties: {onClick?: MouseEventHandler<HTMLButtonElement>} =
     {};
@@ -28,14 +28,14 @@ export default function Button({
 
   return (
     <button
-      disabled={Boolean(disabled)}
-      type={submit ? 'submit' : 'button'}
+      disabled={Boolean(isDisabled)}
+      type={isSubmit ? 'submit' : 'button'}
       title={title}
       className={clsx(
         'flex flex-col justify-center items-center bg-gray-800 bg-opacity-90',
-        border ? 'px-4 py2' : 'px-2 py-1',
-        border && 'border-primary shadow-primary',
-        disabled
+        isBorderEnabled ? 'px-4 py2' : 'px-2 py-1',
+        isBorderEnabled && 'border-primary shadow-primary',
+        isDisabled
           ? 'text-gray-300'
           : 'text-teal hover:(bg-gray-700) active:(text-white bg-black)',
         className,
@@ -46,7 +46,7 @@ export default function Button({
       <div
         className={clsx(
           'text-xs lt-sm:text-xs',
-          disabled ? 'text-gray-300' : 'text-white',
+          isDisabled ? 'text-gray-300' : 'text-white',
         )}
       >
         {label}

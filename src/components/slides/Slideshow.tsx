@@ -4,12 +4,12 @@ import Loading from '../Loading';
 export default function Slideshow({
   pageIndex,
   pages,
-  forward,
+  isForward,
   onClick,
 }: {
   readonly pageIndex: number;
   readonly pages: string[];
-  readonly forward?: boolean;
+  readonly isForward?: boolean;
   readonly onClick?: () => void;
 }) {
   if (pages.length === 0) {
@@ -24,11 +24,11 @@ export default function Slideshow({
   function pageUnder() {
     // Depending on the direction, the page under will be the previous or next index
     // There is nothing to render if we are already at the first or last index
-    if (forward === true && pageIndex > 0) {
+    if (isForward === true && pageIndex > 0) {
       return pageIndex - 1;
     }
 
-    if (forward === false && pageIndex < pages.length - 1) {
+    if (isForward === false && pageIndex < pages.length - 1) {
       return pageIndex + 1;
     }
   }
@@ -53,7 +53,7 @@ export default function Slideshow({
         key={pageIndex}
         className={clsx(
           'w-full h-full absolute top-0 left-0',
-          forward !== undefined && 'animate-fade-in animate-duration-500',
+          isForward !== undefined && 'animate-fade-in animate-duration-500',
         )}
         // @ts-expect-error fetchPriority is not in the react typings
         // eslint-disable-next-line react/no-unknown-property
@@ -70,7 +70,7 @@ export default function Slideshow({
         .filter(
           (_, index) =>
             index !== pageIndex &&
-            (index !== pageUnderIndex || forward === undefined),
+            (index !== pageUnderIndex || isForward === undefined),
         )
         .map((page) => (
           <img

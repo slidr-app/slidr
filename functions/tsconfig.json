@@ -10,7 +10,7 @@
     "sourceMap": true,
     "strict": true,
     // "target": "es2017",
-    // "skipLibCheck": true
+    "skipLibCheck": true
     // "allowImportingTsExtensions": true,
   },
   "compileOnSave": true,

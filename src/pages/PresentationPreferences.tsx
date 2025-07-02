@@ -92,7 +92,7 @@ export default function PresentationPreferences() {
             }}
           />
         )}
-        {presentation && (
+        {presentation ? (
           <>
             <div className="text 2xl mt-8 mb-4">Danger Zone</div>
             <button
@@ -123,7 +123,7 @@ export default function PresentationPreferences() {
               />
             </button>
           </>
-        )}
+        ) : null}
       </div>
     </DefaultLayout>
   );
