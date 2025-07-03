@@ -40,8 +40,16 @@ export async function pdfDataToPngData(data: Uint8Array) {
     // Get the first page.
     for (let pageIndex = 0; pageIndex < pdfDocument.numPages; pageIndex++) {
       const page = await pdfDocument.getPage(pageIndex + 1);
+
+      const originalViewport = page.getViewport({scale: 1});
+
       // Render the page on a Node canvas with 100% scale.
-      const viewport = page.getViewport({scale: 1});
+      // Const viewport = page.getViewport({scale: 2});
+
+      // Determine the scale to get height === 1080px
+      const scale = 1080 / originalViewport.height;
+      const viewport = page.getViewport({scale});
+
       const canvasAndContext = (canvasFactory as NodeCanvasFactory).create(
         viewport.width,
         viewport.height,
