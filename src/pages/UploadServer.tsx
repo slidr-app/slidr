@@ -241,49 +241,45 @@ export default function Upload() {
 
   return (
     <DefaultLayout title="New Presentation">
-      {/* TODO: loading spinner */}
       {uploadState === 'fetching user' ? (
         <div className="flex flex-col col-span-2 lt-sm:col-span-1 h-40 items-center justify-center">
           <Loading />
         </div>
       ) : (
         <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">
-          {!file && (
-            <div
-              className="btn rounded-md p-8 flex w-full max-w-screen-sm aspect-video gap-4 cursor-pointer mx-6"
-              {...getRootProps({role: 'button'})}
-            >
-              <label className="flex flex-col items-center justify-center w-full cursor-pointer">
-                {isDragActive ? (
-                  <>
-                    <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce animate-duration-500 text-teal-500" />
-                    <div className="text-center">
-                      Drop the pdf presentation here...
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce" />
-                    <div className="text-center">
-                      Drag &apos;n&apos; drop a pdf presentation here, or click
-                      to select a pdf presentation
-                    </div>
-                  </>
-                )}
-                <input {...getInputProps()} />
-              </label>
-            </div>
-          )}
-          {uploadState !== 'ready' && (
-            <div className="flex flex-col w-full max-w-screen-sm">
-              <div className="relative w-full">
-                <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90">
-                  <div className={clsx('w-10 h-10', icon)} />
-                  <div>{message}</div>
-                </div>
+          <div className="flex w-full max-w-screen-sm aspect-video mx-6 relative">
+            {file ? (
+              <div className="w-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90 rounded-md">
+                <div className={clsx('w-10 h-10', icon)} />
+                <div>{message}</div>
               </div>
-            </div>
-          )}
+            ) : (
+              <div
+                className="btn rounded-md p-8 flex w-full gap-4 cursor-pointer"
+                {...getRootProps({role: 'button'})}
+              >
+                <label className="flex flex-col items-center justify-center w-full cursor-pointer">
+                  {isDragActive ? (
+                    <>
+                      <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce animate-duration-500 text-teal-500" />
+                      <div className="text-center">
+                        Drop the pdf presentation here...
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="i-tabler-arrow-big-down-lines text-6xl animate-bounce" />
+                      <div className="text-center">
+                        Drag &apos;n&apos; drop a pdf presentation here, or
+                        click to select a pdf presentation
+                      </div>
+                    </>
+                  )}
+                  <input {...getInputProps()} />
+                </label>
+              </div>
+            )}
+          </div>
           <PresentationPreferencesEditor
             saveState={savingState}
             notes={notes}
