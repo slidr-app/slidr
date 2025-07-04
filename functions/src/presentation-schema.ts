@@ -40,13 +40,14 @@ export const presentationSchemaV1 = z.object({
   rendered: timeStamp,
   thumbIndex: z.number().optional(),
   status: z.enum([
+    // Preparing to render
     'uploading',
-    // Rendered and ready for viewing
-    'rendered',
     // Ready to be rendered (render requested)
     'created',
     // Render in progress
     'rendering',
+    // Rendered and ready for viewing
+    'rendered',
   ]),
   isError: z.boolean().optional(), // Optional field to indicate if there was an error during rendering
   errorReason: z.string().optional(), // Optional field to store error message if rendering fails
