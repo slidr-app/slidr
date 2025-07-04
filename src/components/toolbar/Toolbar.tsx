@@ -1,7 +1,7 @@
 import clsx from 'clsx/lite';
 import {useEffect, useState} from 'react';
-import {type PresentationAndId} from '../../../functions/src/presentation';
 import {auth} from '../../firebase';
+import {type PresentationAndId} from '../../../functions/src/presentation-schema';
 import Button from './Button';
 import NavigateButtons from './NavButtons';
 import LinkButton from './LinkButton';
@@ -91,14 +91,14 @@ export default function Toolbar({
           icon="i-tabler-speakerphone"
           label="speaker"
           title="Open speaker view"
-          to={`${window.location.origin}/s/${presentation?.id ?? ''}${
-            window.location.search
+          to={`${globalThis.location.origin}/s/${presentation?.id ?? ''}${
+            globalThis.location.search
           }`}
           onClick={(event) => {
             event.preventDefault();
             window.open(
-              `${window.location.origin}/s/${presentation?.id ?? ''}${
-                window.location.search
+              `${globalThis.location.origin}/s/${presentation?.id ?? ''}${
+                globalThis.location.search
               }`,
               undefined,
               'popup',
@@ -106,30 +106,30 @@ export default function Toolbar({
           }}
         />
         <LinkButton
-          newTab
+          isNewTab
           icon="i-tabler-eyeglass"
           label="audience"
           title="Open audience view"
-          to={`${window.location.origin}/i/${presentation?.id ?? ''}${
-            window.location.search
+          to={`${globalThis.location.origin}/i/${presentation?.id ?? ''}${
+            globalThis.location.search
           }`}
         />
         <LinkButton
-          clientRoute
+          isClientRoute
           icon="i-tabler-eye"
           label="view"
           title="View presentation in browser"
-          to={`/v/${presentation?.id ?? ''}${window.location.search}`}
+          to={`/v/${presentation?.id ?? ''}${globalThis.location.search}`}
         />
-        {isOwner && (
+        {isOwner ? (
           <LinkButton
-            clientRoute
+            isClientRoute
             icon="i-tabler-pencil"
             label="edit"
             title="Edit presentation"
             to={`/e/${presentation.id ?? ''}`}
           />
-        )}
+        ) : null}
         {/* <button
                 className="i-tabler-tools-off text-teal font-size-[4rem]"
                 type="button"
@@ -137,14 +137,14 @@ export default function Toolbar({
               /> */}
         {/* <div className="border-l-black border-l-1 mx-1" /> */}
         <LinkButton
-          clientRoute
+          isClientRoute
           icon="i-tabler-home"
           label="home"
           title="Home"
           to="/"
         />
         <Button
-          disabled={!document.fullscreenEnabled}
+          isDisabled={!document.fullscreenEnabled}
           icon={
             isFullscreen
               ? 'i-tabler-arrows-diagonal-minimize-2'

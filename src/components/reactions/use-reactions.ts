@@ -40,7 +40,7 @@ export default function useReactions(): {
       (currentReactions) =>
         // Set all reactions to done
         new Map(
-          Array.from(currentReactions).map(([id, reaction]) => [
+          [...currentReactions].map(([id, reaction]) => [
             id,
             {
               ...reaction,

@@ -2,16 +2,16 @@ import clsx from 'clsx/lite';
 import {useEffect, useState} from 'react';
 
 export default function Disconnected({
-  paused,
+  isPaused,
   unPause,
 }: {
-  readonly paused: boolean;
+  readonly isPaused: boolean;
   readonly unPause: () => void;
 }) {
   const [spin, setSpin] = useState(false);
 
   useEffect(() => {
-    if (paused) {
+    if (isPaused) {
       setSpin(false);
       return;
     }
@@ -26,13 +26,13 @@ export default function Disconnected({
         clearTimeout(handle);
       }
     };
-  }, [paused]);
+  }, [isPaused]);
 
   return (
     <div
       className={clsx(
         'fixed top-0 w-full h-full flex flex-row justify-center items-start p-6 bg-black bg-opacity-70 overflow-hidden transition-all ease-out duration-1000',
-        paused ? 'opacity-100 z-1' : 'opacity-0 z--2',
+        isPaused ? 'opacity-100 z-1' : 'opacity-0 z--2',
       )}
     >
       <button

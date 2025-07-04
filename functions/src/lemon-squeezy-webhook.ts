@@ -1,10 +1,11 @@
 import {createHmac} from 'node:crypto';
 import {onRequest} from 'firebase-functions/v2/https';
-import * as admin from 'firebase-admin';
 import {z} from 'zod';
 import * as logger from 'firebase-functions/logger';
 import {defineSecret} from 'firebase-functions/params';
-import type {UserData} from './types';
+import {getFirestore} from 'firebase-admin/firestore';
+import {getAuth} from 'firebase-admin/auth';
+import type {UserData} from './types.js';
 
 const lemonSqueezyWebhookSecret = defineSecret('LEMON_SQUEEZY_WEBHOOK_SECRET');
 
@@ -32,6 +33,7 @@ export const lemonSqueezyWebhook = onRequest(
       const signature = request.header('X-Signature');
 
       const hmac = createHmac('sha256', lemonSqueezyWebhookSecret.value());
+      // @ts-expect-error rawBody is a Buffer, this came from the lemon squeezy docs
       const digest = hmac.update(request.rawBody).digest('hex');
 
       if (!signature || digest !== signature) {
@@ -51,12 +53,13 @@ export const lemonSqueezyWebhook = onRequest(
         return;
       }
 
-      const firestore = admin.firestore();
+      const firestore = getFirestore();
+      const auth = getAuth();
 
       // Handle purchase or subscription creation events
       if (type === 'order_created' || type === 'subscription_created') {
         try {
-          const user = await admin.auth().getUserByEmail(email);
+          const user = await auth.getUserByEmail(email);
           const userDocumentReference = firestore
             .collection('users')
             .doc(user.uid);
@@ -74,7 +77,7 @@ export const lemonSqueezyWebhook = onRequest(
               {pro: {...userData?.pro, lemon: true}, isPro: newIsPro},
               {merge: true},
             );
-            await admin.auth().setCustomUserClaims(user.uid, {pro: true});
+            // TODO: await auth.setCustomUserClaims(user.uid, {pro: true});
             logger.info(`✅ Updated Pro status for: ${email}`);
           }
 
@@ -93,7 +96,7 @@ export const lemonSqueezyWebhook = onRequest(
         type === 'subscription_expired'
       ) {
         try {
-          const user = await admin.auth().getUserByEmail(email);
+          const user = await auth.getUserByEmail(email);
           const userDocumentReference = firestore
             .collection('users')
             .doc(user.uid);
@@ -112,7 +115,7 @@ export const lemonSqueezyWebhook = onRequest(
               {pro: {...userData?.pro, lemon: false}, isPro: newIsPro},
               {merge: true},
             );
-            await admin.auth().setCustomUserClaims(user.uid, {pro: false});
+            // TODO: await auth.setCustomUserClaims(user.uid, {pro: false});
             logger.info(`🔻 Downgraded Pro status for: ${email}`);
           }
 

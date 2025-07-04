@@ -19,12 +19,6 @@ test('can upgrade and downgrade Slidr Pro', async ({
   await page.goto('/user');
   await expect(page.getByText('Go Pro to support Slidr!')).toBeVisible();
 
-  await page.goto('/');
-
-  const goProButton = page.getByRole('button', {name: 'Upgrade to Slidr Pro'});
-  await goProButton.click();
-  await page.waitForURL('/user');
-
   const secret = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET;
   if (!secret) {
     throw new Error(
@@ -32,37 +26,8 @@ test('can upgrade and downgrade Slidr Pro', async ({
     );
   }
 
-  const subscriptionCreatedPayload = {
-    meta: {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      event_name: 'subscription_created',
-    },
-    data: {
-      attributes: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        user_email: loginPage.emailAddress,
-      },
-    },
-  };
-
-  const subscriptionCreatedBody = JSON.stringify(subscriptionCreatedPayload);
-  const subscriptionCreatedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(subscriptionCreatedBody)
-    .digest('hex');
-
-  await fetch(lemonSqueezyWebhookFunctionUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Signature': subscriptionCreatedSignature,
-    },
-    body: subscriptionCreatedBody,
-  });
-
-  await expect(
-    page.getByText('Slidr Pro - Thank you for your support!'),
-  ).toBeVisible();
+  await loginPage.goPro();
+  await loginPage.goProComplete();
 
   const subscriptionCancelledPayload = {
     meta: {

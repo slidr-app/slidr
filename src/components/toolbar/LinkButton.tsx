@@ -9,8 +9,8 @@ export default function LinkButton({
   title,
   to,
   disabled,
-  newTab,
-  clientRoute,
+  isNewTab,
+  isClientRoute,
 }: {
   readonly onClick?: MouseEventHandler<HTMLAnchorElement>;
   readonly icon: string;
@@ -18,8 +18,8 @@ export default function LinkButton({
   readonly title: string;
   readonly to: string;
   readonly disabled?: never;
-  readonly newTab?: boolean;
-  readonly clientRoute?: boolean;
+  readonly isNewTab?: boolean;
+  readonly isClientRoute?: boolean;
 }) {
   const linkProperties: {
     target?: string;
@@ -36,7 +36,7 @@ export default function LinkButton({
 
   // TODO: fix click anywhere makes icon white!
 
-  if (!clientRoute && newTab) {
+  if (!isClientRoute && isNewTab) {
     linkProperties.target = '_blank';
     linkProperties.rel = 'noreferrer';
   }
@@ -64,7 +64,7 @@ export default function LinkButton({
     </button>
   );
 
-  if (clientRoute) {
+  if (isClientRoute) {
     return (
       <Link to={to} className={linkClasses} {...linkProperties}>
         {ButtonContent}

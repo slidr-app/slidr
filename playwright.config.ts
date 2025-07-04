@@ -1,11 +1,4 @@
-import path from 'node:path';
-import {fileURLToPath} from 'node:url';
 import {defineConfig, devices} from '@playwright/test';
-
-const filename = fileURLToPath(import.meta.url);
-
-// 👇️ "/home/john/Desktop/javascript"
-const dirname = path.dirname(filename);
 
 /**
  * Read environment variables from file.

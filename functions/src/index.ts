@@ -15,6 +15,7 @@ initializeApp();
 // https://firebase.google.com/docs/functions/typescript
 
 // Re-export cloud functions
-export {renderForBot} from './render-for-bot';
-export {lemonSqueezyWebhook} from './lemon-squeezy-webhook';
-export {syncProUsers} from './sync-pro-users';
+export {renderForBot} from './render-for-bot.js';
+export {lemonSqueezyWebhook} from './lemon-squeezy-webhook.js';
+export {syncProUsers} from './sync-pro-users.js';
+export {renderPresentation} from './render-presentation.js';

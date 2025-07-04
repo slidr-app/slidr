@@ -2,13 +2,13 @@ import {useContext, useEffect, useState} from 'react';
 import {Link, NavLink, useNavigate} from 'react-router-dom';
 import {collection, orderBy, query, onSnapshot} from 'firebase/firestore';
 import {auth, firestore} from '../firebase.ts';
-import {
-  type PresentationDocument,
-  type PresentationData,
-} from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout.tsx';
 import Loading from '../components/Loading.tsx';
 import {UserContext} from '../components/UserProvider.tsx';
+import {
+  type PresentationAndId,
+  presentationConverter,
+} from '../../functions/src/presentation-schema.ts';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -17,23 +17,22 @@ export default function Home() {
     document.title = `Slidr - Home`;
   }, []);
 
-  const [presentations, setPresentations] = useState<PresentationDocument[]>();
+  const [presentations, setPresentations] = useState<PresentationAndId[]>();
 
   useEffect(() => {
     return onSnapshot(
       query(
-        collection(firestore, 'presentations'),
+        collection(firestore, 'presentations').withConverter(
+          presentationConverter,
+        ),
         orderBy('rendered', 'desc'),
       ),
       (querySnapshot) => {
         setPresentations(
-          querySnapshot.docs.map((document) => {
-            const presentation: PresentationDocument = {
-              id: document.id,
-              data: document.data() as PresentationData,
-            };
-            return presentation;
-          }),
+          querySnapshot.docs.map((document) => ({
+            id: document.id,
+            data: document.data(),
+          })),
         );
       },
     );

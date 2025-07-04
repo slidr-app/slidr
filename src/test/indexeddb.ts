@@ -5,7 +5,7 @@ const databaseFileName = 'playwright/.auth/indexeddb.json';
 
 export async function exportFirebaseDatabase(page: Page) {
   const databaseData = await page.evaluate(async () => {
-    const databaseRequest = window.indexedDB.open('firebaseLocalStorageDb');
+    const databaseRequest = globalThis.indexedDB.open('firebaseLocalStorageDb');
 
     return new Promise((resolve) => {
       databaseRequest.addEventListener('success', () => {
@@ -31,8 +31,10 @@ export async function importFirebaseData(page: Page) {
   };
 
   await page.addInitScript(async (databaseData) => {
-    if (window.location.hostname === 'localhost') {
-      const databaseRequest = window.indexedDB.open('firebaseLocalStorageDb');
+    if (globalThis.location.hostname === 'localhost') {
+      const databaseRequest = globalThis.indexedDB.open(
+        'firebaseLocalStorageDb',
+      );
       const store = 'firebaseLocalStorage';
 
       await new Promise<void>((resolve) => {
@@ -52,8 +54,9 @@ export async function importFirebaseData(page: Page) {
       const database = databaseRequest.result;
       const tx = database.transaction(store, 'readwrite');
 
-      for await (const value of databaseData[store]) {
+      for (const value of databaseData[store]) {
         const request = tx.objectStore(store).add(value);
+        // eslint-disable-next-line promise/param-names, no-await-in-loop
         await new Promise<void>((resolve2) => {
           request.addEventListener('success', () => {
             resolve2();

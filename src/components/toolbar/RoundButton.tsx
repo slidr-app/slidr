@@ -7,17 +7,17 @@ export default function RoundButton({
   label,
   title,
   to,
-  newTab,
+  isNewTab,
 }: {
   readonly onClick?: MouseEventHandler<HTMLAnchorElement>;
   readonly to: string;
   readonly icon: string;
   readonly label: string;
   readonly title: string;
-  readonly newTab?: boolean;
+  readonly isNewTab?: boolean;
 }) {
   const anchorProperties: {target?: string; rel?: string} = {};
-  if (newTab) {
+  if (isNewTab) {
     anchorProperties.target = '_blank';
     anchorProperties.rel = 'noreferrer';
   }

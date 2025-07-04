@@ -10,13 +10,14 @@ import {Link, NavLink} from 'react-router-dom';
 import clsx from 'clsx/lite';
 import {doc, onSnapshot} from 'firebase/firestore';
 import {auth, firestore} from '../firebase';
-import {UserContext, type UserDocument} from '../components/UserProvider';
+import {UserContext} from '../components/UserProvider';
+import {userDocumentConverter} from '../user-schema';
 
 export default function DefaultLayout({
   title,
   children,
 }: PropsWithChildren<{readonly title: ReactNode}>) {
-  const {user, setUser, setIsPro} = useContext(UserContext);
+  const {user, setUser, setUserData} = useContext(UserContext);
   useEffect(() => {
     return onAuthStateChanged(auth, (nextUser) => {
       if (!nextUser) {
@@ -33,14 +34,16 @@ export default function DefaultLayout({
       return;
     }
 
-    return onSnapshot(doc(firestore, `users/${user.uid}`), (snapshot) => {
-      // Default to false if the user document does not exist
-      const isPro =
-        (snapshot.data() as UserDocument | undefined)?.isPro ?? false;
-
-      setIsPro(isPro);
-    });
-  }, [user, setIsPro]);
+    return onSnapshot(
+      doc(firestore, `users/${user.uid}`).withConverter(userDocumentConverter),
+      (snapshot) => {
+        // Default to an empty object if no data exists
+        // This lets the UI know the difference between the data not loaded and not existing
+        // TODO: does this work the way we expect? Is there an initial snapshot even if the document does not exist?
+        setUserData(snapshot.data() ?? {});
+      },
+    );
+  }, [user, setUserData]);
 
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -64,7 +67,7 @@ export default function DefaultLayout({
               </div>
             </button>
           </NavLink>
-          {user && (
+          {user ? (
             <NavLink
               end
               to="/upload"
@@ -82,7 +85,7 @@ export default function DefaultLayout({
                 </div>
               </button>
             </NavLink>
-          )}
+          ) : null}
           <NavLink
             end
             to="/help"
@@ -134,7 +137,7 @@ export default function DefaultLayout({
                   showUserMenu ? 'flex' : 'hidden',
                 )}
               >
-                {user.isPro ? (
+                {user.data?.isPro ? (
                   <div className="flex flex-row items-center gap-2 mb-2">
                     <div className="i-tabler-user-star w-6 h-6 text-yellow-400" />
                     <div className="text-sm">Slidr Pro</div>
