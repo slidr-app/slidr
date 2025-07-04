@@ -1,7 +1,7 @@
 import clsx from 'clsx/lite';
 import {useEffect, useState} from 'react';
-import {type PresentationAndId} from '../../../functions/src/presentation';
 import {auth} from '../../firebase';
+import {type PresentationAndId} from '../../../functions/src/presentation-schema';
 import Button from './Button';
 import NavigateButtons from './NavButtons';
 import LinkButton from './LinkButton';

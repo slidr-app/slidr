@@ -23,13 +23,13 @@ import '../components/pdf/pdf.css';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
-import {type Note} from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext} from '../components/UserProvider';
 import Loading from '../components/Loading';
 import Pdf from '../components/pdf/Pdf';
 import {
   type Presentation,
+  type Note,
   presentationConverter,
 } from '../../functions/src/presentation-schema';
 
@@ -111,7 +111,6 @@ export default function Upload() {
           notes: [],
           title: '',
           status: 'uploading',
-          original: '',
           rendered: new Date(),
         },
       );

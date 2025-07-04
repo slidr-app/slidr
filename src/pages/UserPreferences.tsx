@@ -6,7 +6,6 @@ import {
   onSnapshot,
   query,
   setDoc,
-  updateDoc,
   where,
 } from 'firebase/firestore';
 import {useDebouncedCallback} from 'use-debounce';
@@ -14,8 +13,8 @@ import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext} from '../components/UserProvider';
 import {firestore} from '../firebase';
 import SaveIndicator from '../components/SaveIndicator';
-import {type PresentationUpdate} from '../../functions/src/presentation';
 import {type UserDocument, userDocumentConverter} from '../user-schema';
+import {presentationConverter} from '../../functions/src/presentation-schema';
 
 export default function UserPreferences() {
   const {user} = useContext(UserContext);
@@ -55,10 +54,16 @@ export default function UserPreferences() {
     );
     await Promise.all(
       userPresentationsSnapshot.docs.map(async (presentation) =>
-        updateDoc(doc(firestore, 'presentations', presentation.id), {
-          username: userData.username!,
-          twitterHandle: userData.twitterHandle!,
-        } satisfies PresentationUpdate),
+        setDoc(
+          doc(firestore, 'presentations', presentation.id).withConverter(
+            presentationConverter,
+          ),
+          {
+            username: userData.username!,
+            twitterHandle: userData.twitterHandle!,
+          },
+          {merge: true},
+        ),
       ),
     );
     setSaveState((currentState) =>

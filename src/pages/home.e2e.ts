@@ -1,17 +1,24 @@
-import {type PresentationUpdate} from '../../functions/src/presentation';
+import {presentationConverter} from '../../functions/src/presentation-schema';
 import {databaseAdmin} from '../test/firestore';
 import {test, expect} from '../test/login-fixture';
 
 test.beforeAll(async () => {
   await databaseAdmin.doc('presentations/home-test').delete();
-  await databaseAdmin.doc('presentations/home-test').set({
-    uid: 'someone-else',
-    username: 'e2e test user',
-    notes: [],
-    pages: [],
-    title: 'home3',
-    rendered: new Date(2040, 8),
-  } as PresentationUpdate);
+  await databaseAdmin
+    .doc('presentations/home-test')
+    .withConverter(presentationConverter)
+    .set({
+      uid: 'someone-else',
+      username: 'e2e test user',
+      notes: [],
+      pages: [],
+      title: 'home3',
+      rendered: new Date(2040, 8),
+      created: new Date(2040, 8),
+      status: 'rendered',
+      original: 'http://does-not-exist.com',
+      twitterHandle: '',
+    });
 });
 
 test('lists all presentations', async ({

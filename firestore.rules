@@ -10,14 +10,25 @@ service cloud.firestore {
       
       allow create: if request.auth != null
       	// TODO: should this be aligned with all the possible fields?
-      	&& request.resource.data.keys().hasAll(['uid', 'created', 'username', 'pages', 'notes', 'title', 'twitterHandle', 'status', 'original', 'rendered'])
-      	&& request.resource.data.keys().hasOnly(['uid', 'created', 'username', 'pages', 'notes', 'title', 'twitterHandle', 'status', 'original', 'rendered'])
+        // Field 'original' is optional
+      	&& request.resource.data.keys().hasAll(['uid', 'created', 'username', 'pages', 'notes', 'title', 'twitterHandle', 'status', 'rendered', 'version'])
+      	&& request.resource.data.keys().hasOnly(['uid', 'created', 'username', 'pages', 'notes', 'title', 'twitterHandle', 'status', 'original', 'rendered', 'version'])
+        && request.resource.data.version == 1
         && request.auth.uid == request.resource.data.uid;
         
       allow update: if request.auth != null
         && request.auth.uid == resource.data.uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['original', 'pages', 'rendered', 'title', 'notes', 'username', 'twitterHandle', 'status']); 
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['original', 'pages', 'rendered', 'title', 'notes', 'username', 'twitterHandle', 'status', 'version'])
+        // if they are touching 'version', it must be 1
+        && (
+          !request.resource.data
+              .diff(resource.data)
+              .affectedKeys()
+              .hasAny(['version'])
+          || request.resource.data.version == 1
+        );
       
+
       allow delete: if request.auth != null
         && request.auth.uid == resource.data.uid;
     }

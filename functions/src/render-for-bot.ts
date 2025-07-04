@@ -2,7 +2,7 @@ import {onRequest} from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
 import {isbot} from 'isbot';
 import {getFirestore} from 'firebase-admin/firestore';
-import {type PresentationData} from './presentation.js';
+import {presentationConverter} from './presentation-schema.js';
 
 // LinkedIn says descriptions should be at least 100 chars.
 const description = `slidr.app is an always free interactive presentation framework. Why shouldn't presentations be fun for both the speaker and the audience?`;
@@ -33,13 +33,19 @@ export const renderForBot = onRequest(async (request, response) => {
     0,
   );
 
-  const database = getFirestore();
-  const presentationSnapshot = await database
+  const presentationSnapshot = await getFirestore()
     .collection('presentations')
     .doc(presentationId)
+    .withConverter(presentationConverter)
     .get();
 
-  const presentationData = presentationSnapshot.data() as PresentationData;
+  if (!presentationSnapshot.exists) {
+    logger.warn('presentation does not exist', {presentationId});
+    response.status(404).send('Presentation not found');
+    return;
+  }
+
+  const presentationData = presentationSnapshot.data()!;
 
   const pageUrl =
     presentationData.pages[presentationPageIndex] ??

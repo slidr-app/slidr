@@ -27,7 +27,7 @@ function Presentation() {
 
   useEffect(() => {
     document.title = `Slidr - ${
-      presentation.data?.title ?? 'Unnamed Presentation'
+      presentation?.data?.title ?? 'Unnamed Presentation'
     }`;
   }, [presentation]);
 
@@ -51,7 +51,7 @@ function Presentation() {
     forward,
   } = useSlideIndex({
     postMessage: postBroadcastChannel,
-    slideCount: presentation.data?.pages?.length ?? 0,
+    slideCount: presentation?.data?.pages?.length ?? 0,
   });
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
@@ -66,7 +66,7 @@ function Presentation() {
   });
   const {setSlideIndex: setSupabaseSlideIndex} = useSlideIndex({
     postMessage: postBroadcastSupabase,
-    slideCount: presentation.data?.pages?.length ?? 0,
+    slideCount: presentation?.data?.pages?.length ?? 0,
   });
   useEffect(() => {
     setSupabaseSlideIndex(slideIndex);
@@ -180,7 +180,7 @@ function Presentation() {
       <div className="w-full max-w-[calc(100vh_*_(16/9))] aspect-video">
         <Slideshow
           pageIndex={slideIndex}
-          pages={presentation.data?.pages ?? []}
+          pages={presentation?.data?.pages ?? []}
           isForward={forward}
         />
       </div>
@@ -204,7 +204,7 @@ function Presentation() {
       </div>
       <ProgressBar
         slideIndex={slideIndex}
-        slideCount={presentation.data?.pages?.length ?? 0}
+        slideCount={presentation?.data?.pages?.length ?? 0}
       />
       <div
         className="position-absolute top-0 left-0 h-full w-full pointer-events-none"

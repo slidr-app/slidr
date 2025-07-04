@@ -21,15 +21,12 @@ import '../components/pdf/pdf.css';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
-import {
-  // Type PresentationCreate,
-  type Note,
-} from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext} from '../components/UserProvider';
 import Loading from '../components/Loading';
 import {
   fromFirestore,
+  type Note,
   toFirestore,
   type Presentation,
 } from '../../functions/src/presentation-schema';
@@ -104,7 +101,6 @@ export default function Upload() {
           notes: [],
           title: '',
           status: 'uploading',
-          original: '',
           rendered: new Date(),
         } satisfies Presentation,
       );
@@ -161,18 +157,24 @@ export default function Upload() {
 
       if (data.status === 'rendered') {
         setUploadState('done');
-        await setDoc(
-          presentationReference,
-          {
-            // TODO: the function updates the notes. How do we handle this?
-            // notes,
-            title,
-          },
-          {
-            merge: true,
-          },
-        );
+
+        // The function will set the default notes
+        setNotes(data.notes);
         setPages(data.pages);
+
+        // Save the title if the user changed the title
+        if (data.title !== title) {
+          await setDoc(
+            presentationReference,
+            {
+              title,
+            },
+            {
+              merge: true,
+            },
+          );
+          setPages(data.pages);
+        }
       }
     });
   }, [uploadState, presentationReference, notes, title]);
@@ -249,10 +251,19 @@ export default function Upload() {
         <div className="overflow-hidden flex flex-col items-center p-4 gap-6 pb-10 w-full max-w-screen-md mx-auto">
           <div className="flex w-full max-w-screen-sm aspect-video mx-6 relative">
             {file ? (
-              <div className="w-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90 rounded-md">
-                <div className={clsx('w-10 h-10', icon)} />
-                <div>{message}</div>
-              </div>
+              <>
+                {pages.length > 0 ? (
+                  <img
+                    src={pages[0]}
+                    alt="Presentation thumbnail"
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                ) : null}
+                <div className="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center bg-teal-800 bg-opacity-90 rounded-md">
+                  <div className={clsx('w-10 h-10', icon)} />
+                  <div>{message}</div>
+                </div>
+              </>
             ) : (
               <div
                 className="btn rounded-md p-8 flex w-full gap-4 cursor-pointer"

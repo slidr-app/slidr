@@ -1,17 +1,17 @@
 import {useEffect, useState} from 'react';
-import {deleteDoc, doc, updateDoc} from 'firebase/firestore';
+import {deleteDoc, doc, setDoc} from 'firebase/firestore';
 import {ref, deleteObject, listAll, getStorage} from 'firebase/storage';
 import clsx from 'clsx/lite';
 import usePresentation from '../components/slides/use-presentation';
-import {
-  type PresentationUpdate,
-  type Note,
-} from '../../functions/src/presentation';
 import {app, firestore} from '../firebase';
 import DefaultLayout from '../layouts/DefaultLayout';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
+import {
+  presentationConverter,
+  type Note,
+} from '../../functions/src/presentation-schema';
 
 const storage = getStorage(app);
 
@@ -20,7 +20,7 @@ export default function PresentationPreferences() {
 
   useEffect(() => {
     document.title = `Slidr - ${
-      presentation.data?.title ?? 'Unnamed Presentation'
+      presentation?.data?.title ?? 'Unnamed Presentation'
     } - Preferences`;
   }, [presentation]);
 
@@ -30,10 +30,21 @@ export default function PresentationPreferences() {
 
   async function saveNotes() {
     setSavingState('saving');
-    await updateDoc(doc(firestore, 'presentations', presentation.id!), {
-      notes,
-      title,
-    } satisfies PresentationUpdate);
+    if (!presentation?.id) {
+      // Should never happen, but keep TypeScript happy
+      throw new Error('Attempted to save presentation without ID');
+    }
+
+    await setDoc(
+      doc(firestore, 'presentations', presentation.id).withConverter(
+        presentationConverter,
+      ),
+      {
+        notes,
+        title,
+      },
+      {merge: true},
+    );
     setSavingState((currentState) =>
       currentState === 'saving' ? 'saved' : currentState,
     );
@@ -41,7 +52,7 @@ export default function PresentationPreferences() {
 
   useEffect(() => {
     // Use notes from the DB
-    if (presentation.data) {
+    if (presentation?.data) {
       setNotes(presentation.data.notes);
       setTitle(presentation.data.title);
     }
@@ -58,7 +69,7 @@ export default function PresentationPreferences() {
     }
 
     if (deleteState === 'confirm') {
-      const presentationPath = `presentations/${presentation.id!}`;
+      const presentationPath = `presentations/${presentation?.id}`;
 
       setDeleteState('deleting');
 
@@ -83,7 +94,7 @@ export default function PresentationPreferences() {
             title={title}
             setTitle={setTitle}
             setNotes={setNotes}
-            pages={presentation.data?.pages ?? []}
+            pages={presentation?.data?.pages ?? []}
             onSave={() => {
               void saveNotes();
             }}

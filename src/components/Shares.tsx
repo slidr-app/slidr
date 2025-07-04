@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {type PresentationAndId} from '../../functions/src/presentation';
+import {type PresentationAndId} from '../../functions/src/presentation-schema';
 import RoundButton from './toolbar/RoundButton';
 
 export default function Shares({

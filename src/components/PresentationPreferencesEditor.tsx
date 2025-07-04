@@ -1,6 +1,6 @@
 import {useDebouncedCallback} from 'use-debounce';
 import {useRef} from 'react';
-import {type Note} from '../../functions/src/presentation';
+import {type Note} from '../../functions/src/presentation-schema';
 import NoteEditor from './NoteEditor';
 import SaveIndicator from './SaveIndicator';
 import Button from './toolbar/Button';

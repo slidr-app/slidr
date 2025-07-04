@@ -26,7 +26,7 @@ export default function Audience() {
 
   useEffect(() => {
     document.title = `Slidr - ${
-      presentation.data?.title ?? 'Unnamed Presentation'
+      presentation?.data?.title ?? 'Unnamed Presentation'
     } - Audience`;
   }, [presentation]);
 
@@ -47,7 +47,7 @@ export default function Audience() {
     handlers: slideIndexHandlers,
     forward,
   } = useSlideIndex({
-    slideCount: presentation.data?.pages?.length ?? 0,
+    slideCount: presentation?.data?.pages?.length ?? 0,
   });
   useSearchParametersSlideIndex(setSlideIndex, slideIndex);
 
@@ -93,7 +93,7 @@ export default function Audience() {
       <div className="max-w-2xl mx-auto w-full">
         <Slideshow
           pageIndex={slideIndex}
-          pages={presentation.data?.pages ?? []}
+          pages={presentation?.data?.pages ?? []}
           isForward={forward}
         />
       </div>
@@ -111,7 +111,9 @@ export default function Audience() {
           postReaction(reaction);
         }}
       />
-      <Shares presentation={presentation} slideIndex={slideIndex} />
+      {presentation ? (
+        <Shares presentation={presentation} slideIndex={slideIndex} />
+      ) : null}
       <div className="flex flex-col items-center relative gap-1 prose">
         <Link to="/" className="not-prose">
           slidr.app
@@ -130,7 +132,7 @@ export default function Audience() {
       </div>
       <ProgressBar
         slideIndex={slideIndex}
-        slideCount={presentation.data?.pages?.length ?? 0}
+        slideCount={presentation?.data?.pages?.length ?? 0}
       />
     </div>
   );
