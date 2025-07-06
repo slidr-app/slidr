@@ -19,6 +19,33 @@ test.beforeAll(async () => {
       original: 'http://does-not-exist.com',
       twitterHandle: '',
     });
+
+  // Create a presentation with the v0 schema (without converter)
+  await databaseAdmin.doc('presentations/home-test-v0').delete();
+  await databaseAdmin.doc('presentations/home-test-v0').set({
+    uid: 'someone-else',
+    username: 'e2e test user',
+    notes: [
+      {
+        markdown: '',
+        pageIndices: [0],
+      },
+      {
+        markdown: '',
+        pageIndices: [1],
+      },
+      {
+        markdown: '',
+        pageIndices: [2],
+      },
+    ],
+    pages: ['http://page1', 'http://page1', 'http://page1'],
+    title: 'v0 presentation document',
+    created: new Date(2040, 8),
+    rendered: new Date(2040, 8),
+    original: 'http://does-not-exist.com',
+    twitterHandle: '',
+  });
 });
 
 test('lists all presentations', async ({
@@ -75,5 +102,35 @@ test('lists all presentations', async ({
   ).toBeVisible();
   await expect(
     filteredPresentations.nth(1).getByRole('button', {name: 'present'}),
+  ).toBeVisible();
+});
+
+test('can view v0 schema presentations', async ({
+  page,
+  // @ts-expect-error activate coverage
+  coverage,
+}) => {
+  await page.goto('/');
+
+  const presentationList = page.getByRole('list', {
+    name: /presentations/i,
+  });
+
+  const filteredPresentations = presentationList.getByRole('listitem').filter({
+    has: page.getByText('v0 presentation document'),
+  });
+
+  console.log('v0Presentation', filteredPresentations);
+  await expect(filteredPresentations).toHaveCount(1);
+
+  // No edit button because we are not the owner, but always view and present buttons
+  await expect(
+    filteredPresentations.first().getByRole('button', {name: 'edit'}),
+  ).not.toBeVisible();
+  await expect(
+    filteredPresentations.first().getByRole('button', {name: 'view'}),
+  ).toBeVisible();
+  await expect(
+    filteredPresentations.first().getByRole('button', {name: 'present'}),
   ).toBeVisible();
 });
