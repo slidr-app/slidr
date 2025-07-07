@@ -199,6 +199,8 @@ function Presentation() {
             }`}
             className="w-full h-full"
             style={{width: '100%', height: 'auto', maxWidth: '100%'}}
+            // This doesn't seem to be used, but is exported in the TS types. Set it to an empty string to avoid TS errors.
+            title=""
           />
         </div>
       </div>

@@ -1,8 +1,8 @@
 import {useCallback, useContext, useEffect, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import * as pdfjs from 'pdfjs-dist';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 import clsx from 'clsx/lite';
 import {
   type DocumentReference,
@@ -18,6 +18,7 @@ import {
   connectStorageEmulator,
 } from 'firebase/storage';
 import {nanoid} from 'nanoid';
+import src from 'pdfjs-dist/build/pdf.worker.min.mjs?worker&url';
 import {auth, firestore, app} from '../firebase';
 import '../components/pdf/pdf.css';
 import PresentationPreferencesEditor, {
@@ -35,8 +36,7 @@ import {
 
 // TODO: test fails sometimes, done text doesn't show pdf.
 
-const source = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerSrc = source.toString();
+pdfjs.GlobalWorkerOptions.workerSrc = src;
 
 type UploadState =
   | 'fetching user'

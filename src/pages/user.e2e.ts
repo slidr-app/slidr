@@ -17,7 +17,7 @@ test('can upgrade and downgrade Slidr Pro', async ({
   await loginPage.signInComplete();
 
   await page.goto('/user');
-  await expect(page.getByText('Go Pro to support Slidr!')).toBeVisible();
+  await expect(page.getByText('Upgrade to Slidr Pro')).toBeVisible();
 
   const secret = process.env.LEMON_SQUEEZY_WEBHOOK_SECRET;
   if (!secret) {
@@ -59,7 +59,7 @@ test('can upgrade and downgrade Slidr Pro', async ({
     body: subscriptionCancelledBody,
   });
 
-  await expect(page.getByText('Go Pro to support Slidr!')).toBeVisible();
+  await expect(page.getByText('Upgrade to Slidr Pro')).toBeVisible();
 });
 
 const lemonSqueezySyncFunctionUrl =
@@ -76,7 +76,7 @@ test('subscriptions can be synced', async ({page, loginPage}) => {
     await page.goto('/user');
 
     // User is not pro
-    await expect(page.getByText('Go Pro to support Slidr!')).toBeVisible();
+    await expect(page.getByText('Upgrade to Slidr Pro')).toBeVisible();
 
     // Make user pro and sync
     mockLemonServer.setSubscriptions([
@@ -93,9 +93,7 @@ test('subscriptions can be synced', async ({page, loginPage}) => {
     await fetch(lemonSqueezySyncFunctionUrl, {
       method: 'GET',
     });
-    await expect(
-      page.getByText('Slidr Pro - Thank you for your support!'),
-    ).toBeVisible();
+    await loginPage.goProComplete();
 
     // Remove pro status and sync
     mockLemonServer.setSubscriptions([
@@ -112,7 +110,7 @@ test('subscriptions can be synced', async ({page, loginPage}) => {
     await fetch(lemonSqueezySyncFunctionUrl, {
       method: 'GET',
     });
-    await expect(page.getByText('Go Pro to support Slidr!')).toBeVisible();
+    await expect(page.getByText('Upgrade to Slidr Pro')).toBeVisible();
   } finally {
     await mockLemonServer.stop();
   }

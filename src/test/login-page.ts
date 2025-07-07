@@ -51,13 +51,23 @@ export function loginPageFactory(page: Page) {
         name: 'Upgrade to Slidr Pro',
       });
       await goProButton.click();
-      await page.waitForURL('/user');
+      await expect(
+        page.locator('iframe').contentFrame().getByText('Slidr Pro Monthly'),
+      ).toBeVisible();
+      // Await page.waitForURL('/user');
       await simulateLemonSqueezyWebhook(emailAddress);
+      const closeButton = page
+        .locator('iframe')
+        .contentFrame()
+        .getByRole('button')
+        // Not a very explicit selector, but it is the only empty button in the iframe
+        .filter({hasText: /^$/});
+      await closeButton.click();
     },
     async goProComplete() {
       await page.goto('/user');
       await expect(
-        page.getByText('Slidr Pro - Thank you for your support!'),
+        page.getByRole('link', {name: /manage your slidr pro account/i}),
       ).toBeVisible();
     },
   };
