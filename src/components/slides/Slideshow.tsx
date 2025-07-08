@@ -42,7 +42,6 @@ export default function Slideshow({
           key={pageUnderIndex}
           aria-hidden
           className="w-full h-full absolute top-0 left-0"
-          // @ts-expect-error fetchPriority is not in the react typings
           fetchPriority="high"
           src={pages[pageUnderIndex]}
           alt={`Slide page ${pageUnderIndex + 1}`}
@@ -54,7 +53,6 @@ export default function Slideshow({
           'w-full h-full absolute top-0 left-0',
           isForward !== undefined && 'animate-fade-in animate-duration-500',
         )}
-        // @ts-expect-error fetchPriority is not in the react typings
         fetchPriority="high"
         src={pages[pageIndex]}
         alt={`Slide page ${pageIndex + 1}`}
@@ -75,7 +73,6 @@ export default function Slideshow({
             key={page}
             aria-hidden
             className="w-full h-full absolute top-0 left-0 hidden"
-            // @ts-expect-error fetchPriority is not in the react typings
             fetchPriority="low"
             src={page}
           />
