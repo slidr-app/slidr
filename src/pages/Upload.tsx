@@ -196,6 +196,7 @@ export default function Upload() {
           .padStart(3, '0')}_${nanoid()}.webp`,
       );
 
+      console.log('uploading page', pageIndex);
       await uploadBytes(pageStorageReference, pageImage, {
         cacheControl: 'public, max-age=604800, immutable',
       });
@@ -232,14 +233,27 @@ export default function Upload() {
       }
 
       console.log('waiting for pages');
-      const nextPages = await Promise.all(uploadPromises);
+      const pageResults = await Promise.allSettled(uploadPromises);
+      const rejected = pageResults
+        .filter((result) => result.status === 'rejected')
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        .map((result) => result.reason);
+      if (rejected.length > 0) {
+        console.error('Some pages failed to upload:', rejected);
+        throw new Error('Some pages failed to upload');
+      }
+
       console.log('pages done');
-      const nextNotes = nextPages.map((_, pageIndex) => ({
+      const nextNotes = pageResults.map((_, pageIndex) => ({
         pageIndices: [pageIndex] as [number, ...number[]],
         markdown: '',
       }));
 
-      setPages(nextPages);
+      setPages(
+        pageResults
+          .filter((result) => result.status === 'fulfilled')
+          .map((result) => result.value),
+      );
       setNotes(nextNotes);
       setUploadState('setting pages');
     }
