@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import process from 'node:process';
 import {type Page, expect} from '@playwright/test';
+import {type Subscription} from '../../functions/src/subscription-schema';
 import {generateId} from './id';
 
 type OobCode = {
@@ -67,7 +68,7 @@ export function loginPageFactory(page: Page) {
     async goProComplete() {
       await page.goto('/user');
       await expect(
-        page.getByRole('link', {name: /manage your slidr pro account/i}),
+        page.getByRole('button', {name: /manage your slidr pro subscription/i}),
       ).toBeVisible();
     },
   };
@@ -118,17 +119,25 @@ async function simulateLemonSqueezyWebhook(email: string) {
     );
   }
 
+  const subscription: Subscription = {
+    attributes: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      user_email: email,
+      status: 'active',
+      urls: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        customer_portal: 'https://example.com/customer-portal',
+      },
+    },
+    id: 'sub_1234567890',
+  };
+
   const subscriptionCreatedPayload = {
     meta: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       event_name: 'subscription_created',
     },
-    data: {
-      attributes: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        user_email: email,
-      },
-    },
+    data: subscription,
   };
 
   const subscriptionCreatedBody = JSON.stringify(subscriptionCreatedPayload);

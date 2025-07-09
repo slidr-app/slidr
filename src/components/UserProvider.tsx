@@ -5,7 +5,7 @@ import {
   createContext,
   useCallback,
 } from 'react';
-import type {UserDocument} from '../user-schema';
+import {type UserDocument} from '../../functions/src/user-schema';
 
 export type User = {
   email?: string;

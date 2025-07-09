@@ -5,6 +5,7 @@ import {nanoid} from 'nanoid';
 import {pdfDataToPngData} from './pdf-to-png.js';
 import {presentationConverter} from './presentation-schema.js';
 import {getBucket} from './storage-bucket.js';
+import {userConverter} from './user-schema.js';
 
 export const renderPresentation = onDocumentUpdated(
   '/presentations/{presentationId}',
@@ -48,6 +49,7 @@ export const renderPresentation = onDocumentUpdated(
     const userQueryResult = await getFirestore()
       .collection('users')
       .doc(uid)
+      .withConverter(userConverter)
       .get();
 
     if (!userQueryResult.data()?.isPro) {

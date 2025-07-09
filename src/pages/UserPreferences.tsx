@@ -9,18 +9,33 @@ import {
   where,
 } from 'firebase/firestore';
 import {useDebouncedCallback} from 'use-debounce';
+import {
+  getFunctions,
+  httpsCallable,
+  connectFunctionsEmulator,
+} from 'firebase/functions';
 import DefaultLayout from '../layouts/DefaultLayout';
 import {UserContext} from '../components/UserProvider';
-import {firestore} from '../firebase';
+import {app, firestore} from '../firebase';
 import SaveIndicator from '../components/SaveIndicator';
-import {type UserDocument, userDocumentConverter} from '../user-schema';
+import {
+  type UserDocument,
+  userConverter,
+} from '../../functions/src/user-schema';
 import {presentationConverter} from '../../functions/src/presentation-schema';
 import {ProComparison} from '../components/ProComparison';
 import GoProAction from '../components/GoProAction';
+import {useLemon} from '../components/use-lemon';
+
+const functions = getFunctions(app);
+if (import.meta.env.MODE === 'emulator') {
+  connectFunctionsEmulator(functions, '127.0.0.1', 5001);
+}
 
 export default function UserPreferences() {
   const {user} = useContext(UserContext);
   const [userData, setUserData] = useState<UserDocument>({});
+  const lemonLoaded = useLemon();
 
   useEffect(() => {
     if (!user) {
@@ -28,7 +43,7 @@ export default function UserPreferences() {
     }
 
     return onSnapshot(
-      doc(firestore, `users/${user.uid}`).withConverter(userDocumentConverter),
+      doc(firestore, `users/${user.uid}`).withConverter(userConverter),
       (snapshot) => {
         if (!snapshot.exists()) {
           setUserData({});
@@ -100,9 +115,27 @@ export default function UserPreferences() {
               <div className="text-base">
                 Manage your payment method or cancel your membership at anytime.
               </div>
-              <a className="btn" href="https://shop.slidr.app/account">
-                Manage your Slidr Pro account
-              </a>
+              <button
+                className="btn"
+                type="button"
+                disabled={!lemonLoaded}
+                onClick={async () => {
+                  console.log('Fetching Lemon Squeezy URL');
+                  const url = await httpsCallable(
+                    functions,
+                    'getLemonSqueezyUrl',
+                  )({
+                    userId: user.uid,
+                  });
+                  console.log('Opening Lemon Squeezy URL', url.data);
+                  // eslint-disable-next-line unicorn/prefer-global-this, new-cap
+                  window.LemonSqueezy.Url.Open((url.data as {url: string}).url);
+                }}
+              >
+                {lemonLoaded
+                  ? 'Manage your Slidr Pro subscription'
+                  : 'Loading...'}
+              </button>
             </>
           ) : (
             <>

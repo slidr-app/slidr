@@ -1,13 +1,5 @@
 import fastifyFactory from 'fastify';
-
-export type Subscription = {
-  id: string;
-  type: string;
-  attributes: {
-    user_email: string;
-    status: string;
-  };
-};
+import {type Subscription} from '../../functions/src/subscription-schema';
 
 export function createMockLemonServer({port = 3001}: {port?: number}) {
   const fastify = fastifyFactory();
@@ -24,6 +16,22 @@ export function createMockLemonServer({port = 3001}: {port?: number}) {
   fastify.get('/v1/subscriptions', async (_, reply) => {
     console.log('Mock Lemon Squeezy API: GET /v1/subscriptions');
     return reply.send({data: subscriptions});
+  });
+
+  fastify.get<{Params: {id: string}}>(
+    '/v1/subscriptions/:id',
+    async (request, reply) => {
+      console.log('Mock Lemon Squeezy API: GET /v1/subscriptions/:id');
+      const {id} = request.params;
+      return reply.send({data: subscriptions.find((sub) => sub.id === id)});
+    },
+  );
+
+  fastify.get('/customer-portal', async (_, reply) => {
+    console.log('Mock Lemon Squeezy API: GET /user-portal');
+    return reply
+      .type('text/html')
+      .send('<html><body>Mock User Portal</body></html>');
   });
 
   return {

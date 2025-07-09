@@ -14,12 +14,10 @@ import {
   ref as storageReference,
   uploadBytes,
   getDownloadURL,
-  getStorage,
-  connectStorageEmulator,
 } from 'firebase/storage';
 import {nanoid} from 'nanoid';
 import src from 'pdfjs-dist/build/pdf.worker.min.mjs?worker&url';
-import {auth, firestore, app} from '../firebase';
+import {auth, firestore} from '../firebase';
 import '../components/pdf/pdf.css';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
@@ -33,6 +31,7 @@ import {
   type Note,
   presentationConverter,
 } from '../../functions/src/presentation-schema';
+import {storage} from '../storage';
 
 // TODO: test fails sometimes, done text doesn't show pdf.
 
@@ -46,12 +45,6 @@ type UploadState =
   | 'uploading pages'
   | 'setting pages'
   | 'done';
-
-const storage = getStorage(app);
-
-if (import.meta.env.MODE === 'emulator') {
-  connectStorageEmulator(storage, '127.0.0.1', 9199);
-}
 
 export default function Upload() {
   useEffect(() => {
@@ -92,10 +85,12 @@ export default function Upload() {
 
   useEffect(() => {
     async function startRenderingFile() {
+      console.log('acceptedFiles', acceptedFiles, uploadState);
       if (!acceptedFiles[0] || uploadState !== 'ready') {
         return;
       }
 
+      console.log('setting file');
       setFile(acceptedFiles[0]);
 
       const presentationReference_ = await addDoc(
@@ -114,6 +109,7 @@ export default function Upload() {
           rendered: new Date(),
         },
       );
+      console.log('created presentation doc');
       setPresentationReference(presentationReference_);
       const originalName = `${nanoid()}.pdf`;
       const originalReference = storageReference(
@@ -124,6 +120,7 @@ export default function Upload() {
       await uploadBytes(originalReference, acceptedFiles[0], {
         cacheControl: 'public;max-age=604800',
       });
+      console.log('uploaded origina');
 
       const originalDownloadUrl = await getDownloadURL(originalReference);
       await setDoc(
@@ -133,6 +130,7 @@ export default function Upload() {
         },
         {merge: true},
       );
+      console.log('set original download url');
       setUploadState('rendering pages');
     }
 

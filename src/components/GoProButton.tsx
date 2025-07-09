@@ -1,30 +1,14 @@
-import {useContext, useEffect, useState} from 'react';
+import {useContext} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {UserContext} from './UserProvider';
+import {useLemon} from './use-lemon';
 
 // Adapted from Lemon Squeezy docs
 // https://docs.lemonsqueezy.com/help/lemonjs/using-with-frameworks-libraries#react
 export default function GoProButton() {
   const {user} = useContext(UserContext);
-  const [lemonLoaded, setLemonLoaded] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://app.lemonsqueezy.com/js/lemon.js';
-    script.defer = true;
-    script.addEventListener('load', () => {
-      // eslint-disable-next-line unicorn/prefer-global-this
-      window.createLemonSqueezy();
-      setLemonLoaded(true);
-    });
-
-    document.body.append(script);
-
-    return () => {
-      script.remove();
-    };
-  }, []);
+  const lemonLoaded = useLemon();
 
   return (
     <a

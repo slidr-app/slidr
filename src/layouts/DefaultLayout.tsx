@@ -11,7 +11,7 @@ import clsx from 'clsx/lite';
 import {doc, onSnapshot} from 'firebase/firestore';
 import {auth, firestore} from '../firebase';
 import {UserContext} from '../components/UserProvider';
-import {userDocumentConverter} from '../user-schema';
+import {userConverter} from '../../functions/src/user-schema';
 
 export default function DefaultLayout({
   title,
@@ -35,7 +35,7 @@ export default function DefaultLayout({
     }
 
     return onSnapshot(
-      doc(firestore, `users/${user.uid}`).withConverter(userDocumentConverter),
+      doc(firestore, `users/${user.uid}`).withConverter(userConverter),
       (snapshot) => {
         // Default to an empty object if no data exists
         // This lets the UI know the difference between the data not loaded and not existing

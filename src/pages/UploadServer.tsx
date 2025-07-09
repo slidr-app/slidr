@@ -12,11 +12,9 @@ import {
   ref as storageReference,
   uploadBytes,
   getDownloadURL,
-  getStorage,
-  connectStorageEmulator,
 } from 'firebase/storage';
 import {nanoid} from 'nanoid';
-import {firestore, app} from '../firebase';
+import {firestore} from '../firebase';
 import '../components/pdf/pdf.css';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
@@ -30,6 +28,7 @@ import {
   toFirestore,
   type Presentation,
 } from '../../functions/src/presentation-schema';
+import {storage} from '../storage';
 
 type UploadState =
   | 'fetching user'
@@ -37,12 +36,6 @@ type UploadState =
   | 'uploading'
   | 'processing'
   | 'done';
-
-const storage = getStorage(app);
-
-if (import.meta.env.MODE === 'emulator') {
-  connectStorageEmulator(storage, '127.0.0.1', 9199);
-}
 
 const presentationConverter = {
   toFirestore,

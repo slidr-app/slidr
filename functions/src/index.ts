@@ -19,3 +19,4 @@ export {renderForBot} from './render-for-bot.js';
 export {lemonSqueezyWebhook} from './lemon-squeezy-webhook.js';
 export {syncProUsers} from './sync-pro-users.js';
 export {renderPresentation} from './render-presentation.js';
+export {getLemonSqueezyUrl} from './get-lemon-squeezy-url.js';
