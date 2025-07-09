@@ -104,5 +104,12 @@ export default defineConfig(() => {
       // since parsing CSS is slow
       // css: true,
     },
+    server: {
+      watch: {
+        // Ignore the Playwright report directory to avoid unnecessary hmr reloads
+        // Those reloads can occasionally cause issues with the playwright tests
+        ignored: ['playwright-report/**'],
+      },
+    },
   };
 });
