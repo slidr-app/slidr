@@ -15,7 +15,7 @@
     "install:functions": "pnpm --dir functions install",
     "build:functions": "pnpm --dir functions build",
     "build:all": "pwa-assets-generator && pnpm run build && pnpm run build:functions",
-    "deploy": "firebase deploy --only functions:renderForBot,functions:lemonSqueezyWebhook,functions:syncProUsers,auth,firestore,storage,hosting",
+    "deploy": "firebase deploy --only functions:renderForBot,functions:lemonSqueezyWebhook,functions:syncProUsers,functions:renderPresentation,functions:getLemonSqueezyUrl,auth,firestore,storage,hosting",
     "generate-pwa-assets": "pwa-assets-generator",
     "test": "vitest",
     "test:all": "pnpm run test:once && pnpm run test:e2e",
