@@ -5,13 +5,13 @@ export default function NavigateButtons({
   onPrevious,
   onStart,
   onEnd,
-  border,
+  isBorder,
 }: {
   readonly onNext: () => void;
   readonly onPrevious: () => void;
   readonly onStart: () => void;
   readonly onEnd: () => void;
-  readonly border?: boolean;
+  readonly isBorder?: boolean;
 }) {
   return (
     <>
@@ -19,28 +19,28 @@ export default function NavigateButtons({
         icon="i-tabler-arrow-big-left-filled"
         label="previous"
         title="Previous slide"
-        border={border}
+        isBorderEnabled={isBorder}
         onClick={onPrevious}
       />
       <Button
         icon="i-tabler-arrow-big-right-filled"
         label="next"
         title="Next slide"
-        border={border}
+        isBorderEnabled={isBorder}
         onClick={onNext}
       />
       <Button
         icon="i-tabler-arrow-bar-to-left"
         label="start"
         title="Go to start"
-        border={border}
+        isBorderEnabled={isBorder}
         onClick={onStart}
       />
       <Button
         icon="i-tabler-arrow-bar-to-right"
         label="end"
         title="Go to end"
-        border={border}
+        isBorderEnabled={isBorder}
         onClick={onEnd}
       />
     </>

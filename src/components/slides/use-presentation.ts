@@ -1,17 +1,15 @@
 import {useEffect, useState} from 'react';
 import {doc, onSnapshot} from 'firebase/firestore';
 import {useParams} from 'react-router-dom';
-import {
-  type PresentationData,
-  type PresentationAndId,
-} from '../../../functions/src/presentation';
 import {firestore} from '../../firebase';
+import {
+  type PresentationAndId,
+  presentationConverter,
+} from '../../../functions/src/presentation-schema';
 
-export default function usePresentation(): PresentationAndId {
+export default function usePresentation(): PresentationAndId | undefined {
   const {presentationId} = useParams();
-  const [presentation, setPresentation] = useState<PresentationAndId>({
-    id: presentationId,
-  });
+  const [presentation, setPresentation] = useState<PresentationAndId>();
   const [pageError, setPageError] = useState<Error>();
   if (pageError) {
     throw pageError;
@@ -23,7 +21,9 @@ export default function usePresentation(): PresentationAndId {
     }
 
     return onSnapshot(
-      doc(firestore, 'presentations', presentationId),
+      doc(firestore, 'presentations', presentationId).withConverter(
+        presentationConverter,
+      ),
       (snapshot) => {
         if (!snapshot.exists()) {
           setPageError(
@@ -34,7 +34,7 @@ export default function usePresentation(): PresentationAndId {
 
         setPresentation({
           id: snapshot.id,
-          data: snapshot.data() as PresentationData,
+          data: snapshot.data(),
         });
       },
     );

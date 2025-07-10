@@ -43,7 +43,7 @@ export default function Timer() {
       </div>
       <div className="">
         <Button
-          border
+          isBorderEnabled
           title="Reset timer"
           icon="i-tabler-rotate"
           label="reset"

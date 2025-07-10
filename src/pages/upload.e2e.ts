@@ -3,6 +3,28 @@ import {generateId} from '../test/id';
 
 test.describe.configure({mode: 'parallel'});
 
+const consoleMessages = new Map<string, string[]>();
+
+// Since we have a flaky test, capture the console messages and log them on failure
+test.beforeEach(async ({page}, testInfo) => {
+  consoleMessages.set(testInfo.testId, []);
+  page.on('console', (message) => {
+    consoleMessages.get(testInfo.testId)?.push(message.text());
+  });
+});
+
+// @ts-expect-error playwright requires we destructure the fixtures, even if we don't use them
+test.afterEach(async ({page}, testInfo) => {
+  if (testInfo.status === testInfo.expectedStatus) {
+    return;
+  }
+
+  const messages = consoleMessages.get(testInfo.testId);
+  if (messages && messages.length > 0) {
+    for (const message of messages) console.log(message);
+  }
+});
+
 test('can upload and view presentation', async ({page, loginPage}) => {
   test.setTimeout(60_000);
 

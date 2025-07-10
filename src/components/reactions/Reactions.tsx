@@ -81,7 +81,7 @@ export function Reactions({
   return (
     <div className="fixed top-0 left-0 h-screen w-screen pointer-events-none">
       <div className="relative left-[calc(3rem_+_20px)] h-full w-[calc(calc(100vw_-_6rem)_-_40px)] max-h-screen">
-        {Array.from(reactions.entries())
+        {[...reactions.entries()]
           .filter(([, renderedReaction]) => !renderedReaction.done)
           .map(([id, renderedReaction]) => (
             <Reaction

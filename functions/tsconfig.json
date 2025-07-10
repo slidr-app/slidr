@@ -1,17 +1,17 @@
 {
+  "extends": "@tsconfig/node22/tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
+    // "module": "NodeNext",
+    // "esModuleInterop": true,
+    // "moduleResolution": "nodenext",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2017",
-    "esModuleInterop": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    // "target": "es2017",
     "skipLibCheck": true
+    // "allowImportingTsExtensions": true,
   },
   "compileOnSave": true,
   "include": [

@@ -1,5 +1,5 @@
 import {beforeEach, describe, it, expect} from 'vitest';
-import {type Note} from '../../../functions/src/presentation';
+import {type Note} from '../../../functions/src/presentation-schema';
 import {importNotes, exportNotes} from './parse-notes';
 
 let expectedNotes: Note[];

@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {type PresentationAndId} from '../../functions/src/presentation';
+import {type PresentationAndId} from '../../functions/src/presentation-schema';
 import RoundButton from './toolbar/RoundButton';
 
 export default function Shares({
@@ -53,31 +53,31 @@ export default function Shares({
   return (
     <div className="flex flex-row justify-center gap-4 relative flex-wrap">
       <RoundButton
-        newTab
+        isNewTab
         to={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
           tweetText,
         )}`}
-        icon="i-tabler-brand-twitter w-[2rem] h-[2rem]"
-        label="tweet"
-        title="Tweet this slide"
+        icon="i-tabler-brand-x"
+        label="post x"
+        title="Post slide to LinkedIn"
       />
       <RoundButton
-        newTab
+        isNewTab
         to={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
           shareUrl,
         )}`}
-        icon="i-tabler-brand-linkedin w-[2rem] h-[2rem]"
-        label="post"
+        icon="i-tabler-brand-linkedin"
+        label="post linkedIn"
         title="Post slide to LinkedIn"
       />
       <RoundButton
         to={shareUrl}
-        icon="i-tabler-link w-[2rem] h-[2rem]"
+        icon="i-tabler-link"
         label={copied ? 'copied!' : 'copy'}
         title="Copy link to slide"
         onClick={(event) => {
           event.preventDefault();
-          void window.navigator.clipboard.writeText(shareUrl);
+          void globalThis.navigator.clipboard.writeText(shareUrl);
           setCopied(true);
         }}
       />

@@ -13,7 +13,7 @@ export default function ReactionControls({
   return (
     <div className="max-w-lg mx-auto grid grid-cols-[4rem_4rem_4rem_4rem] gap-4 grid-rows-[4rem_4rem]">
       <Button
-        border
+        isBorderEnabled
         label="confetti"
         title="Throw some confetti"
         icon="i-fluent-emoji-flat-party-popper h-8 w-8"
@@ -22,10 +22,10 @@ export default function ReactionControls({
           handleConfetti();
         }}
       />
-      {Array.from(reactionsIconMap.entries()).map(([label, {icon, title}]) => (
+      {[...reactionsIconMap.entries()].map(([label, {icon, title}]) => (
         <Button
           key={label}
-          border
+          isBorderEnabled
           label={label}
           title={title}
           icon={clsx(icon, 'h-8 w-8')}

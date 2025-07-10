@@ -8,6 +8,7 @@ const Presentation = lazy(async () => import('./pages/Presentation.tsx'));
 const Home = lazy(async () => import('./pages/Home.tsx'));
 const SignIn = lazy(async () => import('./pages/SignIn.tsx'));
 const Upload = lazy(async () => import('./pages/Upload.tsx'));
+const UploadServer = lazy(async () => import('./pages/UploadServer.tsx'));
 const PresentationPreferences = lazy(
   async () => import('./pages/PresentationPreferences.tsx'),
 );
@@ -31,6 +32,11 @@ const Routes: RouteObject[] = [
   {
     path: '/upload',
     element: <Upload />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: '/upload-pro',
+    element: <UploadServer />,
     errorElement: <ErrorPage />,
   },
   {

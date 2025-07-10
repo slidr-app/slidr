@@ -40,7 +40,7 @@ export default function Confetti({
   readonly fire?: any;
 }) {
   const [doneReactions, setDoneReactions] = useState<string[]>([]);
-  const confettiReference = useRef<confetti.CreateTypes>();
+  const confettiReference = useRef<confetti.CreateTypes>(null);
   useEffect(() => {
     for (const [id, confettiReaction] of confettiReactions) {
       if (doneReactions.includes(id)) {

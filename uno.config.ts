@@ -16,13 +16,15 @@ export default defineConfig({
       // Loading them explicitly seems to fix the problem.
       collections: {
         tabler: async () =>
+          // eslint-disable-next-line promise/prefer-await-to-then
           import('@iconify-json/tabler/icons.json').then((i) => i.default),
-        // @ts-expect-error the type is being picked up from this json file, maybe it's too large?
         'fluent-emoji-flat': async () =>
+          // eslint-disable-next-line promise/prefer-await-to-then
           import('@iconify-json/fluent-emoji-flat/icons.json').then(
             (i) => i.default,
           ),
         'line-md': async () =>
+          // eslint-disable-next-line promise/prefer-await-to-then
           import('@iconify-json/line-md/icons.json').then((i) => i.default),
       },
       extraProperties: {

@@ -55,7 +55,7 @@ test('can share with share buttons', async ({
   await expect(page.getByRole('img', {name: 'Slide page 2'})).toBeVisible();
 
   // Twitter
-  const tweetButton = page.getByRole('link', {name: 'tweet'});
+  const tweetButton = page.getByRole('link', {name: 'post x'});
 
   await expect(tweetButton).toHaveAttribute('href');
   const tweetHref = await tweetButton.getAttribute('href');
@@ -71,7 +71,7 @@ test('can share with share buttons', async ({
   await expect(tweetButton).toHaveAttribute('rel', 'noreferrer');
 
   // LinkedIn
-  const linkedInButton = page.getByRole('link', {name: 'post'});
+  const linkedInButton = page.getByRole('link', {name: 'post linkedIn'});
 
   await expect(linkedInButton).toHaveAttribute('href');
   const linkedInShareHref = await linkedInButton.getAttribute('href');

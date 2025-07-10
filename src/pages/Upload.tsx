@@ -1,44 +1,41 @@
 import {useCallback, useContext, useEffect, useState} from 'react';
 import {useDropzone} from 'react-dropzone';
 import * as pdfjs from 'pdfjs-dist';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
 import clsx from 'clsx/lite';
 import {
   type DocumentReference,
   addDoc,
   collection,
-  updateDoc,
-  getDoc,
-  doc,
+  setDoc,
 } from 'firebase/firestore';
 import {
   ref as storageReference,
   uploadBytes,
   getDownloadURL,
-  getStorage,
-  connectStorageEmulator,
 } from 'firebase/storage';
 import {nanoid} from 'nanoid';
-import {auth, firestore, app} from '../firebase';
+import src from 'pdfjs-dist/build/pdf.worker.min.mjs?worker&url';
+import {auth, firestore} from '../firebase';
 import '../components/pdf/pdf.css';
 import PresentationPreferencesEditor, {
   type NotesSaveState,
 } from '../components/PresentationPreferencesEditor';
-import {
-  type PresentationCreate,
-  type Note,
-  type PresentationUpdate,
-} from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout';
-import {UserContext, type UserDocument} from '../components/UserProvider';
+import {UserContext} from '../components/UserProvider';
 import Loading from '../components/Loading';
 import Pdf from '../components/pdf/Pdf';
+import {
+  type Presentation,
+  type Note,
+  presentationConverter,
+} from '../../functions/src/presentation-schema';
+import {storage} from '../storage';
 
 // TODO: test fails sometimes, done text doesn't show pdf.
 
-const source = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url);
-pdfjs.GlobalWorkerOptions.workerSrc = source.toString();
+pdfjs.GlobalWorkerOptions.workerSrc = src;
 
 type UploadState =
   | 'fetching user'
@@ -49,24 +46,17 @@ type UploadState =
   | 'setting pages'
   | 'done';
 
-const storage = getStorage(app);
-
-if (import.meta.env.MODE === 'emulator') {
-  connectStorageEmulator(storage, '127.0.0.1', 9199);
-}
-
 export default function Upload() {
   useEffect(() => {
     document.title = `Slidr - Upload`;
   }, []);
 
   const [uploadState, setUploadState] = useState<UploadState>('fetching user');
-  const [userData, setUserData] = useState<UserDocument>();
   const [file, setFile] = useState<File>();
   const [pageIndex, setPageIndex] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [presentationReference, setPresentationReference] =
-    useState<DocumentReference>();
+    useState<DocumentReference<Presentation>>();
   const [notes, setNotes] = useState<Note[]>([]);
   const [title, setTitle] = useState('');
   const [savingState, setSavingState] = useState<NotesSaveState>('saved');
@@ -77,27 +67,12 @@ export default function Upload() {
   const [pages, setPages] = useState<string[]>([]);
 
   const {user} = useContext(UserContext);
+
   useEffect(() => {
-    async function getUserDocument() {
-      setUploadState('fetching user');
-      if (!user) {
-        setUserData(undefined);
-        return;
-      }
-
-      const userSnapshot = await getDoc(doc(firestore, 'users', user.uid));
+    if (user?.data !== undefined) {
       setUploadState('ready');
-
-      if (!userSnapshot.exists()) {
-        setUserData({});
-        return;
-      }
-
-      setUserData(userSnapshot.data() as UserDocument);
     }
-
-    void getUserDocument();
-  }, [user]);
+  }, [user?.data]);
 
   const {getRootProps, getInputProps, isDragActive, acceptedFiles} =
     useDropzone({
@@ -110,24 +85,31 @@ export default function Upload() {
 
   useEffect(() => {
     async function startRenderingFile() {
+      console.log('acceptedFiles', acceptedFiles, uploadState);
       if (!acceptedFiles[0] || uploadState !== 'ready') {
         return;
       }
 
+      console.log('setting file');
       setFile(acceptedFiles[0]);
 
       const presentationReference_ = await addDoc(
-        collection(firestore, 'presentations'),
+        collection(firestore, 'presentations').withConverter(
+          presentationConverter,
+        ),
         {
           created: new Date(),
           uid: auth.currentUser!.uid,
-          username: userData?.username ?? '',
-          twitterHandle: userData?.twitterHandle ?? '',
+          username: user?.data?.username ?? '',
+          twitterHandle: user?.data?.twitterHandle ?? '',
           pages: [],
           notes: [],
           title: '',
-        } satisfies PresentationCreate,
+          status: 'uploading',
+          rendered: new Date(),
+        },
       );
+      console.log('created presentation doc');
       setPresentationReference(presentationReference_);
       const originalName = `${nanoid()}.pdf`;
       const originalReference = storageReference(
@@ -138,22 +120,33 @@ export default function Upload() {
       await uploadBytes(originalReference, acceptedFiles[0], {
         cacheControl: 'public;max-age=604800',
       });
+      console.log('uploaded origina');
 
       const originalDownloadUrl = await getDownloadURL(originalReference);
-      await updateDoc(presentationReference_, {
-        original: originalDownloadUrl,
-      } satisfies PresentationUpdate);
+      await setDoc(
+        presentationReference_,
+        {
+          original: originalDownloadUrl,
+        },
+        {merge: true},
+      );
+      console.log('set original download url');
       setUploadState('rendering pages');
     }
 
     void startRenderingFile();
-  }, [acceptedFiles, uploadState, userData?.twitterHandle, userData?.username]);
+  }, [
+    acceptedFiles,
+    uploadState,
+    user?.data?.twitterHandle,
+    user?.data?.username,
+  ]);
 
   const pageRendered = useCallback((canvas: HTMLCanvasElement) => {
     // Watermark rendered image
     const context = canvas.getContext('2d');
     if (context) {
-      const rootStyles = window.getComputedStyle(
+      const rootStyles = globalThis.getComputedStyle(
         document.querySelector('#root')!,
       );
 
@@ -174,6 +167,7 @@ export default function Upload() {
         textMetrics.actualBoundingBoxLeft -
         textMetrics.actualBoundingBoxRight;
       const y =
+        // eslint-disable-next-line no-implicit-coercion
         canvas.height -
         0 -
         textMetrics.fontBoundingBoxAscent -
@@ -200,6 +194,7 @@ export default function Upload() {
           .padStart(3, '0')}_${nanoid()}.webp`,
       );
 
+      console.log('uploading page', pageIndex);
       await uploadBytes(pageStorageReference, pageImage, {
         cacheControl: 'public, max-age=604800, immutable',
       });
@@ -236,14 +231,27 @@ export default function Upload() {
       }
 
       console.log('waiting for pages');
-      const nextPages = await Promise.all(uploadPromises);
+      const pageResults = await Promise.allSettled(uploadPromises);
+      const rejected = pageResults
+        .filter((result) => result.status === 'rejected')
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        .map((result) => result.reason);
+      if (rejected.length > 0) {
+        console.error('Some pages failed to upload:', rejected);
+        throw new Error('Some pages failed to upload');
+      }
+
       console.log('pages done');
-      const nextNotes = nextPages.map((_, pageIndex) => ({
+      const nextNotes = pageResults.map((_, pageIndex) => ({
         pageIndices: [pageIndex] as [number, ...number[]],
         markdown: '',
       }));
 
-      setPages(nextPages);
+      setPages(
+        pageResults
+          .filter((result) => result.status === 'fulfilled')
+          .map((result) => result.value),
+      );
       setNotes(nextNotes);
       setUploadState('setting pages');
     }
@@ -259,12 +267,16 @@ export default function Upload() {
 
       setSavingState('saving');
       console.log('updating doc with pages');
-      await updateDoc(presentationReference, {
-        pages,
-        rendered: new Date(),
-        title,
-        notes,
-      } satisfies PresentationUpdate);
+      await setDoc(
+        presentationReference,
+        {
+          pages,
+          rendered: new Date(),
+          title,
+          notes,
+        },
+        {merge: true},
+      );
       console.log('doc update done');
       setUploadState('done');
       setSavingState((currentState) =>
@@ -313,10 +325,14 @@ export default function Upload() {
     }
 
     setSavingState('saving');
-    await updateDoc(presentationReference, {
-      notes,
-      title,
-    } satisfies PresentationUpdate);
+    await setDoc(
+      presentationReference,
+      {
+        notes,
+        title,
+      },
+      {merge: true},
+    );
     setSavingState((currentState) =>
       currentState === 'saving' ? 'saved' : currentState,
     );

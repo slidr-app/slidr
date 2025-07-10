@@ -28,6 +28,7 @@ export const test = base.extend<MyFixtures>({
       return newPage;
     }
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use({newPage});
 
     // eslint-disable-next-line n/prefer-global/process

@@ -1,10 +1,10 @@
-import {defineConfig} from 'vite';
+import {defineConfig} from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import {VitePWA as vitePWA} from 'vite-plugin-pwa';
 import unoCSS from 'unocss/vite';
 
 // https://vitejs.dev/config/
-export default defineConfig(({command, mode}) => {
+export default defineConfig(() => {
   return {
     plugins: [
       unoCSS(),
@@ -83,9 +83,6 @@ export default defineConfig(({command, mode}) => {
     ],
     test: {
       globals: true,
-      // TODO probably don't need jsdom nor the setup now that there are no DOM based tests?
-      environment: 'jsdom',
-      setupFiles: './src/test/setup.ts',
       include: ['src/**/*.[Tt]est.ts?(x)'],
       coverage: {
         // Src: [`${process.cwd()}/src`],
@@ -105,6 +102,13 @@ export default defineConfig(({command, mode}) => {
       // You might want to disable it, if you don't have tests that rely on CSS
       // since parsing CSS is slow
       // css: true,
+    },
+    server: {
+      watch: {
+        // Ignore the Playwright report directory to avoid unnecessary hmr reloads
+        // Those reloads can occasionally cause issues with the playwright tests
+        ignored: ['playwright-report/**'],
+      },
     },
   };
 });

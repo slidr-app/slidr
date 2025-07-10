@@ -1,10 +1,10 @@
 import clsx from 'clsx/lite';
 
 export default function Toggle({
-  checked,
+  isChecked,
   onCheckChange,
 }: {
-  readonly checked: boolean;
+  readonly isChecked: boolean;
   readonly onCheckChange: () => void;
 }) {
   // Inspired from https://codepen.io/lhermann/pen/EBGZRZ
@@ -19,7 +19,7 @@ export default function Toggle({
         <div className="relative">
           {/* <!-- input --> */}
           <input
-            checked={checked}
+            checked={isChecked}
             type="checkbox"
             id="toggleB"
             className="sr-only"
@@ -32,14 +32,14 @@ export default function Toggle({
           <div
             className={clsx(
               'block w-14 h-8 rounded-full',
-              checked ? 'bg-blue-700' : 'bg-green-700',
+              isChecked ? 'bg-blue-700' : 'bg-green-700',
             )}
           />
           {/* <!-- dot --> */}
           <div
             className={clsx(
               'absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition',
-              checked && 'translate-x-full bg-gray-7',
+              isChecked && 'translate-x-full bg-gray-7',
             )}
           />
         </div>

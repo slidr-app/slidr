@@ -1,4 +1,4 @@
-import {type Note} from '../../../functions/src/presentation';
+import {type Note} from '../../../functions/src/presentation-schema';
 
 export function importNotes(markdown: string, pageCount: number): Note[] {
   // We ensure a capture group around the entire expression so that it is still included in the String.split results

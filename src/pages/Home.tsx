@@ -1,39 +1,37 @@
-import {useContext, useEffect, useState} from 'react';
-import {Link, NavLink, useNavigate} from 'react-router-dom';
+import {useEffect, useState} from 'react';
+import {Link, NavLink} from 'react-router-dom';
 import {collection, orderBy, query, onSnapshot} from 'firebase/firestore';
 import {auth, firestore} from '../firebase.ts';
-import {
-  type PresentationDocument,
-  type PresentationData,
-} from '../../functions/src/presentation';
 import DefaultLayout from '../layouts/DefaultLayout.tsx';
 import Loading from '../components/Loading.tsx';
-import {UserContext} from '../components/UserProvider.tsx';
+import {
+  type PresentationAndId,
+  presentationConverter,
+} from '../../functions/src/presentation-schema.ts';
+import {ProComparison} from '../components/ProComparison.tsx';
+import GoProAction from '../components/GoProAction.tsx';
 
 export default function Home() {
-  const navigate = useNavigate();
-  const {user} = useContext(UserContext);
   useEffect(() => {
     document.title = `Slidr - Home`;
   }, []);
 
-  const [presentations, setPresentations] = useState<PresentationDocument[]>();
+  const [presentations, setPresentations] = useState<PresentationAndId[]>();
 
   useEffect(() => {
     return onSnapshot(
       query(
-        collection(firestore, 'presentations'),
+        collection(firestore, 'presentations').withConverter(
+          presentationConverter,
+        ),
         orderBy('rendered', 'desc'),
       ),
       (querySnapshot) => {
         setPresentations(
-          querySnapshot.docs.map((document) => {
-            const presentation: PresentationDocument = {
-              id: document.id,
-              data: document.data() as PresentationData,
-            };
-            return presentation;
-          }),
+          querySnapshot.docs.map((document) => ({
+            id: document.id,
+            data: document.data(),
+          })),
         );
       },
     );
@@ -72,61 +70,9 @@ export default function Home() {
             It’s like your favorite slide deck meets live streaming, with
             audience energy baked in.
           </p>
-          <button
-            type="button"
-            className="btn flex flex-row gap-2 self-start text-lg font-semibold hover:bg-teal hover:bg-opacity-20 items-center"
-            onClick={async () => {
-              // First sign in if the user is not signed in
-              if (!user) {
-                navigate('/signin?redirect=/user');
-                return;
-              }
-
-              // If signed-in, navigate to the user page
-              await new Promise((resolve) => {
-                setTimeout(resolve, 500);
-              });
-              navigate('/user');
-            }}
-          >
-            <div>Upgrade to Slidr Pro</div>
-            <div className="i-tabler-arrow-right w-6 h-6" />
-          </button>
-          <p className="text-sm text-gray-300 mt-2">
-            Slidr Pro is available starting at just $5/month. Cancel anytime.
-          </p>
+          <GoProAction />
         </div>
-        <div className="self-stretch w-full flex flex-col gap-4 items-center">
-          <span className="text-lg font-semibold">Compare Free and Pro</span>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-base">
-            <div className="flex flex-col gap-2">
-              <span className="font-semibold text-center text-teal">Free</span>
-              <div>✅ Upload PDFs and add speaker notes</div>
-              <div>✅ Live presentation mode with QR code sync</div>
-              <div>✅ Real-time emoji reactions</div>
-              <div>🚫 No watermark-free presentations</div>
-              <div>🚫 No server-side rendering</div>
-              <div>🚫 Limited file size (coming soon)</div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <span className="font-semibold text-center text-teal">Pro</span>
-              <div>✅ Everything in Free</div>
-              <div>✅ Watermark-free presentations</div>
-              <div>✅ Server-side rendering for higher quality</div>
-              <div>✅ Increased file size and upload limits</div>
-              <div>✅ Priority performance</div>
-              <div>
-                ✅ Support an{' '}
-                <a
-                  className="underline hover:text-teal"
-                  href="https://github.com/slidr-app/slidr"
-                >
-                  Open Source project
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ProComparison />
         <div className="flex flex-col items-center text-base gap-2">
           <div>
             Wondering where to start? Check out the Getting Started guide.

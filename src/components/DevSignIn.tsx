@@ -13,7 +13,7 @@ export default function DeveloperSignIn({
         This button only exists on emulator mode builds.
       </div>
       <Button
-        border
+        isBorderEnabled
         label="Sign In with Test Account"
         title="Sign In with Test Account"
         icon="i-tabler-bug"

@@ -22,7 +22,7 @@ export default function SignIn() {
 
   // Build the current url with react router location, allowing this to be tested
   const location = useLocation();
-  const currentUrl = `${window.location.origin}${location.pathname}${location.search}`;
+  const currentUrl = `${globalThis.location.origin}${location.pathname}${location.search}`;
   const searchParameters = new URLSearchParams(location.search);
   const redirectTo = searchParameters.get('redirect') ?? '/';
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export default function SignIn() {
     // URL you want to redirect back to. The domain (www.example.com) for this
     // URL must be in the authorized domains list in the Firebase Console.
     // url: 'https://www.example.com/finishSignUp?cartId=1234',
-    url: `${window.location.origin}/signin/?redirect=${redirectTo}`,
+    url: `${globalThis.location.origin}/signin/?redirect=${redirectTo}`,
     // This must be true.
     handleCodeInApp: true,
     // IOS: {
@@ -67,14 +67,14 @@ export default function SignIn() {
       } catch (error) {
         setSignInError(error as Error);
       } finally {
-        window.localStorage.removeItem('emailForSignIn');
+        globalThis.localStorage.removeItem('emailForSignIn');
       }
     },
     [redirect, currentUrl],
   );
 
   useEffect(() => {
-    const storedEmail = window.localStorage.getItem('emailForSignIn');
+    const storedEmail = globalThis.localStorage.getItem('emailForSignIn');
     if (isSignInWithEmailLink(auth, currentUrl) && storedEmail) {
       console.log('signing in');
       void signInAndRemoveEmail(storedEmail);
@@ -82,7 +82,7 @@ export default function SignIn() {
   }, [signInAndRemoveEmail, currentUrl]);
 
   const [email, setEmail] = useState(
-    window.localStorage.getItem('emailForSignIn') ?? '',
+    globalThis.localStorage.getItem('emailForSignIn') ?? '',
   );
 
   const [user, setUser] = useState<User | undefined>();
@@ -106,12 +106,12 @@ export default function SignIn() {
         </div>
       ) : (
         <div className="flex flex-col items-center gap-4 p-4">
-          {user && (
+          {user ? (
             <div className="prose">
               You are already signed as {user.email}. You should probably head{' '}
               <Link to="/">home</Link>.
             </div>
-          )}
+          ) : null}
           <form
             className="flex flex-row justify-center items-stretch gap-2 flex-wrap w-full"
             onSubmit={async (event) => {
@@ -123,7 +123,7 @@ export default function SignIn() {
 
               setEmailSending(true);
               await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-              window.localStorage.setItem('emailForSignIn', email);
+              globalThis.localStorage.setItem('emailForSignIn', email);
               setEmailSent(true);
             }}
           >
@@ -144,32 +144,32 @@ export default function SignIn() {
             </label>
             {isLink ? (
               <Button
-                border
-                submit
+                isBorderEnabled
+                isSubmit
                 icon="i-tabler-user-check"
                 label="Verify & Sign In"
                 title="Verify & Sign In"
               />
             ) : (
               <Button
-                border
-                submit
+                isBorderEnabled
+                isSubmit
                 icon={clsx(
                   emailSent ? 'i-tabler-mail-fast' : 'i-tabler-send',
                   !emailSent && emailSending && 'animate-spin',
                 )}
                 label={emailSent ? 'Email Sent' : 'Send Email'}
                 title={emailSent ? 'Email Sent' : 'Send Email'}
-                disabled={emailSent}
+                isDisabled={emailSent}
               />
             )}
           </form>
-          {emailSent && (
+          {emailSent ? (
             <div>
               Please click on the link sent in the email. You can close this
               page.
             </div>
-          )}
+          ) : null}
           {import.meta.env.MODE === 'emulator' && (
             <DeveloperSignIn onSignInSuccess={redirect} />
           )}
