@@ -20,7 +20,7 @@ const presentationSchemaV0 = z.object({
   notes: z.array(noteSchema),
   uid: z.string(),
   username: z.string(),
-  twitterHandle: z.string(),
+  twitterHandle: z.string().optional(),
   original: z.string().url().optional(),
   rendered: timeStamp.optional(),
   thumbIndex: z.number().optional(),
@@ -88,6 +88,7 @@ export function fromFirestore<
       ...parsedData,
       status: parsedData.rendered === undefined ? 'created' : 'rendered', // Determine if it was rendered or not
       rendered: parsedData.rendered ?? parsedData.created,
+      twitterHandle: parsedData.twitterHandle ?? '',
     };
   }
 

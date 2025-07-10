@@ -44,7 +44,6 @@ test.beforeAll(async () => {
     created: new Date(2040, 8),
     rendered: new Date(2040, 8),
     original: 'http://does-not-exist.com',
-    twitterHandle: '',
   });
 });
 

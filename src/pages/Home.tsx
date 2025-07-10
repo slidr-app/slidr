@@ -28,10 +28,26 @@ export default function Home() {
       ),
       (querySnapshot) => {
         setPresentations(
-          querySnapshot.docs.map((document) => ({
-            id: document.id,
-            data: document.data(),
-          })),
+          querySnapshot.docs
+            .map((document) => {
+              try {
+                return {
+                  id: document.id,
+                  data: document.data(),
+                };
+              } catch (error) {
+                // Log and mask errors from users
+                console.error(
+                  `Error converting presentation document ${document.id}`,
+                  error,
+                );
+                return undefined;
+              }
+            })
+            // eslint-disable-next-line unicorn/prefer-native-coercion-functions
+            .filter((presentation): presentation is PresentationAndId =>
+              Boolean(presentation),
+            ),
         );
       },
     );
