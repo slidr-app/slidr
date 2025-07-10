@@ -83,7 +83,6 @@ export default defineConfig(() => {
     ],
     test: {
       globals: true,
-      // TODO probably don't need jsdom nor the setup now that there are no DOM based tests?
       include: ['src/**/*.[Tt]est.ts?(x)'],
       coverage: {
         // Src: [`${process.cwd()}/src`],
